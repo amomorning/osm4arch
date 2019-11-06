@@ -22,30 +22,31 @@ import org.openstreetmap.osmosis.core.domain.v0_6.WayNode;
 import org.openstreetmap.osmosis.core.task.v0_6.Sink;
 
 import crosby.binary.osmosis.OsmosisReader;
+import javafx.util.Pair;
+import utils.Container;
+import utils.DisplayAll;
+import wblut.geom.WB_Point;
 
 
 public class PbfReader implements Sink {
-    static String OSM_FILENAME = "./data/part_prato.osm.pbf";
-	int cnt;
-
-	public static void main() throws FileNotFoundException {
-		// TODO Auto-generated method stub
-        InputStream inputStream = new FileInputStream(OSM_FILENAME);
-        OsmosisReader reader = new OsmosisReader(inputStream);
-        reader.setSink(new PbfReader());
-        reader.run();
-	}
-
+    private int WayCount;
+    private int NodeCount;
+    private int RelationCount;
+	
 	@Override
 	public void initialize(Map<String, Object> arg0) {
 		// TODO Auto-generated method stub
-		cnt = 0;
+		WayCount = 0;
+		NodeCount = 0;
+		RelationCount = 0;
+	    System.out.println("this is initialize.");
 		
 	}
 
 	@Override
 	public void complete() {
 		// TODO Auto-generated method stub
+	    System.out.println("this is complete.");
 		
 	}
 
@@ -53,7 +54,6 @@ public class PbfReader implements Sink {
 	public void close() {
 		// TODO Auto-generated method stub
 		
-            System.out.println("Total = " + cnt);
 	}
 
 	@Override
@@ -63,9 +63,11 @@ public class PbfReader implements Sink {
             // Nothing to do here
         	Node myNode = ((NodeContainer)entityContainer).getEntity();
 //        	System.out.println("node = " + myNode.getId() + "lat = " + myNode.getLatitude() + " lon = " + myNode.getLongitude()) ;
-
-//			System.out.println();
+        	Container.nodeid.put(myNode.getId(), NodeCount++);
+        	Container.points.add(new WB_Point(GeoMath.lonLatToXY(myNode.getLongitude(), myNode.getLatitude())));
         } else if (entityContainer instanceof WayContainer) {
+
+        	Container.edges.add(new Pair<>(1, 1));
 //            Way myWay = ((WayContainer) entityContainer).getEntity();
 //            boolean building = false;
 //            for (Tag myTag : myWay.getTags()) {
