@@ -9,20 +9,31 @@ import com.google.common.collect.HashBiMap;
 
 import javafx.util.Pair;
 import wblut.geom.WB_Point;
+import wblut.geom.WB_PolyLine;
 
 public class Container {
     public static final String OSM_FILENAME = "./data/part_prato.osm.pbf";
 
+    public static BiMap<Long, Integer> wayid;
+    public static BiMap<Long, Integer> nodeid;
+    public static List<Pair<Integer, Integer>> edges;
+
 
     public static List<WB_Point> points;
-    public static BiMap<Long, Integer> nodeid;
+    public static List<WB_PolyLine> plys;
     
-    public static List<Pair<Integer, Integer>> edges;
+    
+    public static List<Poi> pois;
+    public static List<Aoi> aois;
     
     
     public static void initAll() {
          points = new ArrayList<>();
          nodeid = HashBiMap.create();       
+         wayid = HashBiMap.create();
          edges = new ArrayList<>();
+         plys = new ArrayList<>();
+         pois = new ArrayList<>();
+         aois = new ArrayList<>();
     }
 }

@@ -137,13 +137,11 @@ public class Tools {
 	 * @throws:
 	 */
 	public WB_Polygon[] getRectangles(WB_Polygon ply, double distance, int N, int seed) {
-		WB_Point[] centers = getRandomPoint(ply, distance, N, seed);
 
 		return null;
 	}
 
 	public WB_Point[] optimizedPoint(WB_Polygon ply, double distance, int N, int seed) {
-		WB_Point[] initPoint = getRandomPoint(ply, distance, N, seed);
 		WB_Point[] resultPoint = new WB_Point[N];
 
 		return resultPoint;
