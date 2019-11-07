@@ -5,5 +5,7 @@
 	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/HE_Mesh"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/Processing 3"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/OSM"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/GzfCam"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/ControlP5"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

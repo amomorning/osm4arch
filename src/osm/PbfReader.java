@@ -64,6 +64,7 @@ public class PbfReader implements Sink {
         	Node myNode = ((NodeContainer)entityContainer).getEntity();
 //        	System.out.println("node = " + myNode.getId() + "lat = " + myNode.getLatitude() + " lon = " + myNode.getLongitude()) ;
         	Container.nodeid.put(myNode.getId(), NodeCount++);
+        
         	Container.points.add(new WB_Point(GeoMath.lonLatToXY(myNode.getLongitude(), myNode.getLatitude())));
         } else if (entityContainer instanceof WayContainer) {
 

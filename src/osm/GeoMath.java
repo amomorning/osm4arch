@@ -18,7 +18,7 @@ public class GeoMath {
 
     public static final int EARTH_RADIUS = (6378137 + 6356752) / 2;
     
-    public static double[] base = new double[] {43.8827, 11.093150000000001};
+    public static final double[] base = new double[] { 11.093150000000001 ,43.8827};
     /**
      * Calculates a projected coordinate for a given longitude value. 
      * 
