@@ -1,5 +1,7 @@
 package osm;
 
+import utils.Container;
+
 public class GeoMath {
     
  public static final double _180_PI = 180d / Math.PI;
@@ -18,7 +20,6 @@ public class GeoMath {
 
     public static final int EARTH_RADIUS = (6378137 + 6356752) / 2;
     
-    public static final double[] base = new double[] { 11.093150000000001 ,43.8827};
     /**
      * Calculates a projected coordinate for a given longitude value. 
      * 
@@ -61,21 +62,21 @@ public class GeoMath {
     
     
     public static double[] lonLatToXY(double lon, double lat) {
-        double x0 = lonToMercator(base[0]);
-        double y0 = latToMercator(base[1]);
+        double x0 = lonToMercator(Container.MAP_BASE[0]);
+        double y0 = latToMercator(Container.MAP_BASE[1]);
         double x1 = lonToMercator(lon);
         double y1 = latToMercator(lat);
         return new double[] {x1-x0, y1-y0};
     }
     
     public static double[] xyToLonLat(double x, double y) {
-        x += lonToMercator(base[0]);
-        y += latToMercator(base[1]);
+        x += lonToMercator(Container.MAP_BASE[0]);
+        y += latToMercator(Container.MAP_BASE[1]);
         
         return new double[] {mercatorToLon(x), mercatorToLat(y)};
     }
     
-    public static double distance(double lon1, double lat1, double lon2, double lat2) {
+    public static double mercatorDistance(double lon1, double lat1, double lon2, double lat2) {
         double y1 = latToMercator(lat1);
         double x1 = lonToMercator(lon1);
         double y2 = latToMercator(lat2);

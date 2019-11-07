@@ -36,8 +36,7 @@ public class DisplayAll extends PApplet{
 
 
 
-
-        PApplet.main("utils.DisplayAll");
+//        PApplet.main("utils.DisplayAll");
        
     }
 

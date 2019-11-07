@@ -1,14 +1,17 @@
 package utils;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
+import processing.core.PApplet;
 import wblut.geom.WB_GeometryFactory;
 import wblut.geom.WB_Point;
 import wblut.geom.WB_PolyLine;
 import wblut.geom.WB_Polygon;
 
 public class Aoi {
+    Date date;
     WB_PolyLine ply;
     Map<String, String> tags;
     public boolean isClosed;
@@ -36,5 +39,13 @@ public class Aoi {
     
     public void addTag(String key, String value) {
         tags.put(key, value);
+    }
+    
+    public void setDate(Date timestamp) {
+        date = timestamp;
+    }
+    
+    public void draw(PApplet app) {
+        
     }
 }
