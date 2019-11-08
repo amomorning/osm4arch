@@ -56,7 +56,13 @@ public class Tools {
 	 * @throws:
 	 */
 	public static WB_Polygon toWB_Polygon(Polygon ply) {
-		return new WB_GeometryFactory().createPolygonFromJTSPolygon2D(ply);
+	    Coordinate[] pts = new Coordinate[ply.getNumPoints()];
+	    WB_Point[] polypt = new WB_Point[ply.getNumPoints()-1];
+	    
+	    for(int i = 0; i < pts.length-1; ++ i) {
+	        polypt[i] = new WB_Point(pts[i].x, pts[i].y, pts[i].z);
+	    }
+	    return new WB_GeometryFactory().createSimplePolygon(polypt);
 	}
 
 	/**
