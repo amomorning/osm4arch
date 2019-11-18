@@ -23,4 +23,12 @@ public class Poi {
     public void setDate(Date d) {
         date = d;
     }
+    
+    public void printTag() {
+        for(String key : tags.keySet()) {
+            System.out.println("POI key = " + key + ", value = " + tags.get(key) );
+        }
+        System.out.println("---------------------------------------------");
+    }
+
 }

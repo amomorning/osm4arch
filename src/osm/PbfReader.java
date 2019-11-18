@@ -47,7 +47,6 @@ public class PbfReader implements Sink {
 
     @Override
     public void complete() {
-        // TODO Auto-generated method stub
 //	    System.out.println("this is complete.");
         System.out.println(String.valueOf(cntb) + ", " + cnta);
 
@@ -120,28 +119,18 @@ public class PbfReader implements Sink {
                 pts.remove(pts.size() - 1);
             }
 
-            // Get network relations
-            WayNode last = null;
-            for (WayNode node : nodeList) {
-                if (node == nodeList.get(0)) {
-                    last = node;
-                    continue;
-                }
+            // Get Piazza
 
-                Integer u = Container.nodeid.get(last.getNodeId());
-                Integer v = Container.nodeid.get(node.getNodeId());
-
-//                System.out.println(u + " " + v);
-                Container.edges.add(new Pair<>(u, v));
-                last = node;
-            }
 
             // Get Area of Interest
             if (myWay.getTags().size() > 0) {
 
                 Aoi aoi = new Aoi(ply, myWay.isClosed());
                 for (Tag tag : myWay.getTags()) {
-                    aoi.addTag(tag.getKey(), tag.getValue());
+                    String key = tag.getKey();
+                    String value = tag.getValue();
+                    aoi.addTag(key, value);
+                    
                 }
                 if (myWay.getTimestamp().getTime() != -1) {
                     cnta = (cnta > myWay.getTimestamp().getTime()) ? cnta : myWay.getTimestamp().getTime();
@@ -150,7 +139,6 @@ public class PbfReader implements Sink {
                     aoi.setDate(myWay.getTimestamp());
                 }
                 Container.aois.add(aoi);
-
             }
 
         }
