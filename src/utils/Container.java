@@ -3,11 +3,11 @@ package utils;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.eclipse.collections.api.tuple.Pair;
 
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 
-import javafx.util.Pair;
 import wblut.geom.WB_Point;
 import wblut.geom.WB_PolyLine;
 
@@ -23,7 +23,6 @@ public class Container {
 
     public static BiMap<Long, Integer> wayid;
     public static BiMap<Long, Integer> nodeid;
-    public static List<Pair<Integer, Integer>> edges;
 
 
     public static List<WB_Point> points;
@@ -38,7 +37,7 @@ public class Container {
          points = new ArrayList<>();
          nodeid = HashBiMap.create();       
          wayid = HashBiMap.create();
-         edges = new ArrayList<>();
+
          plys = new ArrayList<>();
          pois = new ArrayList<>();
          aois = new ArrayList<>();

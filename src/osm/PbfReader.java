@@ -10,7 +10,6 @@ import org.openstreetmap.osmosis.core.container.v0_6.EntityContainer;
 import org.openstreetmap.osmosis.core.container.v0_6.NodeContainer;
 import org.openstreetmap.osmosis.core.container.v0_6.RelationContainer;
 import org.openstreetmap.osmosis.core.container.v0_6.WayContainer;
-import org.openstreetmap.osmosis.core.domain.common.TimestampContainer;
 import org.openstreetmap.osmosis.core.domain.v0_6.Bound;
 import org.openstreetmap.osmosis.core.domain.v0_6.Node;
 import org.openstreetmap.osmosis.core.domain.v0_6.Tag;
@@ -18,7 +17,6 @@ import org.openstreetmap.osmosis.core.domain.v0_6.Way;
 import org.openstreetmap.osmosis.core.domain.v0_6.WayNode;
 import org.openstreetmap.osmosis.core.task.v0_6.Sink;
 
-import javafx.util.Pair;
 import utils.Aoi;
 import utils.Container;
 import utils.Poi;
@@ -51,7 +49,6 @@ public class PbfReader implements Sink {
         System.out.println(String.valueOf(cntb) + ", " + cnta);
 
         System.out.println(Container.points.size() + " numbers of points is readed.");
-        System.out.println(Container.edges.size() + " numbers of edges is builded.");
 
         System.out.println("WayCount = " + WayCount);
         System.out.println("NodeCount = " + NodeCount);
