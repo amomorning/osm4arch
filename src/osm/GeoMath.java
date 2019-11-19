@@ -62,16 +62,16 @@ public class GeoMath {
     
     
     public static double[] lonLatToXY(double lon, double lat) {
-        double x0 = lonToMercator(Container.MAP_BASE[0]);
-        double y0 = latToMercator(Container.MAP_BASE[1]);
+        double x0 = lonToMercator(Container.MAP_LAT_LNG[1]);
+        double y0 = latToMercator(Container.MAP_LAT_LNG[0]);
         double x1 = lonToMercator(lon);
         double y1 = latToMercator(lat);
         return new double[] {x1-x0, y1-y0};
     }
     
     public static double[] xyToLonLat(double x, double y) {
-        x += lonToMercator(Container.MAP_BASE[0]);
-        y += latToMercator(Container.MAP_BASE[1]);
+        x += lonToMercator(Container.MAP_LAT_LNG[1]);
+        y += latToMercator(Container.MAP_LAT_LNG[0]);
         
         return new double[] {mercatorToLon(x), mercatorToLat(y)};
     }
