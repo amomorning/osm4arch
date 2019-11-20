@@ -60,29 +60,52 @@ public class GeoMath {
         return _180_PI * (2d * Math.atan(Math.exp(y)) - PI_2);
     }
     
-    
-    public static double[] lonLatToXY(double lon, double lat) {
+     public static double[] latLngToXY(double lat, double lng) {
         double x0 = lonToMercator(Container.MAP_LAT_LNG[1]);
         double y0 = latToMercator(Container.MAP_LAT_LNG[0]);
-        double x1 = lonToMercator(lon);
+        double x1 = lonToMercator(lng);
         double y1 = latToMercator(lat);
         return new double[] {x1-x0, y1-y0};
     }
     
-    public static double[] xyToLonLat(double x, double y) {
+    public static double[] xyToLatLng(double x, double y) {
         x += lonToMercator(Container.MAP_LAT_LNG[1]);
         y += latToMercator(Container.MAP_LAT_LNG[0]);
         
-        return new double[] {mercatorToLon(x), mercatorToLat(y)};
+        return new double[] { mercatorToLat(y), mercatorToLon(x)};
     }
+       
+//    public static double[] lonLatToXY(double lon, double lat) {
+//        double x0 = lonToMercator(Container.MAP_LAT_LNG[1]);
+//        double y0 = latToMercator(Container.MAP_LAT_LNG[0]);
+//        double x1 = lonToMercator(lon);
+//        double y1 = latToMercator(lat);
+//        return new double[] {x1-x0, y1-y0};
+//    }
+//    
+//    public static double[] xyToLonLat(double x, double y) {
+//        x += lonToMercator(Container.MAP_LAT_LNG[1]);
+//        y += latToMercator(Container.MAP_LAT_LNG[0]);
+//        
+//        return new double[] {mercatorToLon(x), mercatorToLat(y)};
+//    }
+//    
     
-    public static double mercatorDistance(double lon1, double lat1, double lon2, double lat2) {
+    public static double mercatorDistance(double lat1, double lon1, double lat2, double lon2) {
         double y1 = latToMercator(lat1);
         double x1 = lonToMercator(lon1);
         double y2 = latToMercator(lat2);
         double x2 = lonToMercator(lon2);
         return Math.sqrt((x1-x2) * (x1-x2) + (y1-y2) * (y1-y2));
     }
+    
+//    public static double mercatorDistance(double lon1, double lat1, double lon2, double lat2) {
+//        double y1 = latToMercator(lat1);
+//        double x1 = lonToMercator(lon1);
+//        double y2 = latToMercator(lat2);
+//        double x2 = lonToMercator(lon2);
+//        return Math.sqrt((x1-x2) * (x1-x2) + (y1-y2) * (y1-y2));
+//    }
     
 
     /**
