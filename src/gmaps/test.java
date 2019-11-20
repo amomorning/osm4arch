@@ -13,7 +13,6 @@ import utils.Container;
 
 public class test {
             
-    public static String TABLENAME = "function";
     
     public static String COLUMNS[][] = {
             {"placeid", "char(255)"}, 
@@ -23,6 +22,7 @@ public class test {
             {"type", "char(255)"}
             };
     public static int NOT_NULL_LENGTH = 3;
+    public static String TABLENAME = "function";
 
     public static void main(String[] args) throws Exception {
         test testCase = new test();
