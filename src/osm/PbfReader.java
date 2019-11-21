@@ -74,7 +74,8 @@ public class PbfReader implements Sink {
 //        	System.out.println("node = " + myNode.getId() 
 //        	     + "latitude = " + myNode.getLatitude() 
 //        	     + " longitude = " + myNode.getLongitude()) ;
-            WB_Point pts = new WB_Point(GeoMath.lonLatToXY(myNode.getLongitude(), myNode.getLatitude()));
+            WB_Point pts = new WB_Point(GeoMath.latLngToXY(myNode.getLatitude(), myNode.getLongitude()));
+//            WB_Point pts = new WB_Point(GeoMath.lonLatToXY(myNode.getLongitude(), myNode.getLatitude()));
             Container.nodeid.put(myNode.getId(), NodeCount++);
             Container.points.add(pts);
 
@@ -154,9 +155,6 @@ public class PbfReader implements Sink {
             double y = (myBound.getLeft() + myBound.getRight()) / 2.0;
             System.out.println(y + ", " + x);
 
-            double[] bl = GeoMath.lonLatToXY(myBound.getLeft(), myBound.getBottom());
-            double[] tr = GeoMath.lonLatToXY(myBound.getRight(), myBound.getTop());
-            System.out.println(bl[0] + " " + bl[1] + "\n" + tr[0] + " " + tr[1]);
         } else {
             System.out.println("Unknown Entity!");
         }
