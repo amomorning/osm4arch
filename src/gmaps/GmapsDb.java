@@ -131,12 +131,12 @@ public class GmapsDb {
             stmt = connection.createStatement();
             String sql = "insert into " + TABLENAME + " (";
             for(int i = 0; i < COLUMNS.length; ++ i) {
-            	if(i == COLUMNS.length - 2) continue;
                 sql += COLUMNS[i][0];
                 if(i == COLUMNS.length - 1) sql += ") ";
                 else sql += ", ";
-            }
-            sql += "values (" + values + ");";
+            } 
+            sql += "values (" + values + ") on conflict (" + COLUMNS[0][0] + ") do nothing;";
+
             System.out.println(sql); 
             stmt.executeUpdate(sql);
             stmt.close();

@@ -1,6 +1,7 @@
 package gmaps;
 
 import java.io.IOException;
+import java.util.Random;
 
 import com.google.maps.GeoApiContext;
 import com.google.maps.PlacesApi;
@@ -22,8 +23,8 @@ public class GmapsRequest {
 	public static void main(String[] args) {
 		GmapsRequest gr = new GmapsRequest();
 		GmapsDb db = new GmapsDb();
-		db.deleteTable();
-		db.createTable();
+//		db.deleteTable();
+//		db.createTable();
 		gr.searchNearBy(db);
 	}
 
@@ -36,16 +37,31 @@ public class GmapsRequest {
 	 */
 	public void searchNearBy(GmapsDb db) {
 		GeoApiContext context = new GeoApiContext.Builder().apiKey(Info.API_KEY).build();
-		LatLng PRATO = new LatLng(Container.MAP_LAT_LNG[0], Container.MAP_LAT_LNG[1]);
-
+		Random rand = new Random();
+		LatLng PRATO = new LatLng(43.8830732 + rand.nextDouble()/1000.0, 11.0897498+rand.nextDouble()/1000.0);
+		System.out.println("https://maps.googleapis.com/maps/api/place/nearbysearch/json?"
+				+"location="+PRATO.lat+","+PRATO.lng
+				+"&radius=50"
+				+"&key="+Info.API_KEY);
 		try {
-			PlacesSearchResponse response = PlacesApi.nearbySearchQuery(context, PRATO).radius(50).await();
-			LatLng position = response.results[0].geometry.location;
+			PlacesSearchResponse response = PlacesApi.nearbySearchQuery(context, PRATO).radius(50).language("zh-CN").await();
 
-			String values = "\'" + response.results[0].placeId + "\', " + position.lat + ", " + position.lng + ", \'"
-					+ response.results[0].types[0] + "\'";
+			for (int i = 0; i < response.results.length; ++i) {
+				LatLng position = response.results[i].geometry.location;
 
-			db.insertData(values);
+				String name = response.results[i].name;
+				if(name.indexOf("'") != -1) name = name.replace("'", "''");
+
+				int t = 0;
+				String type = response.results[i].types[t];
+				while(t < response.results[i].types.length-1 && (type.equals("establishment") || type.equals("point_of_interest")) ) type = response.results[i].types[++t];
+
+				String values = "\'" + response.results[i].placeId + "\', " + position.lat + ", " + position.lng
+						+ ", \'" + name + "\'"
+						+ ", \'" + type + "\'";
+
+				db.insertData(values);
+			}
 		} catch (ApiException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

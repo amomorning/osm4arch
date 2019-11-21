@@ -55,12 +55,26 @@ public class GeoMath {
         return EARTH_RADIUS * Math.log(Math.tan(lat * PI_360 + PI_4));
     }
     
+    /**
+     * @Function: mercatorToLat
+     * @Description: TODO
+     * @param y
+     * @return: double
+     */
     public static double mercatorToLat(double y) {
         y = y / EARTH_RADIUS;
         return _180_PI * (2d * Math.atan(Math.exp(y)) - PI_2);
     }
     
-     public static double[] latLngToXY(double lat, double lng) {
+     /**
+     * @Function: latLngToXY
+     * @Description: TODO
+     * @param lat
+     * @param lng
+     *
+     * @return: double[]
+     */
+    public static double[] latLngToXY(double lat, double lng) {
         double x0 = lonToMercator(Container.MAP_LAT_LNG[1]);
         double y0 = latToMercator(Container.MAP_LAT_LNG[0]);
         double x1 = lonToMercator(lng);
@@ -68,6 +82,14 @@ public class GeoMath {
         return new double[] {x1-x0, y1-y0};
     }
     
+    /**
+     * @Function: xyToLatLng
+     * @Description: TODO
+     * @param x
+     * @param y
+     *
+     * @return: double[]
+     */
     public static double[] xyToLatLng(double x, double y) {
         x += lonToMercator(Container.MAP_LAT_LNG[1]);
         y += latToMercator(Container.MAP_LAT_LNG[0]);
@@ -75,22 +97,16 @@ public class GeoMath {
         return new double[] { mercatorToLat(y), mercatorToLon(x)};
     }
        
-//    public static double[] lonLatToXY(double lon, double lat) {
-//        double x0 = lonToMercator(Container.MAP_LAT_LNG[1]);
-//        double y0 = latToMercator(Container.MAP_LAT_LNG[0]);
-//        double x1 = lonToMercator(lon);
-//        double y1 = latToMercator(lat);
-//        return new double[] {x1-x0, y1-y0};
-//    }
-//    
-//    public static double[] xyToLonLat(double x, double y) {
-//        x += lonToMercator(Container.MAP_LAT_LNG[1]);
-//        y += latToMercator(Container.MAP_LAT_LNG[0]);
-//        
-//        return new double[] {mercatorToLon(x), mercatorToLat(y)};
-//    }
-//    
-    
+
+    /**
+     * @Function: mercatorDistance
+     * @Description: TODO
+     * @param lat1
+     * @param lon1
+     * @param lat2
+     * @param lon2
+     * @return: double
+     */
     public static double mercatorDistance(double lat1, double lon1, double lat2, double lon2) {
         double y1 = latToMercator(lat1);
         double x1 = lonToMercator(lon1);
@@ -99,14 +115,7 @@ public class GeoMath {
         return Math.sqrt((x1-x2) * (x1-x2) + (y1-y2) * (y1-y2));
     }
     
-//    public static double mercatorDistance(double lon1, double lat1, double lon2, double lat2) {
-//        double y1 = latToMercator(lat1);
-//        double x1 = lonToMercator(lon1);
-//        double y2 = latToMercator(lat2);
-//        double x2 = lonToMercator(lon2);
-//        return Math.sqrt((x1-x2) * (x1-x2) + (y1-y2) * (y1-y2));
-//    }
-    
+
 
     /**
      * Caculate the haversine distance between two points
