@@ -454,13 +454,13 @@ public class GeoMath {
 			this.northing = northing;
 		}
 
-		public UTM(String utm) {
-			String[] parts = utm.split(" ");
-			zone = Integer.parseInt(parts[0]);
-			letter = parts[1].toUpperCase(Locale.ENGLISH).charAt(0);
-			easting = Double.parseDouble(parts[2]);
-			northing = Double.parseDouble(parts[3]);
-		}
+//		public UTM(String utm) {
+//			String[] parts = utm.split(" ");
+//			zone = Integer.parseInt(parts[0]);
+//			letter = parts[1].toUpperCase(Locale.ENGLISH).charAt(0);
+//			easting = Double.parseDouble(parts[2]);
+//			northing = Double.parseDouble(parts[3]);
+//		}
 
 		public UTM(WGS84 wgs) {
 			fromWGS84(wgs.getLatitude(), wgs.getLongitude());
@@ -559,12 +559,40 @@ public class GeoMath {
 
 	}
 
+	/**
+	 * @Function: latLngToUTM
+	 * @Description: return UTM {easting, northing} as {x, y} 
+	 * @param lat
+	 * @param lon
+	 *
+	 * @return: double[]
+	 */
 	public static double[] latLngToUTM(double lat, double lon) {
 		WGS84 wgs = new WGS84(lat, lon);
 		UTM utm = new UTM(wgs);
 		return new double[] { utm.easting, utm.northing };
 	}
+	/**
+	 * @Function: latLngToUTM
+	 * @Description: {@link #latLngToUTM(double, double)}
+	 * @param double[] latLng
+	 * @return
+	 *
+	 * @return: double[]
+	 */
+	private static double[] latLngToUTM(double[] latLng) {
+		return latLngToUTM(latLng[0], latLng[1]);
+	}
+
 	
+	/**
+	 * @Function: utmToLatLng
+	 * @Description: the reverse of {@link #latLngToUTM(double, double)}
+	 * @param easting
+	 * @param northing
+	 *
+	 * @return: double[]{latitude, longitude}
+	 */
 	public static double[] utmToLatLng(double easting, double northing) {
 		UTM utm = new UTM(Container.UTMZONE, Container.UTMLETTER, easting, northing);
 		WGS84 wgs = new WGS84(utm);
@@ -572,12 +600,28 @@ public class GeoMath {
 	}
 	
 	
+	/**
+	 * @Function: latLngToXY
+	 * @Description: get world {x, y, 0} from {latitude, longitude} with base {@value Container.MAP_LAT_LNG}
+	 * @param lat
+	 * @param lon
+	 *
+	 * @return: double[]
+	 */
 	public static double[] latLngToXY(double lat, double lon) {
 		double[] o = latLngToUTM(Container.MAP_LAT_LNG);
 		double[] t = latLngToUTM(lat, lon);
 		return new double[] {t[0] - o[0], t[1] - o[1]};
 	}
 	
+	/**
+	 * @Function: xyToLatLng
+	 * @Description: get {latitude, longitude} from world {x, y, 0};
+	 * @param x
+	 * @param y
+	 *
+	 * @return: double[]
+	 */
 	public static double[] xyToLatLng(double x, double y) {
 		double[] o = latLngToUTM(Container.MAP_LAT_LNG);
 		double easting = o[0] + x;
@@ -585,10 +629,14 @@ public class GeoMath {
 		return utmToLatLng(easting, northing);
 	}
 
-	private static double[] latLngToUTM(double[] latLng) {
-		return latLngToUTM(latLng[0], latLng[1]);
-	}
 
+	/**
+	 * @Function: latLngToXY
+	 * @Description: {@link #xyToLatLng(double, double)}
+	 * @param double[] latLng
+	 *
+	 * @return: double[]
+	 */
 	public static double[] latLngToXY(double[] latLng) {
 		return latLngToXY(latLng[0], latLng[1]);
 	}
