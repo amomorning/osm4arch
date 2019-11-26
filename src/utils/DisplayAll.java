@@ -8,8 +8,10 @@ import java.util.List;
 
 
 import crosby.binary.osmosis.OsmosisReader;
+import osm.GeoMath;
 import osm.PbfReader;
 import processing.core.PApplet;
+import wblut.geom.WB_AABB;
 import wblut.geom.WB_PolyLine;
 
 public class DisplayAll extends PApplet {
@@ -17,6 +19,8 @@ public class DisplayAll extends PApplet {
     public static final int LEN_OF_CAMERA = 100;
 
     List<WB_PolyLine> ply;
+
+    WB_AABB rect = null;
 
     public static void main(String[] args) {
         Container.initAll();
@@ -42,6 +46,9 @@ public class DisplayAll extends PApplet {
         tools = new Tools(this, LEN_OF_CAMERA);
 
         ply = new ArrayList<>();
+        rect = new WB_AABB(GeoMath.latLngToXY(Container.SW_LAT_LNG), GeoMath.latLngToXY(Container.NE_LAT_LNG));
+        System.out.println(rect);
+       
 
     }
 
@@ -57,6 +64,8 @@ public class DisplayAll extends PApplet {
         stroke(255);
         tools.render.drawPolylineEdges(ply);
 
+        noFill();
+        tools.render.drawAABB(rect);
     }
 
     public void keyPressed() {

@@ -148,12 +148,16 @@ public class PbfReader implements Sink {
 
         else if (entityContainer instanceof BoundContainer) {
             Bound myBound = ((BoundContainer) entityContainer).getEntity();
+            
+            double[] bl = GeoMath.latLngToXY(myBound.getBottom(), myBound.getLeft());
+            double[] tr = GeoMath.latLngToXY(myBound.getTop(), myBound.getRight());
 
-            double yy = GeoMath.latToMercator(myBound.getLeft());
 
-            double x = (myBound.getBottom() + myBound.getTop()) / 2.0;
-            double y = (myBound.getLeft() + myBound.getRight()) / 2.0;
-            System.out.println(y + ", " + x);
+            System.out.println(bl[0] + " " + bl[1] + "\n" + tr[0] + " " + tr[1]);
+
+            double y = (myBound.getBottom() + myBound.getTop()) / 2.0;
+            double x = (myBound.getLeft() + myBound.getRight()) / 2.0;
+            System.out.println(x + ", " + y);
 
         } else {
             System.out.println("Unknown Entity!");

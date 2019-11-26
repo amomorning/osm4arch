@@ -1,145 +1,597 @@
 package osm;
 
+import java.util.Locale;
+
 import utils.Container;
+import wblut.geom.WB_Coord;
 
 public class GeoMath {
-    
- public static final double _180_PI = 180d / Math.PI;
-    
-    public static final double _360_PI = 360d / Math.PI;
-    
-    public static final double PI_360 = Math.PI / 360d;
-    
-    public static final double PI_180 = Math.PI / 180d;
-    
-    public static final double PI_4 = Math.PI / 4d;
-    
-    public static final double PI_2 = Math.PI / 2d;
-    
-    public static final double MAX_LAT = Math.toDegrees(Math.atan(Math.sinh(Math.PI))); 
 
-    public static final int EARTH_RADIUS = (6378137 + 6356752) / 2;
-    
-    /**
-     * Calculates a projected coordinate for a given longitude value. 
-     * 
-     * @see {@link http://en.wikipedia.org/wiki/Mercator_projection#Mathematics_of_the_projection}
-     * 
-     * @param lat the latitude as double value
-     * 
-     * @return the mercator-projected x-coordinate.
-     * 
-     */
-    public static double lonToMercator(double lon) {
-        return EARTH_RADIUS * lon * PI_180;
-    }
-    
-    public static double mercatorToLon(double x) {
-        return x / EARTH_RADIUS / PI_180;
-    }
+	/**
+	 * Class representing WGS84-coordinates. Based on code from stack overflow.
+	 * 
+	 * @see <a href=
+	 *      "https://stackoverflow.com/questions/176137/java-convert-lat-lon-to-utm">Stack
+	 *      Overflow</a>
+	 * @see <a href=
+	 *      "https://en.wikipedia.org/wiki/World_Geodetic_System">Wikipedia-entry on
+	 *      WGS-84</a>
+	 * @author Rolf Rander Næss
+	 *
+	 */
+	private static class WGS84 {
+		private double latitude;
+		private double longitude;
 
-    /**
-     * Calculates a projected coordinate for a given latitude value. When lat is bigger than MAX_LAT, it will be clamped
-     * to MAX_LAT.
-     * 
-     * @see {@link http://en.wikipedia.org/wiki/Mercator_projection#Mathematics_of_the_projection}
-     * 
-     * @param lat the latitude as double value
-     * 
-     * @return the mercator-projected y-coordinate.
-     * 
-     */
-    public static double latToMercator(double lat) {
-        lat = Math.min(MAX_LAT, lat);
-        lat = Math.max(-MAX_LAT, lat);
-        return EARTH_RADIUS * Math.log(Math.tan(lat * PI_360 + PI_4));
-    }
-    
-    /**
-     * @Function: mercatorToLat
-     * @Description: TODO
-     * @param y
-     * @return: double
-     */
-    public static double mercatorToLat(double y) {
-        y = y / EARTH_RADIUS;
-        return _180_PI * (2d * Math.atan(Math.exp(y)) - PI_2);
-    }
-    
-     /**
-     * @Function: latLngToXY
-     * @Description: TODO
-     * @param lat
-     * @param lng
-     *
-     * @return: double[]
-     */
-    public static double[] latLngToXY(double lat, double lng) {
-        double x0 = lonToMercator(Container.MAP_LAT_LNG[1]);
-        double y0 = latToMercator(Container.MAP_LAT_LNG[0]);
-        double x1 = lonToMercator(lng);
-        double y1 = latToMercator(lat);
-        return new double[] {x1-x0, y1-y0};
-    }
-    
-    /**
-     * @Function: xyToLatLng
-     * @Description: TODO
-     * @param x
-     * @param y
-     *
-     * @return: double[]
-     */
-    public static double[] xyToLatLng(double x, double y) {
-        x += lonToMercator(Container.MAP_LAT_LNG[1]);
-        y += latToMercator(Container.MAP_LAT_LNG[0]);
-        
-        return new double[] { mercatorToLat(y), mercatorToLon(x)};
-    }
-       
+		public double getLatitude() {
+			return latitude;
+		}
 
-    /**
-     * @Function: mercatorDistance
-     * @Description: TODO
-     * @param lat1
-     * @param lon1
-     * @param lat2
-     * @param lon2
-     * @return: double
-     */
-    public static double mercatorDistance(double lat1, double lon1, double lat2, double lon2) {
-        double y1 = latToMercator(lat1);
-        double x1 = lonToMercator(lon1);
-        double y2 = latToMercator(lat2);
-        double x2 = lonToMercator(lon2);
-        return Math.sqrt((x1-x2) * (x1-x2) + (y1-y2) * (y1-y2));
-    }
-    
+		public double getLongitude() {
+			return longitude;
+		}
 
+		public WGS84(double latitude, double longitude) {
+			this.latitude = latitude;
+			this.longitude = longitude;
+		}
 
-    /**
-     * Caculate the haversine distance between two points
-     * 
-     * @param lon1
-     * 
-     * @param lat1
-     * 
-     * @param lon2
-     * 
-     * @param lat2
-     * 
-     * @return distance between the two point in meters
-     */
-    public static double haversineDistance(double lon1, double lat1, double lon2, double lat2) {
-        
-        double dLat = Math.toRadians(lat2-lat1);
-        double dLon = Math.toRadians(lon2-lon1);
-        lat1 = Math.toRadians(lat1);
-        lat2 = Math.toRadians(lat2);
+		public WGS84(UTM utm) {
+			fromUTM(utm.getZone(), utm.getLetter(), utm.getEasting(), utm.getNorthing());
+		}
 
-        double a = Math.sin(dLat/2) * Math.sin(dLat/2) +  Math.sin(dLon/2) * Math.sin(dLon/2) * Math.cos(lat1) * Math.cos(lat2); 
-        double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a)); 
-        return EARTH_RADIUS * c;
-    }
+		public String toString() {
+			char ns = (latitude < 0) ? 'S' : 'N';
+			char ew = (longitude < 0) ? 'W' : 'E';
+			return String.format("%s%c %s%c", Math.abs(latitude), ns, Math.abs(longitude), ew);
+		}
 
+		@Override
+		public boolean equals(Object o) {
+			if (o instanceof WGS84) {
+				WGS84 other = (WGS84) o;
+				return (latitude == other.latitude) && (longitude == other.longitude);
+			}
+			return false;
+		}
+
+		@Override
+		public int hashCode() {
+			long llat = Double.doubleToRawLongBits(latitude);
+			long llon = Double.doubleToRawLongBits(longitude);
+			long x = llat ^ llon;
+			return (int) (x ^ (x >>> 32));
+		}
+
+		private void fromUTM(int zone, char letter, double easting, double northing) {
+			double north;
+			if (letter > 'M') {
+				north = northing;
+			} else {
+				north = northing - 10000000;
+			}
+
+			latitude = (north / 6366197.724 / 0.9996
+					+ (1 + 0.006739496742 * Math.pow(Math.cos(north / 6366197.724 / 0.9996), 2)
+							- 0.006739496742 * Math.sin(north / 6366197.724 / 0.9996)
+									* Math.cos(north / 6366197.724 / 0.9996) * (Math
+											.atan(Math
+													.cos(Math.atan((Math
+															.exp((easting - 500000) / (0.9996 * 6399593.625
+																	/ Math.sqrt((1 + 0.006739496742 * Math.pow(
+																			Math.cos(north / 6366197.724 / 0.9996),
+																			2))))
+																	* (1 - 0.006739496742
+																			* Math.pow((easting - 500000) / (0.9996
+																					* 6399593.625
+																					/ Math.sqrt((1 + 0.006739496742
+																							* Math.pow(Math.cos(
+																									north / 6366197.724
+																											/ 0.9996),
+																									2)))),
+																					2)
+																			/ 2
+																			* Math.pow(Math
+																					.cos(north / 6366197.724 / 0.9996),
+																					2)
+																			/ 3))
+															- Math.exp(-(easting - 500000) / (0.9996 * 6399593.625
+																	/ Math.sqrt((1 + 0.006739496742 * Math.pow(
+																			Math.cos(north / 6366197.724 / 0.9996),
+																			2))))
+																	* (1 - 0.006739496742
+																			* Math.pow((easting - 500000) / (0.9996
+																					* 6399593.625
+																					/ Math.sqrt((1 + 0.006739496742
+																							* Math.pow(Math.cos(
+																									north / 6366197.724
+																											/ 0.9996),
+																									2)))),
+																					2)
+																			/ 2
+																			* Math.pow(Math.cos(
+																					north / 6366197.724 / 0.9996), 2)
+																			/ 3)))
+															/ 2
+															/ Math.cos((north - 0.9996 * 6399593.625
+																	* (north / 6366197.724 / 0.9996 - 0.006739496742 * 3
+																			/ 4
+																			* (north / 6366197.724 / 0.9996 + Math.sin(
+																					2 * north / 6366197.724 / 0.9996)
+																					/ 2)
+																			+ Math.pow(0.006739496742 * 3 / 4, 2) * 5
+																					/ 3
+																					* (3 * (north / 6366197.724
+																							/ 0.9996
+																							+ Math.sin(2
+																									* north
+																									/ 6366197.724
+																									/ 0.9996)
+																									/ 2)
+																							+ Math.sin(2
+																									* north
+																									/ 6366197.724
+																									/ 0.9996)
+																									* Math.pow(Math.cos(
+																											north / 6366197.724
+																													/ 0.9996),
+																											2))
+																					/ 4
+																			- Math.pow(0.006739496742 * 3 / 4, 3) * 35
+																					/ 27
+																					* (5 * (3 * (north / 6366197.724
+																							/ 0.9996
+																							+ Math.sin(2
+																									* north
+																									/ 6366197.724
+																									/ 0.9996) / 2)
+																							+ Math.sin(2
+																									* north
+																									/ 6366197.724
+																									/ 0.9996)
+																									* Math.pow(Math
+																											.cos(north
+																													/ 6366197.724
+																													/ 0.9996),
+																											2))
+																							/ 4
+																							+ Math.sin(2 * north
+																									/ 6366197.724
+																									/ 0.9996)
+																									* Math.pow(Math.cos(
+																											north / 6366197.724
+																													/ 0.9996),
+																											2)
+																									* Math.pow(Math.cos(
+																											north / 6366197.724
+																													/ 0.9996),
+																											2))
+																					/ 3))
+																	/ (0.9996 * 6399593.625 / Math.sqrt(
+																			(1 + 0.006739496742 * Math.pow(Math.cos(
+																					north / 6366197.724 / 0.9996), 2))))
+																	* (1 - 0.006739496742
+																			* Math.pow((easting - 500000) / (0.9996
+																					* 6399593.625
+																					/ Math.sqrt((1 + 0.006739496742
+																							* Math.pow(Math.cos(
+																									north / 6366197.724
+																											/ 0.9996),
+																									2)))),
+																					2)
+																			/ 2 * Math.pow(Math.cos(north / 6366197.724
+																					/ 0.9996), 2))
+																	+ north / 6366197.724 / 0.9996)))
+													* Math.tan((north - 0.9996 * 6399593.625
+															* (north / 6366197.724 / 0.9996
+																	- 0.006739496742 * 3 / 4
+																			* (north / 6366197.724 / 0.9996 + Math.sin(
+																					2 * north / 6366197.724 / 0.9996)
+																					/ 2)
+																	+ Math.pow(0.006739496742 * 3 / 4, 2) * 5 / 3 * (3
+																			* (north / 6366197.724 / 0.9996 + Math.sin(
+																					2 * north / 6366197.724 / 0.9996)
+																					/ 2)
+																			+ Math.sin(
+																					2 * north / 6366197.724 / 0.9996)
+																					* Math.pow(
+																							Math.cos(north / 6366197.724
+																									/ 0.9996),
+																							2))
+																			/ 4
+																	- Math.pow(0.006739496742 * 3 / 4, 3) * 35 / 27 * (5
+																			* (3 * (north / 6366197.724 / 0.9996
+																					+ Math.sin(2 * north / 6366197.724
+																							/ 0.9996) / 2)
+																					+ Math.sin(2 * north / 6366197.724
+																							/ 0.9996)
+																							* Math.pow(Math.cos(
+																									north / 6366197.724
+																											/ 0.9996),
+																									2))
+																			/ 4
+																			+ Math.sin(2 * north / 6366197.724 / 0.9996)
+																					* Math.pow(Math.cos(north
+																							/ 6366197.724 / 0.9996), 2)
+																					* Math.pow(Math.cos(north
+																							/ 6366197.724 / 0.9996), 2))
+																			/ 3))
+															/ (0.9996 * 6399593.625
+																	/ Math.sqrt((1 + 0.006739496742 * Math.pow(
+																			Math.cos(north / 6366197.724 / 0.9996),
+																			2))))
+															* (1 - 0.006739496742
+																	* Math.pow((easting - 500000) / (0.9996
+																			* 6399593.625
+																			/ Math.sqrt((1 + 0.006739496742 * Math
+																					.pow(Math.cos(north / 6366197.724
+																							/ 0.9996), 2)))),
+																			2)
+																	/ 2
+																	* Math.pow(Math.cos(north / 6366197.724 / 0.9996),
+																			2))
+															+ north / 6366197.724 / 0.9996))
+											- north / 6366197.724 / 0.9996)
+									* 3 / 2)
+							* (Math.atan(Math
+									.cos(Math.atan((Math
+											.exp((easting - 500000) / (0.9996 * 6399593.625 / Math.sqrt(
+													(1 + 0.006739496742
+															* Math.pow(Math.cos(north / 6366197.724 / 0.9996), 2))))
+													* (1 - 0.006739496742
+															* Math.pow((easting - 500000) / (0.9996 * 6399593.625
+																	/ Math.sqrt((1 + 0.006739496742 * Math
+																			.pow(Math.cos(north / 6366197.724 / 0.9996),
+																					2)))),
+																	2)
+															/ 2 * Math.pow(Math.cos(north / 6366197.724 / 0.9996), 2)
+															/ 3))
+											- Math.exp(-(easting - 500000) / (0.9996 * 6399593.625
+													/ Math.sqrt((1 + 0.006739496742
+															* Math.pow(Math.cos(north / 6366197.724 / 0.9996), 2))))
+													* (1 - 0.006739496742
+															* Math.pow((easting - 500000) / (0.9996 * 6399593.625
+																	/ Math.sqrt((1 + 0.006739496742 * Math.pow(
+																			Math.cos(north / 6366197.724 / 0.9996),
+																			2)))),
+																	2)
+															/ 2 * Math.pow(Math.cos(north / 6366197.724 / 0.9996), 2)
+															/ 3)))
+											/ 2
+											/ Math.cos((north - 0.9996 * 6399593.625 * (north / 6366197.724
+													/ 0.9996
+													- 0.006739496742 * 3 / 4
+															* (north / 6366197.724 / 0.9996
+																	+ Math.sin(2 * north / 6366197.724 / 0.9996) / 2)
+													+ Math.pow(0.006739496742 * 3 / 4, 2) * 5 / 3 * (3
+															* (north / 6366197.724 / 0.9996
+																	+ Math.sin(2 * north / 6366197.724 / 0.9996) / 2)
+															+ Math.sin(
+																	2 * north / 6366197.724 / 0.9996)
+																	* Math.pow(Math.cos(north / 6366197.724 / 0.9996),
+																			2))
+															/ 4
+													- Math.pow(0.006739496742 * 3 / 4, 3) * 35 / 27 * (5 * (3
+															* (north / 6366197.724 / 0.9996
+																	+ Math.sin(2 * north / 6366197.724 / 0.9996) / 2)
+															+ Math.sin(2 * north / 6366197.724 / 0.9996) * Math
+																	.pow(Math.cos(north / 6366197.724 / 0.9996), 2))
+															/ 4
+															+ Math.sin(2 * north / 6366197.724 / 0.9996)
+																	* Math.pow(Math.cos(north / 6366197.724 / 0.9996),
+																			2)
+																	* Math.pow(Math.cos(north / 6366197.724 / 0.9996),
+																			2))
+															/ 3))
+													/ (0.9996 * 6399593.625
+															/ Math.sqrt((1 + 0.006739496742 * Math
+																	.pow(Math.cos(north / 6366197.724 / 0.9996), 2))))
+													* (1 - 0.006739496742
+															* Math.pow((easting - 500000) / (0.9996 * 6399593.625
+																	/ Math.sqrt((1 + 0.006739496742 * Math.pow(
+																			Math.cos(north / 6366197.724 / 0.9996),
+																			2)))),
+																	2)
+															/ 2 * Math.pow(Math.cos(north / 6366197.724 / 0.9996), 2))
+													+ north / 6366197.724 / 0.9996)))
+									* Math.tan((north - 0.9996 * 6399593.625 * (north / 6366197.724 / 0.9996
+											- 0.006739496742 * 3 / 4
+													* (north / 6366197.724 / 0.9996
+															+ Math.sin(2 * north / 6366197.724 / 0.9996) / 2)
+											+ Math.pow(0.006739496742 * 3 / 4, 2) * 5 / 3 * (3
+													* (north / 6366197.724 / 0.9996
+															+ Math.sin(2 * north / 6366197.724 / 0.9996) / 2)
+													+ Math.sin(2 * north / 6366197.724 / 0.9996)
+															* Math.pow(Math.cos(north / 6366197.724 / 0.9996), 2))
+													/ 4
+											- Math.pow(0.006739496742 * 3 / 4, 3) * 35 / 27 * (5 * (3
+													* (north / 6366197.724 / 0.9996
+															+ Math.sin(2 * north / 6366197.724 / 0.9996) / 2)
+													+ Math.sin(2 * north / 6366197.724 / 0.9996)
+															* Math.pow(Math.cos(north / 6366197.724 / 0.9996), 2))
+													/ 4
+													+ Math.sin(2 * north / 6366197.724 / 0.9996)
+															* Math.pow(Math.cos(north / 6366197.724 / 0.9996), 2)
+															* Math.pow(Math.cos(north / 6366197.724 / 0.9996), 2))
+													/ 3))
+											/ (0.9996 * 6399593.625
+													/ Math.sqrt((1 + 0.006739496742
+															* Math.pow(Math.cos(north / 6366197.724 / 0.9996), 2))))
+											* (1 - 0.006739496742 * Math.pow(
+													(easting - 500000) / (0.9996 * 6399593.625
+															/ Math.sqrt((1 + 0.006739496742 * Math
+																	.pow(Math.cos(north / 6366197.724 / 0.9996), 2)))),
+													2) / 2 * Math.pow(Math.cos(north / 6366197.724 / 0.9996), 2))
+											+ north / 6366197.724 / 0.9996))
+									- north / 6366197.724 / 0.9996))
+					* 180 / Math.PI;
+			latitude = Math.round(latitude * 10000000);
+			latitude = latitude / 10000000;
+
+			longitude = Math
+					.atan((Math
+							.exp((easting - 500000)
+									/ (0.9996 * 6399593.625 / Math.sqrt(
+											(1 + 0.006739496742 * Math.pow(Math.cos(north / 6366197.724 / 0.9996), 2))))
+									* (1 - 0.006739496742
+											* Math.pow(
+													(easting - 500000) / (0.9996 * 6399593.625
+															/ Math.sqrt((1 + 0.006739496742 * Math
+																	.pow(Math.cos(north / 6366197.724 / 0.9996), 2)))),
+													2)
+											/ 2 * Math.pow(Math.cos(north / 6366197.724 / 0.9996), 2) / 3))
+							- Math.exp(-(easting - 500000)
+									/ (0.9996 * 6399593.625 / Math.sqrt(
+											(1 + 0.006739496742 * Math.pow(Math.cos(north / 6366197.724 / 0.9996), 2))))
+									* (1 - 0.006739496742
+											* Math.pow(
+													(easting - 500000) / (0.9996 * 6399593.625
+															/ Math.sqrt((1 + 0.006739496742 * Math
+																	.pow(Math.cos(north / 6366197.724 / 0.9996), 2)))),
+													2)
+											/ 2 * Math.pow(Math.cos(north / 6366197.724 / 0.9996), 2) / 3)))
+							/ 2
+							/ Math.cos((north - 0.9996 * 6399593.625 * (north / 6366197.724 / 0.9996
+									- 0.006739496742 * 3 / 4
+											* (north / 6366197.724 / 0.9996
+													+ Math.sin(2 * north / 6366197.724 / 0.9996) / 2)
+									+ Math.pow(0.006739496742 * 3 / 4, 2) * 5 / 3
+											* (3 * (north / 6366197.724 / 0.9996
+													+ Math.sin(2 * north / 6366197.724 / 0.9996) / 2)
+													+ Math.sin(2 * north / 6366197.724 / 0.9996)
+															* Math.pow(Math.cos(north / 6366197.724 / 0.9996), 2))
+											/ 4
+									- Math.pow(0.006739496742 * 3 / 4, 3) * 35 / 27 * (5
+											* (3 * (north / 6366197.724 / 0.9996
+													+ Math.sin(2 * north / 6366197.724 / 0.9996) / 2)
+													+ Math.sin(2 * north / 6366197.724 / 0.9996)
+															* Math.pow(Math.cos(north / 6366197.724 / 0.9996), 2))
+											/ 4
+											+ Math.sin(2 * north / 6366197.724 / 0.9996)
+													* Math.pow(Math.cos(north / 6366197.724 / 0.9996), 2)
+													* Math.pow(Math.cos(north / 6366197.724 / 0.9996), 2))
+											/ 3))
+									/ (0.9996 * 6399593.625 / Math.sqrt(
+											(1 + 0.006739496742 * Math.pow(Math.cos(north / 6366197.724 / 0.9996), 2))))
+									* (1 - 0.006739496742
+											* Math.pow(
+													(easting - 500000) / (0.9996 * 6399593.625
+															/ Math.sqrt((1 + 0.006739496742 * Math
+																	.pow(Math.cos(north / 6366197.724 / 0.9996), 2)))),
+													2)
+											/ 2 * Math.pow(Math.cos(north / 6366197.724 / 0.9996), 2))
+									+ north / 6366197.724 / 0.9996))
+					* 180 / Math.PI + zone * 6 - 183;
+			longitude = Math.round(longitude * 10000000);
+			longitude = longitude / 10000000;
+		}
+	}
+
+	/**
+	 * Class representing UTM-coordinates. Based on code from stack overflow.
+	 * 
+	 * @see <a href=
+	 *      "https://stackoverflow.com/questions/176137/java-convert-lat-lon-to-utm">Stack
+	 *      Overflow</a>
+	 * @see <a href=
+	 *      "https://en.wikipedia.org/wiki/Universal_Transverse_Mercator_coordinate_system">Wikipedia-entry
+	 *      on UTM</a>
+	 * @author Rolf Rander Næss
+	 *
+	 */
+	private static class UTM {
+		private double easting;
+		private double northing;
+		private int zone;
+		private char letter;
+
+		public double getEasting() {
+			return easting;
+		}
+
+		public double getNorthing() {
+			return northing;
+		}
+
+		public int getZone() {
+			return zone;
+		}
+
+		public char getLetter() {
+			return letter;
+		}
+
+		public String toString() {
+			return String.format("%s %c %s %s", zone, letter, easting, northing);
+		}
+
+		/**
+		 * Tests the exact representation. There might be more representations for the
+		 * same geographical point with different letters or zones, but that is not
+		 * taken into account.
+		 */
+		public boolean equals(Object o) {
+			if (o instanceof UTM) {
+				UTM other = (UTM) o;
+				return (zone == other.zone) && (letter == other.letter) && (easting == other.easting)
+						&& (northing == other.northing);
+			}
+			return false;
+		}
+
+		@Override
+		public int hashCode() {
+			long least = Double.doubleToRawLongBits(easting);
+			long lnort = Double.doubleToRawLongBits(northing);
+			long x = least ^ lnort;
+			return (int) (x ^ (x >>> 32));
+		}
+
+		public UTM(int zone, char letter, double easting, double northing) {
+			this.zone = zone;
+			this.letter = Character.toUpperCase(letter);
+			this.easting = easting;
+			this.northing = northing;
+		}
+
+		public UTM(String utm) {
+			String[] parts = utm.split(" ");
+			zone = Integer.parseInt(parts[0]);
+			letter = parts[1].toUpperCase(Locale.ENGLISH).charAt(0);
+			easting = Double.parseDouble(parts[2]);
+			northing = Double.parseDouble(parts[3]);
+		}
+
+		public UTM(WGS84 wgs) {
+			fromWGS84(wgs.getLatitude(), wgs.getLongitude());
+		}
+
+		private void fromWGS84(double latitude, double longitude) {
+			zone = (int) Math.floor(longitude / 6 + 31);
+			if (latitude < -72)
+				letter = 'C';
+			else if (latitude < -64)
+				letter = 'D';
+			else if (latitude < -56)
+				letter = 'E';
+			else if (latitude < -48)
+				letter = 'F';
+			else if (latitude < -40)
+				letter = 'G';
+			else if (latitude < -32)
+				letter = 'H';
+			else if (latitude < -24)
+				letter = 'J';
+			else if (latitude < -16)
+				letter = 'K';
+			else if (latitude < -8)
+				letter = 'L';
+			else if (latitude < 0)
+				letter = 'M';
+			else if (latitude < 8)
+				letter = 'N';
+			else if (latitude < 16)
+				letter = 'P';
+			else if (latitude < 24)
+				letter = 'Q';
+			else if (latitude < 32)
+				letter = 'R';
+			else if (latitude < 40)
+				letter = 'S';
+			else if (latitude < 48)
+				letter = 'T';
+			else if (latitude < 56)
+				letter = 'U';
+			else if (latitude < 64)
+				letter = 'V';
+			else if (latitude < 72)
+				letter = 'W';
+			else
+				letter = 'X';
+			easting = 0.5
+					* Math.log((1 + Math.cos(latitude * Math.PI / 180)
+							* Math.sin(longitude * Math.PI / 180 - (6 * zone - 183) * Math.PI / 180))
+							/ (1 - Math.cos(latitude * Math.PI / 180)
+									* Math.sin(longitude * Math.PI / 180 - (6 * zone - 183) * Math.PI / 180)))
+					* 0.9996 * 6399593.62
+					/ Math.pow((1 + Math.pow(0.0820944379, 2) * Math.pow(Math.cos(latitude * Math.PI / 180), 2)), 0.5)
+					* (1 + Math.pow(0.0820944379, 2) / 2
+							* Math.pow((0.5 * Math.log((1 + Math.cos(latitude * Math.PI / 180)
+									* Math.sin(longitude * Math.PI / 180 - (6 * zone - 183) * Math.PI / 180))
+									/ (1 - Math.cos(latitude * Math.PI / 180)
+											* Math.sin(longitude * Math.PI / 180 - (6 * zone - 183) * Math.PI / 180)))),
+									2)
+							* Math.pow(Math.cos(latitude * Math.PI / 180), 2) / 3)
+					+ 500000;
+			easting = Math.round(easting * 100) * 0.01;
+			northing = (Math
+					.atan(Math.tan(latitude * Math.PI / 180)
+							/ Math.cos((longitude * Math.PI / 180 - (6 * zone - 183) * Math.PI / 180)))
+					- latitude * Math.PI / 180) * 0.9996 * 6399593.625
+					/ Math.sqrt(1 + 0.006739496742 * Math.pow(Math.cos(latitude * Math.PI / 180), 2))
+					* (1 + 0.006739496742 / 2 * Math.pow(0.5 * Math.log((1 + Math.cos(latitude * Math.PI / 180)
+							* Math.sin((longitude * Math.PI / 180 - (6 * zone - 183) * Math.PI / 180)))
+							/ (1 - Math.cos(latitude * Math.PI / 180)
+									* Math.sin((longitude * Math.PI / 180 - (6 * zone - 183) * Math.PI / 180)))),
+							2) * Math.pow(Math.cos(latitude * Math.PI / 180), 2))
+					+ 0.9996 * 6399593.625
+							* (latitude * Math.PI / 180
+									- 0.005054622556
+											* (latitude * Math.PI / 180 + Math.sin(2 * latitude * Math.PI / 180) / 2)
+									+ 4.258201531e-05 * (3
+											* (latitude * Math.PI / 180 + Math.sin(2 * latitude * Math.PI / 180) / 2)
+											+ Math.sin(2 * latitude * Math.PI / 180)
+													* Math.pow(Math.cos(latitude * Math.PI / 180), 2))
+											/ 4
+									- 1.674057895e-07 * (5 * (3
+											* (latitude * Math.PI / 180 + Math.sin(2 * latitude * Math.PI / 180) / 2)
+											+ Math.sin(2 * latitude * Math.PI / 180)
+													* Math.pow(Math.cos(latitude * Math.PI / 180), 2))
+											/ 4
+											+ Math.sin(2 * latitude * Math.PI / 180)
+													* Math.pow(Math.cos(latitude * Math.PI / 180), 2)
+													* Math.pow(Math.cos(latitude * Math.PI / 180), 2))
+											/ 3);
+			if (letter < 'N')
+				northing = northing + 10000000;
+			northing = Math.round(northing * 100) * 0.01;
+		}
+
+	}
+
+	public static double[] latLngToUTM(double lat, double lon) {
+		WGS84 wgs = new WGS84(lat, lon);
+		UTM utm = new UTM(wgs);
+		return new double[] { utm.easting, utm.northing };
+	}
+	
+	public static double[] utmToLatLng(double easting, double northing) {
+		UTM utm = new UTM(Container.UTMZONE, Container.UTMLETTER, easting, northing);
+		WGS84 wgs = new WGS84(utm);
+		return new double[] {wgs.latitude, wgs.longitude};
+	}
+	
+	
+	public static double[] latLngToXY(double lat, double lon) {
+		double[] o = latLngToUTM(Container.MAP_LAT_LNG);
+		double[] t = latLngToUTM(lat, lon);
+		return new double[] {t[0] - o[0], t[1] - o[1]};
+	}
+	
+	public static double[] xyToLatLng(double x, double y) {
+		double[] o = latLngToUTM(Container.MAP_LAT_LNG);
+		double easting = o[0] + x;
+		double northing = o[1] + y;
+		return utmToLatLng(easting, northing);
+	}
+
+	private static double[] latLngToUTM(double[] latLng) {
+		return latLngToUTM(latLng[0], latLng[1]);
+	}
+
+	public static double[] latLngToXY(double[] latLng) {
+		return latLngToXY(latLng[0], latLng[1]);
+	}
+	
+	
 }
