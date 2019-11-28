@@ -15,6 +15,9 @@ import wblut.math.WB_Epsilon;
 import wblut.processing.WB_Render;
 import Guo_Cam.*;
 import controlP5.ControlP5;
+import igeo.ICurve;
+import igeo.IG;
+import igeo.IPoint;
 
 /**
  * @author amo Sep 14, 2018
@@ -40,6 +43,7 @@ public class Tools {
 	 *            len: Camera Len;
 	 */
 	public Tools(PApplet app, int len) {
+		IG.init();
 		render = new WB_Render(app);
 		cam = new CameraController(app, len);
 		cp5 = new ControlP5(app);
@@ -294,6 +298,8 @@ public class Tools {
 	}
 
 	public static boolean isIntersect(WB_AABB aabb, WB_Segment seg) {
+
+	
 		WB_Coord aabb_max = aabb.getMax();
 		WB_Coord aabb_min = aabb.getMin();
 		WB_Coord o = seg.getOrigin();
@@ -325,5 +331,49 @@ public class Tools {
 			}
 		}
 		return true;
+	}
+	
+	public static WB_Point[] IPointstoWB_Points(IPoint[] pts) {
+		WB_Point[] points = new WB_Point[pts.length];
+		for (int i = 0; i < pts.length; i++) {
+			points[i] = IPointtoWB_Point(pts[i]);
+		}
+		return points;
+	}
+	
+	public static IPoint[] WB_PointstoIPoints(WB_CoordCollection pts) {
+		IPoint[] points = new IPoint[pts.size()];
+		for(int i = 0; i < pts.size(); ++ i) {
+			points[i] = WB_PointtoIPoint(pts.get(i));
+		}
+		return points;
+	}
+	
+	public static WB_Point IPointtoWB_Point(IPoint p) {
+		return new WB_Point(p.x(), -p.y(), p.z());
+	}
+	
+	public static IPoint WB_PointtoIPoint(WB_Coord p) {
+		return new IPoint(p.xd(), p.yd(), p.zd());
+	}
+	
+	public static ICurve[] WB_PolylinestoIPolyline(WB_PolyLine[] plys) {
+		ICurve[] crvs = new ICurve[plys.length];
+		for (int i = 0; i < plys.length; ++ i) {
+			crvs[i] = WB_PolylinetoIPolyline(plys[i]);
+		}
+		return crvs;
+	}
+	
+	public static ICurve WB_PolylinetoIPolyline(WB_PolyLine ply) {
+		WB_CoordCollection pts = ply.getPoints();
+		IPoint[] points = WB_PointstoIPoints(pts);
+		ICurve crv = new ICurve(points, 1);
+		return crv;
+	}
+	
+	public static void saveWB_Polyline(WB_PolyLine[] plys, String filename) {
+		ICurve[] crvs = WB_PolylinestoIPolyline(plys);
+		IG.save(filename);
 	}
 }

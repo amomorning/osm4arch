@@ -16,7 +16,7 @@ import wblut.geom.WB_PolyLine;
 
 public class DisplayAll extends PApplet {
     Tools tools;
-    public static final int LEN_OF_CAMERA = 100;
+    public static final int LEN_OF_CAMERA = 1000;
 
     List<WB_PolyLine> ply;
 
@@ -48,8 +48,6 @@ public class DisplayAll extends PApplet {
         ply = new ArrayList<>();
         rect = new WB_AABB(GeoMath.latLngToXY(Container.SW_LAT_LNG), GeoMath.latLngToXY(Container.NE_LAT_LNG));
         System.out.println(rect);
-       
-
     }
 
     public void draw() {
@@ -61,14 +59,22 @@ public class DisplayAll extends PApplet {
             tools.render.drawPoint(poi.position);
         }
         noStroke();
-        stroke(255);
+        stroke(0, 0, 255);
         tools.render.drawPolylineEdges(ply);
 
+        stroke(255);
         noFill();
         tools.render.drawAABB(rect);
     }
+    
 
     public void keyPressed() {
+    	if (key == 'a' || key == 'A') {
+    		ply = new ArrayList<>();
+    		for(Aoi aoi: Container.aois) {
+    			ply.add(aoi.ply);
+    		}
+    	}
         if (key == 'p' || key == 'P') {
             ply = new ArrayList<>();
             for(Aoi aoi : Container.aois) {
@@ -113,6 +119,10 @@ public class DisplayAll extends PApplet {
                     aoi.printTag();
                 }
             }
+        }
+        
+        if(key == 's' || key == 'S') {
+        	Tools.saveWB_Polyline(ply.toArray(new WB_PolyLine[ply.size()]), "./data/test.3dm");
         }
     }
 }

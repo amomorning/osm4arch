@@ -26,8 +26,13 @@ public class GmapsDb {
 			{ "placeid", "char(255)" }, 
 			{ "lat", "float" }, 
 			{ "lng", "float" },
+			{ "rating", "float"},
+			{ "user_ratings_total", "int"},
+			{ "is_chinese", "boolean"},
 			{ "name", "char(255)" }, 
-			{ "type", "char(255)" } };
+			{ "type", "char(255)" },
+			{ "type_detail", "char(255)"}};
+
 
 	/**
 	 * 0 to n should be set as 'not null'
