@@ -23,7 +23,7 @@ public class Container {
     public static final String OSM_FILENAME = "./data/planet_10.92,43.81_11.2627,43.9551.osm.pbf";
 //    public static final double[] BASE = new double[] { 11.0913501, 43.88255};
     public static final int UTMZONE = 32;
-    public static final char UTMLETTER = 'M';
+    public static final char UTMLETTER = 'T';
 
     public static BiMap<Long, Integer> wayid;
     public static BiMap<Long, Integer> nodeid;

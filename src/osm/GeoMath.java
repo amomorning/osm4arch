@@ -570,6 +570,7 @@ public class GeoMath {
 	public static double[] latLngToUTM(double lat, double lon) {
 		WGS84 wgs = new WGS84(lat, lon);
 		UTM utm = new UTM(wgs);
+//		System.out.println(utm.toString());
 		return new double[] { utm.easting, utm.northing };
 	}
 	/**
@@ -580,7 +581,7 @@ public class GeoMath {
 	 *
 	 * @return: double[]
 	 */
-	private static double[] latLngToUTM(double[] latLng) {
+	public static double[] latLngToUTM(double[] latLng) {
 		return latLngToUTM(latLng[0], latLng[1]);
 	}
 
@@ -624,6 +625,7 @@ public class GeoMath {
 	 */
 	public static double[] xyToLatLng(double x, double y) {
 		double[] o = latLngToUTM(Container.MAP_LAT_LNG);
+//		System.out.println(o[0] + " " + o[1]);
 		double easting = o[0] + x;
 		double northing = o[1] + y;
 		return utmToLatLng(easting, northing);
