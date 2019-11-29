@@ -50,7 +50,7 @@ public class GmapsRequest {
 
 	}
 
-	public void gridSearch(double[] bl, double[] tr, double radius) throws IOException {
+	public void gridSearch(double[] bl, double[] tr, int radius) throws IOException {
 		double[] min = GeoMath.latLngToXY(bl);
 		double[] max = GeoMath.latLngToXY(tr);
 
@@ -60,17 +60,15 @@ public class GmapsRequest {
 		File file = new File("./data/number_of_result.txt");
 		FileWriter out = new FileWriter(file);
 
-//		double step = Math.floor(radius * Math.sqrt(2.0));
-		double step = 3000;
+		double step = Math.floor(radius * Math.sqrt(2.0));
+//		double step = 3000;
 		for (double x = min[0] + step / 2; x < max[0]; x += step) {
 			for (double y = min[1] + step / 2; y < max[1]; y += step) {
 				double[] latlng = GeoMath.xyToLatLng(x, y);
 				LatLng position = new LatLng(latlng[0], latlng[1]);
-				int tot = searchNearBy(db, context, position);
+				int tot = searchNearBy(db, context, position, radius);
 				System.out.println("( " + x + " " + y + " )");
 				System.out.println("-------------\n" + tot + " at position " + position + "\n--------------");
-				if (y + step < max[1])
-					out.write(tot + ", ");
 			}
 			out.write("\r\n");
 		}
@@ -84,31 +82,20 @@ public class GmapsRequest {
 	 *
 	 * @return: void
 	 */
-	public int searchNearBy(GmapsDb db, GeoApiContext context, LatLng position) {
+	public int searchNearBy(GmapsDb db, GeoApiContext context, LatLng position, int radius) {
 		System.out.println("https://maps.googleapis.com/maps/api/place/nearbysearch/json?" + "location=" + position.lat
-				+ "," + position.lng + "&radius=50" + "&key=" + Info.API_KEY);
+				+ "," + position.lng + "&radius=" + radius + "&key=" + Info.API_KEY);
 		int total = 0;
 		try {
-			PlacesSearchResponse response = PlacesApi.nearbySearchQuery(context, position).radius(50).language("zh-CN")
-					.await();
+			PlacesSearchResponse response = PlacesApi.nearbySearchQuery(context, position).radius(radius)
+					.language("zh-CN").await();
 
 			for (int i = 0; i < response.results.length; ++i) {
 				resultToDb(db, response.results[i]);
 			}
 			total = response.results.length;
 
-			while (response.nextPageToken != null) {
-				TimeUnit.SECONDS.sleep(10);
-				System.out.println("https://maps.googleapis.com/maps/api/place/nearbysearch/json?" + "pagetoken="
-						+ response.nextPageToken + "&key=" + Info.API_KEY);
-				response = PlacesApi.nearbySearchNextPage(context, response.nextPageToken).await();
-
-				for (int i = 0; i < response.results.length; ++i) {
-					resultToDb(db, response.results[i]);
-				}
-
-				total += response.results.length;
-			}
+			total += searchNextPage(db, context, response.nextPageToken);
 		} catch (ApiException e) {
 			e.printStackTrace();
 		} catch (InterruptedException e) {
@@ -117,6 +104,36 @@ public class GmapsRequest {
 			e.printStackTrace();
 		}
 
+		return total;
+	}
+
+	public int searchNextPage(GmapsDb db, GeoApiContext context, String nextPageToken) {
+		int total = 0;
+		try {
+			while (nextPageToken != null) {
+				TimeUnit.SECONDS.sleep(10);
+				System.out.println("https://maps.googleapis.com/maps/api/place/nearbysearch/json?" + "pagetoken="
+						+ nextPageToken + "&key=" + Info.API_KEY);
+				PlacesSearchResponse response = PlacesApi.nearbySearchNextPage(context, nextPageToken).await();
+
+				for (int i = 0; i < response.results.length; ++i) {
+					resultToDb(db, response.results[i]);
+				}
+
+				total += response.results.length;	
+				nextPageToken = response.nextPageToken;
+				
+			}
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (ApiException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		return total;
 	}
 
@@ -138,6 +155,9 @@ public class GmapsRequest {
 			isChinese = true;
 		if (name.indexOf("'") != -1)
 			name = name.replace("'", "''");
+
+		if (name.length() > 255)
+			name = name.substring(0, 255);
 
 		String values = "\'" + result.placeId + "\', " + position.lat + ", " + position.lng + ", " + result.rating
 				+ ", " + result.userRatingsTotal + "," + isChinese + ", \'" + name + "\'";

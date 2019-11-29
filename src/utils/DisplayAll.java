@@ -8,10 +8,12 @@ import java.util.List;
 
 
 import crosby.binary.osmosis.OsmosisReader;
+import gmaps.GmapsDb;
 import osm.GeoMath;
 import osm.PbfReader;
 import processing.core.PApplet;
 import wblut.geom.WB_AABB;
+import wblut.geom.WB_Point;
 import wblut.geom.WB_PolyLine;
 
 public class DisplayAll extends PApplet {
@@ -19,11 +21,15 @@ public class DisplayAll extends PApplet {
     public static final int LEN_OF_CAMERA = 1000;
 
     List<WB_PolyLine> ply;
+    List<WB_Point> pts;
 
     WB_AABB rect = null;
 
     public static void main(String[] args) {
         Container.initAll();
+		GmapsDb db = new GmapsDb();
+		db.collectData();
+
 
         try {
             InputStream inputStream = new FileInputStream(Container.OSM_FILENAME);
@@ -55,9 +61,9 @@ public class DisplayAll extends PApplet {
         tools.cam.openLight();
         tools.cam.drawSystem(LEN_OF_CAMERA);
         stroke(255, 0, 0);
-        for (Poi poi : Container.pois) {
-            tools.render.drawPoint(poi.position);
-        }
+//        for (Poi poi : Container.pois) {
+//            tools.render.drawPoint(poi.position);
+//        }
         noStroke();
         stroke(0, 0, 255);
         tools.render.drawPolylineEdges(ply);
@@ -65,6 +71,11 @@ public class DisplayAll extends PApplet {
         stroke(255);
         noFill();
         tools.render.drawAABB(rect);
+        
+        stroke(0, 255, 0);
+        if(pts != null) {
+        	tools.render.drawPoint(pts);
+        }
     }
     
 
@@ -123,6 +134,15 @@ public class DisplayAll extends PApplet {
         
         if(key == 's' || key == 'S') {
         	Tools.saveWB_Polyline(ply.toArray(new WB_PolyLine[ply.size()]), "./data/test.3dm");
+        }
+        
+        if(key == 'g' || key == 'G') {
+        	pts = new ArrayList<>();
+        	for(Gpoi g : Container.gpois) {
+        		double[] pos = GeoMath.latLngToXY(g.getLat(), g.getLng());
+        		if(g.getType() == "null") continue;
+        		pts.add(new WB_Point(pos));
+        	}
         }
     }
 }

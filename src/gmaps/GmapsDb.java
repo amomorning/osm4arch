@@ -3,8 +3,12 @@ package gmaps;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+
+import utils.Container;
+import utils.Gpoi;
 
 /**
  * 
@@ -104,25 +108,25 @@ public class GmapsDb {
 		}
 	}
 
-	/**
-	 * @Function: deleteTable
-	 * @Description: delete table {@link #TABLENAME}
-	 *
-	 * @return: void
-	 */
-	public void deleteTable() {
-		try {
-			stmt = connection.createStatement();
-			String sql = "drop table " + TABLENAME;
-			stmt.executeUpdate(sql);
-			stmt.close();
-			System.out.println("delete table successfully");
-		} catch (Exception e) {
-			e.printStackTrace();
-			System.err.println(e.getClass().getName() + ": " + e.getMessage());
-			System.exit(0);
-		}
-	}
+//	/**
+//	 * @Function: deleteTable
+//	 * @Description: delete table {@link #TABLENAME}
+//	 *
+//	 * @return: void
+//	 */
+//	public void deleteTable() {
+//		try {
+//			stmt = connection.createStatement();
+//			String sql = "drop table " + TABLENAME;
+//			stmt.executeUpdate(sql);
+//			stmt.close();
+//			System.out.println("delete table successfully");
+//		} catch (Exception e) {
+//			e.printStackTrace();
+//			System.err.println(e.getClass().getName() + ": " + e.getMessage());
+//			System.exit(0);
+//		}
+//	}
 
 	/**
 	 * @Function: insertData
@@ -153,4 +157,33 @@ public class GmapsDb {
         }	
 	}
 	
+	
+	public void collectData() {
+		try {
+			stmt = connection.createStatement();
+			ResultSet rs = stmt.executeQuery("select * from function;");
+			
+			while(rs.next()) {
+				Gpoi g = new Gpoi();
+				g.setPlaceid(rs.getString("placeid"));
+				g.setLat(rs.getFloat("lat"));
+				g.setLng(rs.getFloat("lng"));
+				g.setRating(rs.getFloat("rating"));
+				g.setUserRatingsTotal(rs.getInt("user_ratings_total"));
+				g.setChinese(rs.getBoolean("is_chinese"));
+				g.setName(rs.getString("name"));
+				g.setType(rs.getString("type"));
+				g.setTypeDetail(rs.getString("type_detail"));
+				
+				Container.gpois.add(g);
+			}
+			rs.close();
+			stmt.close();
+			
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+
 }

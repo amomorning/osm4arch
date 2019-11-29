@@ -33,6 +33,7 @@ public class Container {
     public static List<WB_PolyLine> plys;
     
     
+    public static List<Gpoi> gpois;
     public static List<Poi> pois;
     public static List<Aoi> aois;
     
@@ -45,8 +46,7 @@ public class Container {
          plys = new ArrayList<>();
          pois = new ArrayList<>();
          aois = new ArrayList<>();
-
+         gpois = new ArrayList<>();
     }
     
-
 }
