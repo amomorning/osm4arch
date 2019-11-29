@@ -95,4 +95,12 @@ public class Aoi {
         }
         return false;
     }
+
+	public boolean isHighway() {
+        for(String key : tags.keySet()) {
+            if(key.equals("highway"))
+                return true;
+        }
+        return false;
+	}
 }

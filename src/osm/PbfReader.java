@@ -84,7 +84,12 @@ public class PbfReader implements Sink {
             if (myNode.getTags().size() > 0) {
                 Poi poi = new Poi(pts);
                 for (Tag tag : myNode.getTags()) {
-                    poi.addTag(tag.getKey(), tag.getValue());
+                	String key = tag.getKey();
+                	String value = tag.getValue();
+                    poi.addTag(key, value);
+                    if(! Container.tagList.containsEntry(key, value)) {
+                    	Container.tagList.put(key, value);
+                    }
                 }
 
                 if (myNode.getTimestamp() != null) {
@@ -128,7 +133,9 @@ public class PbfReader implements Sink {
                     String key = tag.getKey();
                     String value = tag.getValue();
                     aoi.addTag(key, value);
-                    
+                    if(! Container.tagList.containsEntry(key, value)) {
+                    	Container.tagList.put(key, value);
+                    } 
                 }
                 if (myWay.getTimestamp().getTime() != -1) {
                     cnta = (cnta > myWay.getTimestamp().getTime()) ? cnta : myWay.getTimestamp().getTime();

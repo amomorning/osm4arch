@@ -5,8 +5,10 @@ import java.util.List;
 
 import org.eclipse.collections.api.tuple.Pair;
 
+import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
+import com.google.common.collect.Multimap;
 
 import wblut.geom.WB_Point;
 import wblut.geom.WB_PolyLine;
@@ -37,6 +39,8 @@ public class Container {
     public static List<Poi> pois;
     public static List<Aoi> aois;
     
+    public static Multimap<String, String> tagList;
+    
 
     public static void initAll() {
          points = new ArrayList<>();
@@ -47,6 +51,8 @@ public class Container {
          pois = new ArrayList<>();
          aois = new ArrayList<>();
          gpois = new ArrayList<>();
+         
+         tagList = ArrayListMultimap.create();
     }
     
 }
