@@ -165,15 +165,15 @@ public class GmapsDb {
 			
 			while(rs.next()) {
 				Gpoi g = new Gpoi();
-				g.setPlaceid(rs.getString("placeid"));
+				g.setPlaceid(rs.getString("placeid").trim());
 				g.setLat(rs.getFloat("lat"));
 				g.setLng(rs.getFloat("lng"));
 				g.setRating(rs.getFloat("rating"));
 				g.setUserRatingsTotal(rs.getInt("user_ratings_total"));
 				g.setChinese(rs.getBoolean("is_chinese"));
-				g.setName(rs.getString("name"));
-				g.setType(rs.getString("type"));
-				g.setTypeDetail(rs.getString("type_detail"));
+				g.setName(rs.getString("name").trim());
+				g.setType(rs.getString("type").trim());
+				g.setTypeDetail(rs.getString("type_detail").trim());
 				
 				Container.gpois.add(g);
 			}

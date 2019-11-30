@@ -87,9 +87,9 @@ public class PbfReader implements Sink {
                 	String key = tag.getKey();
                 	String value = tag.getValue();
                     poi.addTag(key, value);
-                    if(! Container.tagList.containsEntry(key, value)) {
-                    	Container.tagList.put(key, value);
-                    }
+//                    if(! Container.tagList.containsEntry(key, value)) {
+//                    	Container.tagList.put(key, value);
+//                    }
                 }
 
                 if (myNode.getTimestamp() != null) {

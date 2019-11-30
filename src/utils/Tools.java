@@ -229,6 +229,7 @@ public class Tools {
 	 */
 	public void drawCP5() {
 		this.cam.begin2d();
+		this.cp5.update();
 		this.cp5.draw();
 		this.cam.begin3d();
 	}

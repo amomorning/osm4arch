@@ -1,99 +1,128 @@
 package test;
 
+import controlP5.ControlEvent;
+import controlP5.ControlP5;
+import controlP5.ListBox;
 import processing.core.PApplet;
-import wblut.geom.WB_Network;
-import wblut.hemesh.HEC_FromNetwork;
 import wblut.hemesh.HE_Mesh;
 import wblut.processing.WB_Render;
 
 public class Test extends PApplet {
-    HE_Mesh mesh;
-    WB_Render render;
+	ControlP5 cp5;
+
+    ListBox l;
+
+    int cnt = 0;
 
     public static void main(String[] args) {
+
         PApplet.main("test.Test");
     }
 
     public void settings() {
-        size(1000, 1000, P3D);
-        smooth(8);
+      size(700, 400);
     }
 
     public void setup() {
+      
+      ControlP5.printPublicMethodsFor(ListBox.class);
 
-        render = new WB_Render(this);
-        // Creates a mesh from a frame. A WB_Frame is a collection of points and a list
-        // of
-        // indexed connections.
+      cp5 = new ControlP5(this);
+      l = cp5.addListBox("myList")
+             .setPosition(100, 100)
+             .setSize(120, 120)
+             .setItemHeight(15)
+             .setBarHeight(15)
+             .setColorBackground(color(255, 128))
+             .setColorActive(color(0))
+             .setColorForeground(color(255, 100,0))
+             ;
 
-        // Array of all points
-        float[][] vertices = new float[1681][3];
-        int index = 0;
-        for (int j = 0; j < 41; j++) {
-            for (int i = 0; i < 41; i++) {
-                vertices[index][0] = -400 + i * 20;
-                vertices[index][1] = -400 + j * 20;
-                vertices[index][2] = sin(TWO_PI / 30 * i) * 40 + cos(TWO_PI / 25 * j) * 40;
-                index++;
-            }
-        }
+      l.getCaptionLabel().toUpperCase(true);
+      l.getCaptionLabel().set("A Listbox");
+      l.getCaptionLabel().setColor(0xffff0000);
+      l.getCaptionLabel().getStyle().marginTop = 3;
+      l.getValueLabel().getStyle().marginTop = 3;
+      
+      for (int i=0;i<80;i++) {
+        l.addItem("item "+i, i).setColorBackground(0xffff0000);
+      }
+      
+    }
 
-        // WB_Network network=new WB_Network(vertices);
+    public void keyPressed() {
+      if (key=='0') {
+        // will activate the listbox item with value 5
+        l.setValue(5);
+      }
+      if (key=='1') {
+        // set the height of a listBox should always be a multiple of itemHeight
+        l.setHeight(210);
+      } 
+      else if (key=='2') {
+        // set the height of a listBox should always be a multiple of itemHeight
+        l.setHeight(120);
+      } 
+      else if (key=='3') {
+        // set the width of a listBox
+        l.setWidth(200);
+      }
+      else if (key=='i') {
+        // set the height of a listBoxItem, should always be a fraction of the listBox
+        l.setItemHeight(30);
+      } 
+      else if (key=='u') {
+        // set the height of a listBoxItem, should always be a fraction of the listBox
+        l.setItemHeight(10);
+        l.setBackgroundColor(color(100, 0, 0));
+      } 
+      else if (key=='a') {
+        int n = (int)(random(100000));
+        l.addItem("item "+n, n);
+      } 
+      else if (key=='d') {
+        l.removeItem("item "+cnt);
+        cnt++;
+      } else if (key=='c') {
+        l.clear();
+      }
+    }
 
-        // For more control add the nodes one by one, a value can be given to each node
-        // for future use.
-        WB_Network network = new WB_Network();
-        index = 0;
-        for (int j = 0; j < 41; j++) {
-            for (int i = 0; i < 41; i++) {
-                network.addNode(vertices[index][0], vertices[index][1], vertices[index][2], noise(0.1f * i, 0.1f * j));
-                index++;
-            }
-        }
+    void controlEvent(ControlEvent theEvent) {
+      // ListBox is if type ControlGroup.
+      // 1 controlEvent will be executed, where the event
+      // originates from a ControlGroup. therefore
+      // you need to check the Event with
+      // if (theEvent.isGroup())
+      // to avoid an error message from controlP5.
 
-        // adding random connections to the frame
-        for (int j = 0; j < 40; j++) {
-            for (int i = 0; i < 40; i++) {
-                if (random(100) > 30)
-                    network.addConnection(i + 41 * j, i + 1 + 41 * j);
-                if (random(100) > 30)
-                    network.addConnection(i + 41 * j, i + 41 * (j + 1));
-            }
-        }
-        // If the connections are known in advance these can be given as parameter as
-        // int[][]. The
-        // second index gives index of first and second point of connection in the
-        // points array.
-        // network=new WB_Network(vertices, connections);
-
-        HEC_FromNetwork creator = new HEC_FromNetwork();
-        creator.setNetwork(network);
-        // alternatively you can specify a HE_Mesh instead of a WB_Network.
-        creator.setConnectionRadius(6);// connection radius
-        creator.setConnectionFacets(6);// number of faces in the connections, min 3, max whatever blows up the CPU
-        creator.setAngleOffset(0.25);// rotate the connections by a fraction of a facet. 0 is no rotation, 1 is a
-                                     // rotation over a full facet. More noticeable for low number of facets.
-        creator.setMinimumBalljointAngle(TWO_PI / 3.0);// Threshold angle to include sphere in joint.
-        creator.setMaximumConnectionLength(30);// divide connection into equal parts if larger than maximum length.
-        creator.setCap(true); // cap open endpoints of connections?
-        creator.setTaper(true);// allow connections to have different radii at each end?
-        creator.setCreateIsolatedNodes(false);// create spheres for isolated points?
-        creator.setUseNodeValues(true);// use the value of the WB_Node as scaling factor, only useful if the frame was
-                                       // created using addNode().
-        mesh = new HE_Mesh(creator);
-        mesh.validate();
-
+      if (theEvent.isGroup()) {
+        // an event from a group e.g. scrollList
+        println(theEvent.group().getValue()+" from "+theEvent.group());
+      }
+      
+      if(theEvent.isGroup() && theEvent.name().equals("myList")){
+        int test = (int)theEvent.group().getValue();
+        println("test "+test);
+    }
     }
 
     public void draw() {
-        background(55);
-        lights();
-        translate(width / 2, height / 2);
-        rotateY(mouseX * 1.0f / width * TWO_PI);
-        rotateX(mouseY * 1.0f / height * TWO_PI);
-        noStroke();
-        render.drawFaces(mesh);
-        stroke(0);
-        render.drawEdges(mesh);
+		l.continuousUpdateEvents();
+      background(128);
+      // scroll the scroll List according to the mouseX position
+      // when holding down SPACE.
+      if (keyPressed && key==' ') {
+        //l.scroll(mouseX/((float)width)); // scroll taks values between 0 and 1
+      }
+      if (keyPressed && key==' ') {
+        l.setWidth(mouseX);
+      }
     }
+    
+    public void myList() {
+    	l.updateItemIndexOffset();
+    	System.out.println(l.getInfo());
+    }
+
 }
