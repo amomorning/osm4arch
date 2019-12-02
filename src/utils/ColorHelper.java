@@ -65,7 +65,6 @@ public class ColorHelper {
 		float min = Math.min(r, Math.min(g, b));
 		float h = 0.0f, s = 0.0f, v = 0.0f;
 
-		System.out.println(r + ", " + g + ", " + b);
 
 		// hue
 		if (max == min)
@@ -146,7 +145,7 @@ public class ColorHelper {
 		return hsvToRGB(cc[0], cc[1], cc[2]);
 	}
 	
-	public static int[][] createGradientHSV(int num, float[] a, float[] b) {
+	public static int[][] createGradientHue(int num, float[] a, float[] b) {
 		float min = Math.min(a[0], b[0]);
 		float max = Math.max(a[0], b[0]);
 		float s = Math.min(a[1], b[1]);
@@ -161,12 +160,12 @@ public class ColorHelper {
 		return c;
 	}
 
-	public static int[][] createGradientHSV(int num, int a, int b) {
-		return createGradientHSV(num, hexToRGB(a), hexToRGB(b));
+	public static int[][] createGradientHue(int num, int a, int b) {
+		return createGradientHue(num, hexToRGB(a), hexToRGB(b));
 	}
 
-	private static int[][] createGradientHSV(int num, int[] a, int[] b) {
-		return createGradientHSV(num, rgbToHSV(a), rgbToHSV(b));
+	private static int[][] createGradientHue(int num, int[] a, int[] b) {
+		return createGradientHue(num, rgbToHSV(a), rgbToHSV(b));
 	}
 
 }

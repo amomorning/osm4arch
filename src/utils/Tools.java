@@ -3,6 +3,7 @@
  */
 package utils;
 
+import java.util.List;
 import java.util.Random;
 
 import org.fusesource.jansi.Ansi;
@@ -28,6 +29,7 @@ import igeo.IPoint;
  */
 public class Tools {
 	public static double EPS = Double.longBitsToDouble(971L << 52);
+	public static double RATIO = (Math.sqrt(5) + 1.0)/2;
 
 	/**
 	 * @param testUtils
@@ -78,6 +80,17 @@ public class Tools {
 			polypt[i] = new WB_Point(pts[i].x, pts[i].y, pts[i].z);
 		}
 		return new WB_GeometryFactory().createSimplePolygon(polypt);
+	}
+	
+	public static double[][] toPoint3D(List<WB_Point> pts) {
+		if(pts == null) return null;
+		double[][] ret = new double[pts.size()][3];
+		for(int i = 0; i < pts.size(); ++ i) {
+			ret[i][0] = pts.get(i).xd();
+			ret[i][1] = pts.get(i).yd();
+			ret[i][2] = pts.get(i).zd();
+		}
+		return ret;
 	}
 
 	/**

@@ -15,6 +15,7 @@ import controlP5.ControlEvent;
 import controlP5.DropdownList;
 import controlP5.ListBox;
 import crosby.binary.osmosis.OsmosisReader;
+import evaluate.FunctionAnalysis;
 import gmaps.GmapsDb;
 import gmaps.GmapsTypeDetail;
 import gmaps.GmapsTypeDetail.Types;
@@ -33,9 +34,11 @@ public class DisplayAll extends PApplet {
 	List<WB_Point> pts;
 
 	WB_AABB rect = null;
+
 	DropdownList aoiKey, aoiValue, poiType;
 	Button keyButton, valueButton, typeButton;
 	
+	FunctionAnalysis functionAnalysis;
 
 	public static void main(String[] args) {
 		
@@ -70,35 +73,39 @@ public class DisplayAll extends PApplet {
 	}
 
 	public void setup() {
+		functionAnalysis = new FunctionAnalysis();
 		tools = new Tools(this, LEN_OF_CAMERA);
 
 		ply = new ArrayList<>();
 		rect = new WB_AABB(GeoMath.latLngToXY(Container.SW_LAT_LNG), GeoMath.latLngToXY(Container.NE_LAT_LNG));
 		System.out.println(rect);
 
+		
 		initGUI();
 	}
 
 	public void draw() {
-		background(0);
-		tools.cam.openLight();
+		background(255);
 		tools.cam.drawSystem(LEN_OF_CAMERA);
 		stroke(255, 0, 0);
 //        for (Poi poi : Container.pois) {
 //            tools.render.drawPoint(poi.position);
 //        }
 		noStroke();
-		stroke(0, 0, 255);
+		stroke(0);
 		tools.render.drawPolylineEdges(ply);
 
-		stroke(255);
+		stroke(255, 0, 0);
 		noFill();
 		tools.render.drawAABB(rect);
 
 		stroke(0, 255, 0);
 		if (pts != null) {
 			tools.render.drawPoint(pts);
+			functionAnalysis.drawGridCount(this);
 		}
+
+
 
 		tools.drawCP5();
 	}
@@ -201,6 +208,8 @@ public class DisplayAll extends PApplet {
 				pts.add(new WB_Point(pos));
 			}
 		}
+
+		functionAnalysis.gridCount(Tools.toPoint3D(pts));
 	}
 
 	public void keyPressed() {
@@ -219,10 +228,12 @@ public class DisplayAll extends PApplet {
 			pts = new ArrayList<>();
 			for (Gpoi g : Container.gpois) {
 				double[] pos = GeoMath.latLngToXY(g.getLat(), g.getLng());
-				if (g.getType() == "null")
-					continue;
+//				if (g.getType() == "null")
+//					continue;
 				pts.add(new WB_Point(pos));
 			}
+
+			functionAnalysis.gridCount(Tools.toPoint3D(pts));
 		}
 
 	}
