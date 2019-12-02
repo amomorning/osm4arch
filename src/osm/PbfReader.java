@@ -46,7 +46,7 @@ public class PbfReader implements Sink {
     @Override
     public void complete() {
 //	    System.out.println("this is complete.");
-        System.out.println(String.valueOf(cntb) + ", " + cnta);
+        System.out.println("OSM_TIMESTAMP_RANGE [" + cntb + ", " + cnta + "]\n");
 
         System.out.println(Container.points.size() + " numbers of points is readed.");
 
@@ -68,14 +68,8 @@ public class PbfReader implements Sink {
 
         if (entityContainer instanceof NodeContainer) {
 
-            // Get all geometry points;
-
             Node myNode = ((NodeContainer) entityContainer).getEntity();
-//        	System.out.println("node = " + myNode.getId() 
-//        	     + "latitude = " + myNode.getLatitude() 
-//        	     + " longitude = " + myNode.getLongitude()) ;
             WB_Point pts = new WB_Point(GeoMath.latLngToXY(myNode.getLatitude(), myNode.getLongitude()));
-//            WB_Point pts = new WB_Point(GeoMath.lonLatToXY(myNode.getLongitude(), myNode.getLatitude()));
             Container.nodeid.put(myNode.getId(), NodeCount++);
             Container.points.add(pts);
 
@@ -159,12 +153,11 @@ public class PbfReader implements Sink {
             double[] bl = GeoMath.latLngToXY(myBound.getBottom(), myBound.getLeft());
             double[] tr = GeoMath.latLngToXY(myBound.getTop(), myBound.getRight());
 
-
-            System.out.println(bl[0] + " " + bl[1] + "\n" + tr[0] + " " + tr[1]);
+            System.out.println("OSM_BOUND [" + bl[0] + ":" + tr[0] + ", " + bl[1] + ":" + tr[1] + "]");
 
             double y = (myBound.getBottom() + myBound.getTop()) / 2.0;
             double x = (myBound.getLeft() + myBound.getRight()) / 2.0;
-            System.out.println(x + ", " + y);
+            System.out.println("OSM_CENTER_LATLNG [" + x + ", " + y + "]");
 
         } else {
             System.out.println("Unknown Entity!");

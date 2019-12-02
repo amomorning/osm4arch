@@ -8,6 +8,8 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
+import org.fusesource.jansi.AnsiConsole;
+
 import controlP5.Button;
 import controlP5.ControlEvent;
 import controlP5.DropdownList;
@@ -33,12 +35,21 @@ public class DisplayAll extends PApplet {
 	WB_AABB rect = null;
 	DropdownList aoiKey, aoiValue, poiType;
 	Button keyButton, valueButton, typeButton;
+	
 
 	public static void main(String[] args) {
+		
+		Tools.timerStart();
 		Container.initAll();
+		Tools.timerShow("CONTAINER INIT");
+
+
+		Tools.timerStart();
 		GmapsDb db = new GmapsDb();
 		db.collectData();
+		Tools.timerShow("DATABASE");
 
+		Tools.timerStart();
 		try {
 			InputStream inputStream = new FileInputStream(Container.OSM_FILENAME);
 			OsmosisReader reader = new OsmosisReader(inputStream);
@@ -47,6 +58,8 @@ public class DisplayAll extends PApplet {
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		}
+		Tools.timerShow("OSM_READER");
+
 
 		PApplet.main("utils.DisplayAll");
 
@@ -197,51 +210,6 @@ public class DisplayAll extends PApplet {
 				ply.add(aoi.ply);
 			}
 		}
-		if (key == 'p' || key == 'P') {
-			ply = new ArrayList<>();
-			for (Aoi aoi : Container.aois) {
-				if (aoi.isPiazza()) {
-					ply.add(aoi.ply);
-					aoi.printTag();
-				}
-			}
-		}
-		if (key == 'b' || key == 'B') {
-			ply = new ArrayList<>();
-			for (Aoi aoi : Container.aois) {
-				if (aoi.isBuilding()) {
-					ply.add(aoi.ply);
-					aoi.printTag();
-				}
-			}
-		}
-		if (key == 'f' || key == 'F') {
-			ply = new ArrayList<>();
-			for (Aoi aoi : Container.aois) {
-				if (aoi.isForest()) {
-					ply.add(aoi.ply);
-					aoi.printTag();
-				}
-			}
-		}
-		if (key == 'i' || key == 'I') {
-			ply = new ArrayList<>();
-			for (Aoi aoi : Container.aois) {
-				if (aoi.isIndustrial()) {
-					ply.add(aoi.ply);
-					aoi.printTag();
-				}
-			}
-		}
-		if (key == 'r' || key == 'R') {
-			ply = new ArrayList<>();
-			for (Aoi aoi : Container.aois) {
-				if (aoi.isResidential()) {
-					ply.add(aoi.ply);
-					aoi.printTag();
-				}
-			}
-		}
 
 		if (key == 's' || key == 'S') {
 			Tools.saveWB_Polyline(ply.toArray(new WB_PolyLine[ply.size()]), "./data/test.3dm");
@@ -257,14 +225,5 @@ public class DisplayAll extends PApplet {
 			}
 		}
 
-		if (key == 'h' || key == 'H') {
-			ply = new ArrayList<>();
-			for (Aoi aoi : Container.aois) {
-				if (aoi.isHighway()) {
-					ply.add(aoi.ply);
-					aoi.printTag();
-				}
-			}
-		}
 	}
 }

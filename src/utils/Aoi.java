@@ -47,6 +47,9 @@ public class Aoi {
         timestamp = t;
     }
     
+    public void draw(Tools tool) {
+    	tool.app.noFill();
+    }
 
     public void printTag() {
         for(String key : tags.keySet()) {
@@ -56,51 +59,4 @@ public class Aoi {
         System.out.println("---------------------------------------------");
     }
 
-    public boolean isBuilding() {
-        for(String key : tags.keySet()) {
-            if(key.equals("building"))
-                return true;
-        }
-        return false;
-    }
-    
-    public boolean isResidential() {
-        for(String key : tags.keySet()) {
-            if(key.equals("landuse") && tags.get(key).equals("residential"))
-                return true;
-        }
-        return false;
-    }
-        
-    public boolean isIndustrial() {
-        for(String key : tags.keySet()) {
-            if(key.equals("landuse") && tags.get(key).equals("industrial")) return true;
-        }
-        return false;
-    }
-    
-    public boolean isForest() {
-        for(String key : tags.keySet()) {
-            if(key.equals("landuse") && tags.get(key).equals("forest"))
-                return true;
-        }
-        return false;
-    }
-    
-    public boolean isPiazza() {
-        for(String key : tags.keySet()) {
-            if(key.equals("addr:street") && tags.get(key).indexOf("Piazza") > 0) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-	public boolean isHighway() {
-        for(String key : tags.keySet()) {
-            if(key.equals("highway"))
-                return true;
-        }
-        return false;
-	}
 }

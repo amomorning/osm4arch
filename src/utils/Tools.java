@@ -5,6 +5,9 @@ package utils;
 
 import java.util.Random;
 
+import org.fusesource.jansi.Ansi;
+import org.fusesource.jansi.AnsiConsole;
+
 import com.vividsolutions.jts.algorithm.MinimumDiameter;
 import com.vividsolutions.jts.geom.*;
 import com.vividsolutions.jts.operation.buffer.BufferOp;
@@ -24,6 +27,7 @@ import igeo.IPoint;
  * 
  */
 public class Tools {
+	public static double EPS = Double.longBitsToDouble(971L << 52);
 
 	/**
 	 * @param testUtils
@@ -31,16 +35,15 @@ public class Tools {
 	public WB_Render render;
 	public CameraController cam;
 	public ControlP5 cp5;
-	private PApplet app;
+	public PApplet app;
+	private static long lastTimeMillis;
 
 	/**
 	 * Construct a useful tool for Architecture Design.
 	 * 
-	 * @param PApplet
-	 *            app: the Parent PApplet
+	 * @param PApplet app: the Parent PApplet
 	 * 
-	 * @param int
-	 *            len: Camera Len;
+	 * @param int     len: Camera Len;
 	 */
 	public Tools(PApplet app, int len) {
 		IG.init();
@@ -51,28 +54,35 @@ public class Tools {
 		this.app = app;
 	}
 
+	public static void timerStart() {
+		lastTimeMillis = System.currentTimeMillis();
+	}
+
+	public static void timerShow(String msg) {
+		long duration = System.currentTimeMillis() - lastTimeMillis;
+		System.err.println(msg + ": " + duration);
+	}
+
 	/**
 	 * Change a JTS Polygon into WB_Polygon
 	 * 
-	 * @param: Polygon
-	 *             ply
+	 * @param: Polygon ply
 	 * @return: WB_Polygon
 	 * @throws:
 	 */
 	public static WB_Polygon toWB_Polygon(Polygon ply) {
-	    Coordinate[] pts = new Coordinate[ply.getNumPoints()];
-	    WB_Point[] polypt = new WB_Point[ply.getNumPoints()-1];
-	    
-	    for(int i = 0; i < pts.length-1; ++ i) {
-	        polypt[i] = new WB_Point(pts[i].x, pts[i].y, pts[i].z);
-	    }
-	    return new WB_GeometryFactory().createSimplePolygon(polypt);
+		Coordinate[] pts = new Coordinate[ply.getNumPoints()];
+		WB_Point[] polypt = new WB_Point[ply.getNumPoints() - 1];
+
+		for (int i = 0; i < pts.length - 1; ++i) {
+			polypt[i] = new WB_Point(pts[i].x, pts[i].y, pts[i].z);
+		}
+		return new WB_GeometryFactory().createSimplePolygon(polypt);
 	}
 
 	/**
 	 *
-	 * @param: WB_Polygon
-	 *             ply
+	 * @param: WB_Polygon ply
 	 * @return:Polygon
 	 * @throws:
 	 */
@@ -111,8 +121,7 @@ public class Tools {
 
 	/**
 	 *
-	 * @param: WB_Polygon
-	 *             ply
+	 * @param: WB_Polygon ply
 	 * @return:double
 	 * @throws:
 	 */
@@ -120,18 +129,15 @@ public class Tools {
 		double ret = 0;
 		int n = ply.getNumberOfPoints();
 		for (int i = 0; i < n; ++i) {
-			ret += ply.getd(i, (i+1)%n);
+			ret += ply.getd(i, (i + 1) % n);
 		}
 		return ret;
 	}
 
 	/**
-	 * @param: WB_Polygon
-	 *             a
-	 * @param: WB_Polygon
-	 *             b
-	 * @param: double
-	 *             distance
+	 * @param: WB_Polygon a
+	 * @param: WB_Polygon b
+	 * @param: double     distance
 	 * @return: a is within b or not;
 	 */
 	public boolean JTSwithin(WB_Polygon a, WB_Polygon b, double distance) {
@@ -207,12 +213,9 @@ public class Tools {
 	/**
 	 * Draw a box with two Vectors and a base Point
 	 * 
-	 * @param: WB_Point
-	 *             pt left bottom vertex of Box
-	 * @param: WB_Vector
-	 *             vec from pt to right up of Box
-	 * @param: WB_Vector
-	 *             Xaxis axis of Z
+	 * @param: WB_Point  pt left bottom vertex of Box
+	 * @param: WB_Vector vec from pt to right up of Box
+	 * @param: WB_Vector Xaxis axis of Z
 	 * @return: void
 	 * @throws:
 	 */
@@ -237,12 +240,9 @@ public class Tools {
 	/**
 	 * print string on (x, y) with size
 	 * 
-	 * @param: str
-	 *             strings need to print
-	 * @param: font
-	 *             size
-	 * @param: (x,
-	 *             y)
+	 * @param: str  strings need to print
+	 * @param: font size
+	 * @param: (x,  y)
 	 * @return: void
 	 * @throws:
 	 */
@@ -300,7 +300,6 @@ public class Tools {
 
 	public static boolean isIntersect(WB_AABB aabb, WB_Segment seg) {
 
-	
 		WB_Coord aabb_max = aabb.getMax();
 		WB_Coord aabb_min = aabb.getMin();
 		WB_Coord o = seg.getOrigin();
@@ -333,7 +332,7 @@ public class Tools {
 		}
 		return true;
 	}
-	
+
 	public static WB_Point[] IPointstoWB_Points(IPoint[] pts) {
 		WB_Point[] points = new WB_Point[pts.length];
 		for (int i = 0; i < pts.length; i++) {
@@ -341,38 +340,38 @@ public class Tools {
 		}
 		return points;
 	}
-	
+
 	public static IPoint[] WB_PointstoIPoints(WB_CoordCollection pts) {
 		IPoint[] points = new IPoint[pts.size()];
-		for(int i = 0; i < pts.size(); ++ i) {
+		for (int i = 0; i < pts.size(); ++i) {
 			points[i] = WB_PointtoIPoint(pts.get(i));
 		}
 		return points;
 	}
-	
+
 	public static WB_Point IPointtoWB_Point(IPoint p) {
 		return new WB_Point(p.x(), -p.y(), p.z());
 	}
-	
+
 	public static IPoint WB_PointtoIPoint(WB_Coord p) {
 		return new IPoint(p.xd(), p.yd(), p.zd());
 	}
-	
+
 	public static ICurve[] WB_PolylinestoIPolyline(WB_PolyLine[] plys) {
 		ICurve[] crvs = new ICurve[plys.length];
-		for (int i = 0; i < plys.length; ++ i) {
+		for (int i = 0; i < plys.length; ++i) {
 			crvs[i] = WB_PolylinetoIPolyline(plys[i]);
 		}
 		return crvs;
 	}
-	
+
 	public static ICurve WB_PolylinetoIPolyline(WB_PolyLine ply) {
 		WB_CoordCollection pts = ply.getPoints();
 		IPoint[] points = WB_PointstoIPoints(pts);
 		ICurve crv = new ICurve(points, 1);
 		return crv;
 	}
-	
+
 	public static void saveWB_Polyline(WB_PolyLine[] plys, String filename) {
 		ICurve[] crvs = WB_PolylinestoIPolyline(plys);
 		IG.save(filename);
