@@ -6,8 +6,6 @@ package utils;
 import java.util.List;
 import java.util.Random;
 
-import org.fusesource.jansi.Ansi;
-import org.fusesource.jansi.AnsiConsole;
 
 import com.vividsolutions.jts.algorithm.MinimumDiameter;
 import com.vividsolutions.jts.geom.*;
@@ -388,5 +386,9 @@ public class Tools {
 	public static void saveWB_Polyline(WB_PolyLine[] plys, String filename) {
 		ICurve[] crvs = WB_PolylinestoIPolyline(plys);
 		IG.save(filename);
+	}
+
+	public static WB_Polygon toWB_Polygon(WB_PolyLine ply) {
+		return new WB_Polygon(ply.getPoints());
 	}
 }

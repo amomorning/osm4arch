@@ -5,6 +5,7 @@ import processing.core.PImage;
 public class ColorHelper {
 	public static int RED = 0xff3333;
 	public static int BLUE = 0x6666ff;
+	public static int PINK = 0xff66cc;
 
 	public static int[] hexToRGB(int c) {
 		int[] ret = new int[3];

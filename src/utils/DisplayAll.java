@@ -5,17 +5,13 @@ import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.List;
 
-import org.fusesource.jansi.AnsiConsole;
-
 import controlP5.Button;
-import controlP5.ControlEvent;
 import controlP5.DropdownList;
-import controlP5.ListBox;
 import crosby.binary.osmosis.OsmosisReader;
 import evaluate.FunctionAnalysis;
+import evaluate.ShapeAnalysis;
 import gmaps.GmapsDb;
 import gmaps.GmapsTypeDetail;
 import gmaps.GmapsTypeDetail.Types;
@@ -25,11 +21,13 @@ import processing.core.PApplet;
 import wblut.geom.WB_AABB;
 import wblut.geom.WB_Point;
 import wblut.geom.WB_PolyLine;
+import wblut.geom.WB_Polygon;
 
 public class DisplayAll extends PApplet {
 	Tools tools;
 	public static final int LEN_OF_CAMERA = 5000;
 
+	List<WB_Polygon> polygon;
 	List<WB_PolyLine> ply;
 	List<WB_Point> pts;
 
@@ -39,6 +37,7 @@ public class DisplayAll extends PApplet {
 	Button keyButton, valueButton, typeButton;
 	
 	FunctionAnalysis functionAnalysis;
+	ShapeAnalysis shapeAnalysis;
 
 	public static void main(String[] args) {
 		
@@ -74,9 +73,10 @@ public class DisplayAll extends PApplet {
 
 	public void setup() {
 		functionAnalysis = new FunctionAnalysis();
+		shapeAnalysis = new ShapeAnalysis();
+
 		tools = new Tools(this, LEN_OF_CAMERA);
 
-		ply = new ArrayList<>();
 		rect = new WB_AABB(GeoMath.latLngToXY(Container.SW_LAT_LNG), GeoMath.latLngToXY(Container.NE_LAT_LNG));
 		System.out.println(rect);
 
@@ -93,7 +93,7 @@ public class DisplayAll extends PApplet {
 //        }
 		noStroke();
 		stroke(0);
-		tools.render.drawPolylineEdges(ply);
+		if(ply != null) tools.render.drawPolylineEdges(ply);
 
 		stroke(255, 0, 0);
 		noFill();
@@ -106,6 +106,7 @@ public class DisplayAll extends PApplet {
 		}
 
 
+		if (polygon != null) shapeAnalysis.drawShapeIndex(tools);
 
 		tools.drawCP5();
 	}
@@ -180,19 +181,24 @@ public class DisplayAll extends PApplet {
 
 //		System.out.println(key + " " + value);
 		ply = new ArrayList<>();
+		polygon = new ArrayList<>();
 		for (Aoi aoi : Container.aois) {
 			for (String aoiKey : aoi.tags.keySet()) {
 				if (aoiKey.equals(key) && value.equals("all")) {
+					if(aoi.isClosed) polygon.add(Tools.toWB_Polygon(aoi.ply));
 					ply.add(aoi.ply);
 					aoi.printTag();
 					continue;
 				}
 				if (aoiKey.equals(key) && aoi.tags.get(aoiKey).equals(value)) {
+					if(aoi.isClosed) polygon.add(Tools.toWB_Polygon(aoi.ply));
 					ply.add(aoi.ply);
 					aoi.printTag();
 				}
 			}
 		}
+	
+		shapeAnalysis.shapeIndex(polygon, 8);
 	}
 
 	public void typeControl() {
@@ -221,7 +227,7 @@ public class DisplayAll extends PApplet {
 		}
 
 		if (key == 's' || key == 'S') {
-			Tools.saveWB_Polyline(ply.toArray(new WB_PolyLine[ply.size()]), "./data/test.3dm");
+			Tools.saveWB_Polyline(ply.toArray(new WB_PolyLine[ply.size()]), "./data/"+aoiKey.getLabel() + "_" + aoiValue.getLabel() + ".3dm");
 		}
 
 		if (key == 'g' || key == 'G') {
@@ -234,6 +240,16 @@ public class DisplayAll extends PApplet {
 			}
 
 			functionAnalysis.gridCount(Tools.toPoint3D(pts));
+		}
+		
+		if (key == 'i' || key == 'I') {
+			polygon = new ArrayList<>();
+			for(Aoi aoi : Container.aois) {
+				if(aoi.isClosed && aoi.isBuilding()) {
+					polygon.add(Tools.toWB_Polygon(aoi.ply));
+				}
+			}
+			shapeAnalysis.shapeIndex(polygon, 8);
 		}
 
 	}

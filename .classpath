@@ -11,7 +11,6 @@
 			<attribute name="maven.pomderived" value="true"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/HE_Mesh"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/GzfCam"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/ControlP5"/>
 	<classpathentry kind="con" path="org.eclipse.m2e.MAVEN2_CLASSPATH_CONTAINER">
@@ -20,5 +19,6 @@
 		</attributes>
 	</classpathentry>
 	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/iGeo"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/HE_Mesh"/>
 	<classpathentry kind="output" path="target/classes"/>
 </classpath>

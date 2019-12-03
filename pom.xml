@@ -29,12 +29,7 @@
 			<artifactId>guava</artifactId>
 			<version>23.5-jre</version> <!-- or 23.5-android for the Android flavor -->
 		</dependency>
-		
-		<dependency>
-			<groupId>org.fusesource.jansi</groupId>
-			<artifactId>jansi</artifactId>
-			<version>1.18</version>
-		</dependency>
+
 
 		<!-- OSM -->
 		<dependency>

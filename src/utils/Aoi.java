@@ -59,4 +59,12 @@ public class Aoi {
         System.out.println("---------------------------------------------");
     }
 
+	public boolean isBuilding() {
+		// TODO Auto-generated method stub
+		for(String key : tags.keySet()) {
+			if(key.equals("building")) return true;
+		}
+		return false;
+	}
+
 }
