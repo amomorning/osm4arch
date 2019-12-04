@@ -21,7 +21,7 @@ public class DisplayRoad extends PApplet {
 	List<int[]> color;
 
 	public void settings() {
-		size(1200, 1000, P3D);
+		size(1600, 1000, P3D);
 	}
 
 	public void setup() {
@@ -44,6 +44,7 @@ public class DisplayRoad extends PApplet {
 				color.add(new int[] { 255, 255, 255 });
 			}
 		}
+		tools.cam.top();
 	}
 
 	public void draw() {
@@ -60,7 +61,8 @@ public class DisplayRoad extends PApplet {
 			noFill();
 			int c[] = color.get(i);
 			stroke(c[0], c[1], c[2]);
-			if(c[1] == 102 && c[2] == 102) strokeWeight(4);
+			if(c[0] == 255 && c[1] == 255 && c[2] == 255) strokeWeight(1);
+			else if(c[1] == 102 && c[2] == 102) strokeWeight(4);
 			else if(c[1] == 255) strokeWeight(2);
 			else strokeWeight(1);
 			tools.render.drawPolylineEdges(plys.get(i));
@@ -86,10 +88,19 @@ public class DisplayRoad extends PApplet {
 			fill(255);
 			textSize(17);
 			text(str, x + 50, y + 20);
+			text(str, x + 50, y + 20);
 			cnt++;
 		}
 		tools.cam.begin3d();
 	}
 
+	public void keyPressed() {
+		if(key == 'p' || key == 'P') {
+			tools.cam.perspective();
+		}
+		if(key == 't' || key == 'T') {
+			tools.cam.top();
+		}
+	}
 
 }

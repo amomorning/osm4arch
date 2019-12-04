@@ -12,7 +12,7 @@ public class Main {
 //		Container.initContainer();
 //		Container.initGmaps();
 		PApplet.main("main.DisplayAll");
-//		PApplet.main("main.DisplayResult");
+		PApplet.main("main.DisplayGrid");
 		PApplet.main("main.DisplayRoad");
 	}
 

@@ -61,11 +61,11 @@ public class DisplayAll extends PApplet {
 	}
 
 	public void draw() {
-		background(255);
+		background(0);
 		tools.cam.drawSystem(LEN_OF_CAMERA);
 		stroke(255, 0, 0);
 
-		stroke(0);
+		stroke(255);
 
 		if (ply != null) {
 			tools.render.drawPolylineEdges(ply);
@@ -77,13 +77,13 @@ public class DisplayAll extends PApplet {
 
 		stroke(0, 255, 0);
 		if (pts != null) {
-			tools.render.drawPoint(pts);
+			tools.render.drawPoint(pts, 2);
 //			functionAnalysis.drawGridCount(tools);
 		}
 		
 
 
-//		if (polygon != null) shapeAnalysis.drawShapeIndex(tools);
+		if (polygon != null) shapeAnalysis.drawShapeIndex(tools);
 
 		tools.drawCP5();
 	}
@@ -177,7 +177,7 @@ public class DisplayAll extends PApplet {
 	
 		System.out.println(ply.get(0).getPoint(0));
 		System.out.println(ply.get(0).getPoint(1));
-//		shapeAnalysis.shapeIndex(polygon, 8);
+		shapeAnalysis.shapeIndex(polygon, 8);
 	}
 
 	public void typeControl() {

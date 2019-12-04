@@ -28,5 +28,8 @@ public class DisplayTemplate extends PApplet {
 	public void initGUI() {
 		
 	}
+	
+	public void keyPressed() {
+	}
 
 }

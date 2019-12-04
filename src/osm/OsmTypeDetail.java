@@ -11,7 +11,7 @@ public class OsmTypeDetail {
 		R2("trunk", "primary", "secondary", "trunk_link", "primary_link", "secondary_link"), 
 		S1("tertiary", "tertiary_link"), 
 		S2("unclassified", "residential", "living_street", "road"), 
-		S3("foot", "footway",  "service", 	"pedestrian", "steps", "cycleway");
+		S3( "footway",  "service", 	"pedestrian",  "cycleway", "contruction");
 
 		private String[] string;
 
