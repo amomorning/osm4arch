@@ -65,7 +65,7 @@ public class PbfReader implements Sink {
 		if (entityContainer instanceof NodeContainer) {
 
 			Node myNode = ((NodeContainer) entityContainer).getEntity();
-			System.out.println("Node" + Container.nodeCount);
+//			System.out.println("Node" + Container.nodeCount);
 			if (Container.nodeid.containsKey(myNode.getId()) == false) {
 				WB_Point pts = new WB_Point(GeoMath.latLngToXY(myNode.getLatitude(), myNode.getLongitude()));
 				Container.nodeid.put(myNode.getId(), Container.nodeCount++);
@@ -96,7 +96,7 @@ public class PbfReader implements Sink {
 
 		else if (entityContainer instanceof WayContainer) {
 
-			System.out.println("Way"+Container.wayCount);
+//			System.out.println("Way"+Container.wayCount);
 			// Get all geometry ways
 			Way myWay = ((WayContainer) entityContainer).getEntity();
 

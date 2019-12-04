@@ -17,7 +17,7 @@ import utils.Tools;
 import wblut.geom.WB_AABB;
 import wblut.geom.WB_Point;
 
-public class DisplayResult extends PApplet {
+public class DisplayGrid extends PApplet {
 	Tools tools;
 	public static final int LEN_OF_CAMERA = 5000;
 
