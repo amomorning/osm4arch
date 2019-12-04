@@ -26,7 +26,7 @@ public class DisplayGrid extends PApplet {
 	private WB_AABB rect;
 
 	private DropdownList  poiType;
-	private Button  typeButton;
+	private Button typeButton;
 	private List<WB_Point> pts;
 	
 	public void settings() {

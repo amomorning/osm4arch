@@ -26,7 +26,7 @@ public class Container {
 	public static final long[] TIME_MIN_MAX = new long[] { 1215035100000L, 1572163411000L };
 
 //    public static final String OSM_FILENAME = "./data/centro-latest.osm.pbf";
-	public static final String OSM_FILENAME = "./data/prato.pbf";
+	public static final String OSM_FILENAME = "./data/planet_10.976,43.831_11.181,43.922.osm.pbf";
 //    public static final double[] BASE = new double[] { 11.0913501, 43.88255};
 	public static final int UTMZONE = 32;
 	public static final char UTMLETTER = 'T';
@@ -89,6 +89,7 @@ public class Container {
 				e.printStackTrace();
 			}
 		}
+
 		Tools.timerShow("OSM_READER");
 
 	}
