@@ -24,144 +24,143 @@ import wblut.geom.WB_Point;
 import wblut.geom.WB_PolyLine;
 
 public class PbfReader implements Sink {
-    private int WayCount;
-    private int NodeCount;
-    private int RelationCount;
+	private int RelationCount;
 
-    long cnta;
-    long cntb;
+	long cnta;
+	long cntb;
 
-    @Override
-    public void initialize(Map<String, Object> arg0) {
-        // TODO Auto-generated method stub
-        WayCount = 0;
-        NodeCount = 0;
-        RelationCount = 0;
-        System.out.println("this is initialize.");
+	@Override
+	public void initialize(Map<String, Object> arg0) {
+		// TODO Auto-generated method stub
+		RelationCount = 0;
+		System.out.println("this is initialize.");
 
-        cnta = Long.MIN_VALUE;
-        cntb = Long.MAX_VALUE;
-    }
+		cnta = Long.MIN_VALUE;
+		cntb = Long.MAX_VALUE;
+	}
 
-    @Override
-    public void complete() {
+	@Override
+	public void complete() {
 //	    System.out.println("this is complete.");
-        System.out.println("OSM_TIMESTAMP_RANGE [" + cntb + ", " + cnta + "]\n");
+		System.out.println("OSM_TIMESTAMP_RANGE [" + cntb + ", " + cnta + "]\n");
 
-        System.out.println(Container.points.size() + " numbers of points is readed.");
+		System.out.println(Container.points.size() + " numbers of points is readed.");
 
-        System.out.println("WayCount = " + WayCount);
-        System.out.println("NodeCount = " + NodeCount);
-        System.out.println("RelationCount = " + RelationCount);
+		System.out.println("WayCount = " + Container.wayCount);
+		System.out.println("NodeCount = " + Container.nodeCount);
+		System.out.println("RelationCount = " + RelationCount);
 
-        System.out.println(Container.points.get(0));
-    }
+		System.out.println(Container.points.get(0));
+	}
 
-    @Override
-    public void close() {
-        // TODO Auto-generated method stub
+	@Override
+	public void close() {
+		// TODO Auto-generated method stub
 
-    }
+	}
 
-    @Override
-    public void process(EntityContainer entityContainer) {
+	@Override
+	public void process(EntityContainer entityContainer) {
 
-        if (entityContainer instanceof NodeContainer) {
+		if (entityContainer instanceof NodeContainer) {
 
-            Node myNode = ((NodeContainer) entityContainer).getEntity();
-            WB_Point pts = new WB_Point(GeoMath.latLngToXY(myNode.getLatitude(), myNode.getLongitude()));
-            Container.nodeid.put(myNode.getId(), NodeCount++);
-            Container.points.add(pts);
+			Node myNode = ((NodeContainer) entityContainer).getEntity();
+			System.out.println("Node" + Container.nodeCount);
+			if (Container.nodeid.containsKey(myNode.getId()) == false) {
+				WB_Point pts = new WB_Point(GeoMath.latLngToXY(myNode.getLatitude(), myNode.getLongitude()));
+				Container.nodeid.put(myNode.getId(), Container.nodeCount++);
+				Container.points.add(pts);
 
-            // Get Point of Interest
-
-            if (myNode.getTags().size() > 0) {
-                Poi poi = new Poi(pts);
-                for (Tag tag : myNode.getTags()) {
-                	String key = tag.getKey();
-                	String value = tag.getValue();
-                    poi.addTag(key, value);
+				if (myNode.getTags().size() > 0) {
+					Poi poi = new Poi(pts);
+					for (Tag tag : myNode.getTags()) {
+						String key = tag.getKey();
+						String value = tag.getValue();
+						poi.addTag(key, value);
 //                    if(! Container.tagList.containsEntry(key, value)) {
 //                    	Container.tagList.put(key, value);
 //                    }
-                }
+					}
 
-                if (myNode.getTimestamp() != null) {
-                    cnta = (cnta > myNode.getTimestamp().getTime()) ? cnta : myNode.getTimestamp().getTime();
-                    cntb = (cntb < myNode.getTimestamp().getTime()) ? cntb : myNode.getTimestamp().getTime();
-                    poi.setDate(myNode.getTimestamp());
+					if (myNode.getTimestamp() != null) {
+						cnta = (cnta > myNode.getTimestamp().getTime()) ? cnta : myNode.getTimestamp().getTime();
+						cntb = (cntb < myNode.getTimestamp().getTime()) ? cntb : myNode.getTimestamp().getTime();
+						poi.setDate(myNode.getTimestamp());
 //                    System.out.println(myNode.getTimestamp().getTime());
-                }
-                Container.pois.add(poi);
-            }
+					}
+					Container.pois.add(poi);
+				}
 
-        }
+			}
+		}
 
-        else if (entityContainer instanceof WayContainer) {
+		else if (entityContainer instanceof WayContainer) {
 
-            // Get all geometry ways
-            Way myWay = ((WayContainer) entityContainer).getEntity();
-            List<WayNode> nodeList = myWay.getWayNodes();
+			System.out.println("Way"+Container.wayCount);
+			// Get all geometry ways
+			Way myWay = ((WayContainer) entityContainer).getEntity();
 
-            ArrayList<WB_Point> pts = new ArrayList<>();
-            for (WayNode node : nodeList) {
-                Integer id = Container.nodeid.get(node.getNodeId());
-                pts.add(Container.points.get(id));
-            }
-            WB_PolyLine ply = new WB_PolyLine(pts);
-            Container.plys.add(ply);
-            Container.wayid.put(myWay.getId(), WayCount++);
+			if (Container.wayid.containsKey(myWay.getId()) == false) {
+				List<WayNode> nodeList = myWay.getWayNodes();
 
-            if (myWay.isClosed() == true) {
-                pts.remove(pts.size() - 1);
-            }
+				ArrayList<WB_Point> pts = new ArrayList<>();
+				for (WayNode node : nodeList) {
+					Integer id = Container.nodeid.get(node.getNodeId());
+					pts.add(Container.points.get(id));
+				}
+				WB_PolyLine ply = new WB_PolyLine(pts);
 
-            // Get Piazza
+				Container.wayid.put(myWay.getId(), Container.wayCount++);
+				Container.plys.add(ply);
+				if (myWay.isClosed() == true) {
+					pts.remove(pts.size() - 1);
+				}
 
+				// Get Piazza
 
-            // Get Area of Interest
-            if (myWay.getTags().size() > 0) {
+				// Get Area of Interest
+				if (myWay.getTags().size() > 0) {
 
-                Aoi aoi = new Aoi(ply, myWay.isClosed());
-                for (Tag tag : myWay.getTags()) {
-                    String key = tag.getKey();
-                    String value = tag.getValue();
-                    aoi.addTag(key, value);
-                    if(! Container.tagList.containsEntry(key, value)) {
-                    	Container.tagList.put(key, value);
-                    } 
-                }
-                if (myWay.getTimestamp().getTime() != -1) {
-                    cnta = (cnta > myWay.getTimestamp().getTime()) ? cnta : myWay.getTimestamp().getTime();
-                    cntb = (cntb < myWay.getTimestamp().getTime()) ? cntb : myWay.getTimestamp().getTime();
+					Aoi aoi = new Aoi(ply, myWay.isClosed());
+					for (Tag tag : myWay.getTags()) {
+						String key = tag.getKey();
+						String value = tag.getValue();
+						aoi.addTag(key, value);
+						if (!Container.tagList.containsEntry(key, value)) {
+							Container.tagList.put(key, value);
+						}
+					}
+					if (myWay.getTimestamp().getTime() != -1) {
+						cnta = (cnta > myWay.getTimestamp().getTime()) ? cnta : myWay.getTimestamp().getTime();
+						cntb = (cntb < myWay.getTimestamp().getTime()) ? cntb : myWay.getTimestamp().getTime();
 //                    System.out.println(myWay.getTimestamp().getTime());
-                    aoi.setDate(myWay.getTimestamp());
-                }
-                Container.aois.add(aoi);
-            }
+						aoi.setDate(myWay.getTimestamp());
+					}
+					Container.aois.add(aoi);
+				}
+			}
+		}
 
-        }
+		else if (entityContainer instanceof RelationContainer) {
+			// Nothing to do here
 
-        else if (entityContainer instanceof RelationContainer) {
-            // Nothing to do here
+		}
 
-        }
+		else if (entityContainer instanceof BoundContainer) {
+			Bound myBound = ((BoundContainer) entityContainer).getEntity();
 
-        else if (entityContainer instanceof BoundContainer) {
-            Bound myBound = ((BoundContainer) entityContainer).getEntity();
-            
-            double[] bl = GeoMath.latLngToXY(myBound.getBottom(), myBound.getLeft());
-            double[] tr = GeoMath.latLngToXY(myBound.getTop(), myBound.getRight());
+			double[] bl = GeoMath.latLngToXY(myBound.getBottom(), myBound.getLeft());
+			double[] tr = GeoMath.latLngToXY(myBound.getTop(), myBound.getRight());
 
-            System.out.println("OSM_BOUND [" + bl[0] + ":" + tr[0] + ", " + bl[1] + ":" + tr[1] + "]");
+			System.out.println("OSM_BOUND [" + bl[0] + ":" + tr[0] + ", " + bl[1] + ":" + tr[1] + "]");
 
-            double y = (myBound.getBottom() + myBound.getTop()) / 2.0;
-            double x = (myBound.getLeft() + myBound.getRight()) / 2.0;
-            System.out.println("OSM_CENTER_LATLNG [" + x + ", " + y + "]");
+			double y = (myBound.getBottom() + myBound.getTop()) / 2.0;
+			double x = (myBound.getLeft() + myBound.getRight()) / 2.0;
+			System.out.println("OSM_CENTER_LATLNG [" + x + ", " + y + "]");
 
-        } else {
-            System.out.println("Unknown Entity!");
-        }
-    }
+		} else {
+			System.out.println("Unknown Entity!");
+		}
+	}
 
 }

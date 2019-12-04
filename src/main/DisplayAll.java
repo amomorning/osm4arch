@@ -1,4 +1,4 @@
-package utils;
+package main;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -18,6 +18,10 @@ import gmaps.GmapsTypeDetail.Types;
 import osm.GeoMath;
 import osm.PbfReader;
 import processing.core.PApplet;
+import utils.Aoi;
+import utils.Container;
+import utils.Gpoi;
+import utils.Tools;
 import wblut.geom.WB_AABB;
 import wblut.geom.WB_Point;
 import wblut.geom.WB_PolyLine;
@@ -38,34 +42,6 @@ public class DisplayAll extends PApplet {
 	
 	FunctionAnalysis functionAnalysis;
 	ShapeAnalysis shapeAnalysis;
-
-	public static void main(String[] args) {
-		
-		Tools.timerStart();
-		Container.initAll();
-		Tools.timerShow("CONTAINER INIT");
-
-
-		Tools.timerStart();
-		GmapsDb db = new GmapsDb();
-		db.collectData();
-		Tools.timerShow("DATABASE");
-
-		Tools.timerStart();
-		try {
-			InputStream inputStream = new FileInputStream(Container.OSM_FILENAME);
-			OsmosisReader reader = new OsmosisReader(inputStream);
-			reader.setSink(new PbfReader());
-			reader.run();
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-		}
-		Tools.timerShow("OSM_READER");
-
-
-		PApplet.main("utils.DisplayAll");
-
-	}
 
 	public void settings() {
 		size(1800, 1000, P3D);
@@ -88,12 +64,12 @@ public class DisplayAll extends PApplet {
 		background(255);
 		tools.cam.drawSystem(LEN_OF_CAMERA);
 		stroke(255, 0, 0);
-//        for (Poi poi : Container.pois) {
-//            tools.render.drawPoint(poi.position);
-//        }
-		noStroke();
+
 		stroke(0);
-		if(ply != null) tools.render.drawPolylineEdges(ply);
+
+		if (ply != null) {
+			tools.render.drawPolylineEdges(ply);
+		}
 
 		stroke(255, 0, 0);
 		noFill();
@@ -102,11 +78,12 @@ public class DisplayAll extends PApplet {
 		stroke(0, 255, 0);
 		if (pts != null) {
 			tools.render.drawPoint(pts);
-			functionAnalysis.drawGridCount(this);
+//			functionAnalysis.drawGridCount(tools);
 		}
+		
 
 
-		if (polygon != null) shapeAnalysis.drawShapeIndex(tools);
+//		if (polygon != null) shapeAnalysis.drawShapeIndex(tools);
 
 		tools.drawCP5();
 	}
@@ -156,7 +133,7 @@ public class DisplayAll extends PApplet {
 
 		for (Types type : GmapsTypeDetail.Types.values()) {
 			String str = type.toString();
-			System.out.println(str);
+//			System.out.println(str);
 			poiType.addItem(str, cnt++).setLabel(str).setColorBackground(color(0, 0, 255));
 		}
 
@@ -183,22 +160,24 @@ public class DisplayAll extends PApplet {
 		ply = new ArrayList<>();
 		polygon = new ArrayList<>();
 		for (Aoi aoi : Container.aois) {
-			for (String aoiKey : aoi.tags.keySet()) {
+			for (String aoiKey : aoi.getTags().keySet()) {
 				if (aoiKey.equals(key) && value.equals("all")) {
-					if(aoi.isClosed) polygon.add(Tools.toWB_Polygon(aoi.ply));
-					ply.add(aoi.ply);
+					if(aoi.isClosed) polygon.add(Tools.toWB_Polygon(aoi.getPly()));
+					ply.add(aoi.getPly());
 					aoi.printTag();
 					continue;
 				}
-				if (aoiKey.equals(key) && aoi.tags.get(aoiKey).equals(value)) {
-					if(aoi.isClosed) polygon.add(Tools.toWB_Polygon(aoi.ply));
-					ply.add(aoi.ply);
+				if (aoiKey.equals(key) && aoi.getTags().get(aoiKey).equals(value)) {
+					if(aoi.isClosed) polygon.add(Tools.toWB_Polygon(aoi.getPly()));
+					ply.add(aoi.getPly());
 					aoi.printTag();
 				}
 			}
 		}
 	
-		shapeAnalysis.shapeIndex(polygon, 8);
+		System.out.println(ply.get(0).getPoint(0));
+		System.out.println(ply.get(0).getPoint(1));
+//		shapeAnalysis.shapeIndex(polygon, 8);
 	}
 
 	public void typeControl() {
@@ -215,14 +194,14 @@ public class DisplayAll extends PApplet {
 			}
 		}
 
-		functionAnalysis.gridCount(Tools.toPoint3D(pts));
+//		functionAnalysis.gridCount(Tools.toPoint3D(pts));
 	}
 
 	public void keyPressed() {
 		if (key == 'a' || key == 'A') {
 			ply = new ArrayList<>();
 			for (Aoi aoi : Container.aois) {
-				ply.add(aoi.ply);
+				ply.add(aoi.getPly());
 			}
 		}
 
@@ -246,10 +225,10 @@ public class DisplayAll extends PApplet {
 			polygon = new ArrayList<>();
 			for(Aoi aoi : Container.aois) {
 				if(aoi.isClosed && aoi.isBuilding()) {
-					polygon.add(Tools.toWB_Polygon(aoi.ply));
+					polygon.add(Tools.toWB_Polygon(aoi.getPly()));
 				}
 			}
-			shapeAnalysis.shapeIndex(polygon, 8);
+//			shapeAnalysis.shapeIndex(polygon, 8);
 		}
 
 	}

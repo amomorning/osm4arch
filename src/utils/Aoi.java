@@ -12,34 +12,34 @@ import wblut.geom.WB_Polygon;
 
 public class Aoi {
     Date timestamp;
-    WB_PolyLine ply;
-    Map<String, String> tags;
+    private WB_PolyLine ply;
+    private Map<String, String> tags;
     public boolean isClosed = false;
 
     
     public Aoi(WB_PolyLine polyline) {
-        ply = polyline;
-        tags = new HashMap<>();
+        setPly(polyline);
+        setTags(new HashMap<>());
     }
     
     public Aoi(WB_PolyLine pl, boolean b) { 
         isClosed = b;
-        ply = pl;
-        tags = new HashMap<>();
+        setPly(pl);
+        setTags(new HashMap<>());
     }
     
     //TODO: UNCHECKED
     public Aoi(WB_Polygon out, WB_Polygon inner) {
-        ply = (new WB_GeometryFactory()).createPolygonWithHole(
-                out.getPoints().toArray(), inner.getPoints().toArray());
+        setPly((new WB_GeometryFactory()).createPolygonWithHole(
+                out.getPoints().toArray(), inner.getPoints().toArray()));
     }
     
     public Aoi(WB_Point...pts) {
-       ply = (new WB_GeometryFactory()).createSimplePolygon(pts);
+       setPly((new WB_GeometryFactory()).createSimplePolygon(pts));
     }
 
     public void addTag(String key, String value) {
-        tags.put(key, value);
+        getTags().put(key, value);
     }
     
     
@@ -52,19 +52,35 @@ public class Aoi {
     }
 
     public void printTag() {
-        for(String key : tags.keySet()) {
+        for(String key : getTags().keySet()) {
 //            if(key == "building") continue;
-            System.out.println("AOI key = " + key + ", value = " + tags.get(key) );
+            System.out.println("AOI key = " + key + ", value = " + getTags().get(key) );
         }
         System.out.println("---------------------------------------------");
     }
 
 	public boolean isBuilding() {
 		// TODO Auto-generated method stub
-		for(String key : tags.keySet()) {
+		for(String key : getTags().keySet()) {
 			if(key.equals("building")) return true;
 		}
 		return false;
+	}
+
+	public WB_PolyLine getPly() {
+		return ply;
+	}
+
+	public void setPly(WB_PolyLine ply) {
+		this.ply = ply;
+	}
+
+	public Map<String, String> getTags() {
+		return tags;
+	}
+
+	public void setTags(Map<String, String> tags) {
+		this.tags = tags;
 	}
 
 }
