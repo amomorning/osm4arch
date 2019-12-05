@@ -76,21 +76,18 @@ public class Container {
 
 	public static void initOsm() {
 
-
 		Tools.timerStart();
 		wayCount = 0;
 		nodeCount = 0;
-		for (int i = 0; i < 12; ++i) {
-			String filename = "./data/prato/prato_" + i + ".pbf";
-			System.out.println(filename);
-			try {
-				InputStream inputStream = new FileInputStream(filename);
-				OsmosisReader reader = new OsmosisReader(inputStream);
-				reader.setSink(new PbfReader());
-				reader.run();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
+		String filename = "./data/prato.pbf";
+		System.out.println(filename);
+		try {
+			InputStream inputStream = new FileInputStream(filename);
+			OsmosisReader reader = new OsmosisReader(inputStream);
+			reader.setSink(new PbfReader());
+			reader.run();
+		} catch (IOException e) {
+			e.printStackTrace();
 		}
 
 		Tools.timerShow("OSM_READER");

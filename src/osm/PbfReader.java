@@ -155,13 +155,13 @@ public class PbfReader implements Sink {
 			double x = (myBound.getLeft() + myBound.getRight()) / 2.0;
 			System.out.println("OSM_CENTER_LATLNG [" + x + ", " + y + "]");
 			
-//			double[] center = new double[] {x, y};
-//			Container.MAP_LAT_LNG = center;
-//			Container.SW_LAT_LNG = new double[] {myBound.getBottom(), myBound.getLeft()};
-//			Container.NE_LAT_LNG = new double[] {myBound.getTop(), myBound.getRight()};
-//			System.out.println(Container.MAP_LAT_LNG);
-//			System.out.println(Container.SW_LAT_LNG);
-//			System.out.println(Container.NE_LAT_LNG);
+			double[] center = new double[] {y, x};
+			Container.MAP_LAT_LNG = center;
+			Container.SW_LAT_LNG = new double[] {myBound.getBottom(), myBound.getLeft()};
+			Container.NE_LAT_LNG = new double[] {myBound.getTop(), myBound.getRight()};
+			System.out.println(Container.MAP_LAT_LNG[0] + " " + Container.MAP_LAT_LNG[1]);
+			System.out.println(Container.SW_LAT_LNG[0] + " " + Container.SW_LAT_LNG[1]);
+			System.out.println(Container.NE_LAT_LNG[0] + " " + Container.NE_LAT_LNG[1]);
 
 		} else {
 			System.out.println("Unknown Entity!");
