@@ -19,11 +19,11 @@ import wblut.geom.WB_Point;
 import wblut.geom.WB_PolyLine;
 
 public class Container {
-//    public static final String OSM_FILENAME = "./data/part_prato.osm.pbf";
-	public static final double[] MAP_LAT_LNG = new double[] { 43.8783119, 11.08387555 };
-	public static final double[] NE_LAT_LNG = new double[] { 43.9252112, 11.1474862 };
-	public static final double[] SW_LAT_LNG = new double[] { 43.8314126, 11.0202649 };
-	public static final long[] TIME_MIN_MAX = new long[] { 1215035100000L, 1572163411000L };
+//    public static String OSM_FILENAME = "./data/part_prato.osm.pbf";
+	public static double[] MAP_LAT_LNG = new double[] { 43.8783119, 11.08387555 };
+	public static double[] NE_LAT_LNG = new double[] { 43.9252112, 11.1474862 };
+	public static double[] SW_LAT_LNG = new double[] { 43.8314126, 11.0202649 };
+	public static long[] TIME_MIN_MAX = new long[] { 1215035100000L, 1572163411000L };
 
 //    public static final String OSM_FILENAME = "./data/centro-latest.osm.pbf";
 	public static final String OSM_FILENAME = "./data/planet_10.976,43.831_11.181,43.922.osm.pbf";
@@ -60,13 +60,14 @@ public class Container {
 		plys = new ArrayList<>();
 		pois = new ArrayList<>();
 		aois = new ArrayList<>();
-		gpois = new ArrayList<>();
 
 		tagList = ArrayListMultimap.create();
 		Tools.timerShow("CONTAINER INIT");
 	}
 
 	public static void initGmaps() {
+
+		gpois = new ArrayList<>();
 		Tools.timerStart();
 		GmapsDb db = new GmapsDb();
 		db.collectData();
@@ -74,6 +75,8 @@ public class Container {
 	}
 
 	public static void initOsm() {
+
+
 		Tools.timerStart();
 		wayCount = 0;
 		nodeCount = 0;

@@ -1,22 +1,16 @@
 package main;
 
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 import controlP5.Button;
 import controlP5.DropdownList;
-import crosby.binary.osmosis.OsmosisReader;
 import evaluate.FunctionAnalysis;
 import evaluate.ShapeAnalysis;
-import gmaps.GmapsDb;
 import gmaps.GmapsTypeDetail;
 import gmaps.GmapsTypeDetail.Types;
 import osm.GeoMath;
-import osm.PbfReader;
 import processing.core.PApplet;
 import utils.Aoi;
 import utils.Container;
@@ -42,6 +36,7 @@ public class DisplayAll extends PApplet {
 	
 	FunctionAnalysis functionAnalysis;
 	ShapeAnalysis shapeAnalysis;
+	GeoMath geoMath = new GeoMath(Container.MAP_LAT_LNG);
 
 	public void settings() {
 		size(1800, 1000, P3D);
@@ -53,7 +48,7 @@ public class DisplayAll extends PApplet {
 
 		tools = new Tools(this, LEN_OF_CAMERA);
 
-		rect = new WB_AABB(GeoMath.latLngToXY(Container.SW_LAT_LNG), GeoMath.latLngToXY(Container.NE_LAT_LNG));
+		rect = new WB_AABB(geoMath.latLngToXY(Container.SW_LAT_LNG), geoMath.latLngToXY(Container.NE_LAT_LNG));
 		System.out.println(rect);
 
 		
@@ -189,7 +184,7 @@ public class DisplayAll extends PApplet {
 			String type = g.getType();
 
 			if (type.equals(label)) {
-				double[] pos = GeoMath.latLngToXY(g.getLat(), g.getLng());
+				double[] pos = geoMath.latLngToXY(g.getLat(), g.getLng());
 				pts.add(new WB_Point(pos));
 			}
 		}
@@ -212,7 +207,7 @@ public class DisplayAll extends PApplet {
 		if (key == 'g' || key == 'G') {
 			pts = new ArrayList<>();
 			for (Gpoi g : Container.gpois) {
-				double[] pos = GeoMath.latLngToXY(g.getLat(), g.getLng());
+				double[] pos = geoMath.latLngToXY(g.getLat(), g.getLng());
 //				if (g.getType() == "null")
 //					continue;
 				pts.add(new WB_Point(pos));

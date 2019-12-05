@@ -11,6 +11,7 @@ import gmaps.GmapsTypeDetail;
 import gmaps.GmapsTypeDetail.Types;
 import osm.GeoMath;
 import processing.core.PApplet;
+import utils.ColorHelper;
 import utils.Container;
 import utils.Gpoi;
 import utils.Tools;
@@ -34,16 +35,15 @@ public class DisplayGrid extends PApplet {
 	}
 
 	public void setup() {
+		GeoMath geoMath = new GeoMath(Container.MAP_LAT_LNG);
 		tools = new Tools(this, LEN_OF_CAMERA);
 
 		functionAnalysis = new FunctionAnalysis();
-		rect = new WB_AABB(GeoMath.latLngToXY(Container.SW_LAT_LNG), GeoMath.latLngToXY(Container.NE_LAT_LNG));
+		rect = new WB_AABB(geoMath.latLngToXY(Container.SW_LAT_LNG), geoMath.latLngToXY(Container.NE_LAT_LNG));
 
 		pts = new ArrayList<>();
 		for (Gpoi g : Container.gpois) {
-			double[] pos = GeoMath.latLngToXY(g.getLat(), g.getLng());
-//			if (g.getType() == "null")
-//				continue;
+			double[] pos = geoMath.latLngToXY(g.getLat(), g.getLng());
 			pts.add(new WB_Point(pos));
 		}
 
@@ -80,23 +80,27 @@ public class DisplayGrid extends PApplet {
 		
 		typeButton = tools.cp5.addButton("typeControl").setPosition(100, 80);
 		
+		int c[][] = ColorHelper.createGradientHue(GmapsTypeDetail.Types.values().length + 1,
+				ColorHelper.RED, ColorHelper.BLUE);
 		int cnt = 0;
 		for (Types type : GmapsTypeDetail.Types.values()) {
 			String str = type.toString();
-			poiType.addItem(str, cnt++).setLabel(str).setColorBackground(color(0, 0, 255));
-		}
+			poiType.addItem(str, cnt).setLabel(str).setColorBackground(color(c[cnt][0], c[cnt][1], c[cnt][2]));
+			cnt ++ ;
+		} 
+		poiType.addItem("all", cnt ++).setLabel("all");
+		
+
 	}
 	
 	public void typeControl() {
+		
 		pts = new ArrayList<>();
 		String label = poiType.getLabel();
-//		System.out.println(label);
 		for (Gpoi g : Container.gpois) {
-//			System.out.println(g.getType() + " " + label + " " + g.getType().equalsIgnoreCase(label));
 			String type = g.getType();
-
-			if (type.equals(label)) {
-				double[] pos = GeoMath.latLngToXY(g.getLat(), g.getLng());
+			if (type.equals(label) || label.equals("all")) {
+				double[] pos = new GeoMath(Container.MAP_LAT_LNG).latLngToXY(g.getLat(), g.getLng());
 				pts.add(new WB_Point(pos));
 			}
 		}

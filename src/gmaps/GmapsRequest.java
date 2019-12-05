@@ -51,8 +51,9 @@ public class GmapsRequest {
 	}
 
 	public void gridSearch(double[] bl, double[] tr, int radius) throws IOException {
-		double[] min = GeoMath.latLngToXY(bl);
-		double[] max = GeoMath.latLngToXY(tr);
+		GeoMath geoMath = new GeoMath(Container.MAP_LAT_LNG);
+		double[] min = geoMath.latLngToXY(bl);
+		double[] max = geoMath.latLngToXY(tr);
 
 		GmapsDb db = new GmapsDb();
 		GeoApiContext context = new GeoApiContext.Builder().apiKey(Info.API_KEY).build();
@@ -64,7 +65,7 @@ public class GmapsRequest {
 //		double step = 3000;
 		for (double x = min[0] + step / 2; x < max[0]; x += step) {
 			for (double y = min[1] + step / 2; y < max[1]; y += step) {
-				double[] latlng = GeoMath.xyToLatLng(x, y);
+				double[] latlng = geoMath.xyToLatLng(x, y);
 				LatLng position = new LatLng(latlng[0], latlng[1]);
 				int tot = searchNearBy(db, context, position, radius);
 				System.out.println("( " + x + " " + y + " )");

@@ -9,8 +9,9 @@ import utils.Container;
 public class test {
 
 	public static void main(String[] args) throws Exception {
-		double[] min = GeoMath.latLngToXY(Container.SW_LAT_LNG);
-		double[] max = GeoMath.latLngToXY(Container.NE_LAT_LNG);
+		GeoMath geoMath = new GeoMath(Container.MAP_LAT_LNG);
+		double[] min = geoMath.latLngToXY(Container.SW_LAT_LNG);
+		double[] max = geoMath.latLngToXY(Container.NE_LAT_LNG);
 		int radius = 50;
 		double step = Math.floor(radius * Math.sqrt(2.0));
 

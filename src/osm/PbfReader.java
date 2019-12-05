@@ -29,6 +29,8 @@ public class PbfReader implements Sink {
 	long cnta;
 	long cntb;
 
+	GeoMath geoMath = new GeoMath(Container.MAP_LAT_LNG);
+
 	@Override
 	public void initialize(Map<String, Object> arg0) {
 		// TODO Auto-generated method stub
@@ -67,7 +69,7 @@ public class PbfReader implements Sink {
 			Node myNode = ((NodeContainer) entityContainer).getEntity();
 //			System.out.println("Node" + Container.nodeCount);
 			if (Container.nodeid.containsKey(myNode.getId()) == false) {
-				WB_Point pts = new WB_Point(GeoMath.latLngToXY(myNode.getLatitude(), myNode.getLongitude()));
+				WB_Point pts = new WB_Point(geoMath.latLngToXY(myNode.getLatitude(), myNode.getLongitude()));
 				Container.nodeid.put(myNode.getId(), Container.nodeCount++);
 				Container.points.add(pts);
 
@@ -149,14 +151,17 @@ public class PbfReader implements Sink {
 		else if (entityContainer instanceof BoundContainer) {
 			Bound myBound = ((BoundContainer) entityContainer).getEntity();
 
-			double[] bl = GeoMath.latLngToXY(myBound.getBottom(), myBound.getLeft());
-			double[] tr = GeoMath.latLngToXY(myBound.getTop(), myBound.getRight());
-
-			System.out.println("OSM_BOUND [" + bl[0] + ":" + tr[0] + ", " + bl[1] + ":" + tr[1] + "]");
-
 			double y = (myBound.getBottom() + myBound.getTop()) / 2.0;
 			double x = (myBound.getLeft() + myBound.getRight()) / 2.0;
 			System.out.println("OSM_CENTER_LATLNG [" + x + ", " + y + "]");
+			
+//			double[] center = new double[] {x, y};
+//			Container.MAP_LAT_LNG = center;
+//			Container.SW_LAT_LNG = new double[] {myBound.getBottom(), myBound.getLeft()};
+//			Container.NE_LAT_LNG = new double[] {myBound.getTop(), myBound.getRight()};
+//			System.out.println(Container.MAP_LAT_LNG);
+//			System.out.println(Container.SW_LAT_LNG);
+//			System.out.println(Container.NE_LAT_LNG);
 
 		} else {
 			System.out.println("Unknown Entity!");

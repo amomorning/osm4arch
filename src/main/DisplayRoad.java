@@ -51,8 +51,11 @@ public class DisplayRoad extends PApplet {
 		background(ColorHelper.BACKGROUNDBLUE);
 //		tools.cam.drawSystem(LEN_OF_CAMERA);
 
+
 		drawRoads();
+
 		drawLabels();
+
 		tools.drawCP5();
 	}
 

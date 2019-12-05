@@ -19,10 +19,11 @@ public class FunctionAnalysis {
 	private double[] min, max;
 	private double step = 150;
 	
+	private GeoMath geoMath = new GeoMath(Container.MAP_LAT_LNG);
 	public void gridCount(double[][] points) {
 
-		min = GeoMath.latLngToXY(Container.SW_LAT_LNG);
-		max = GeoMath.latLngToXY(Container.NE_LAT_LNG);
+		min = geoMath.latLngToXY(Container.SW_LAT_LNG);
+		max = geoMath.latLngToXY(Container.NE_LAT_LNG);
 
 		n = new int[2];
 		for (int i = 0; i < 2; ++i) {
@@ -102,9 +103,9 @@ public class FunctionAnalysis {
 	public Gpoi[] getGpoisNeighbor(Gpoi pos, double r) {
 		List<Gpoi> innerGpoi = new ArrayList<>();
 
-		WB_Point p = new WB_Point(GeoMath.latLngToXY(pos.getLat(), pos.getLng()));
+		WB_Point p = new WB_Point(geoMath.latLngToXY(pos.getLat(), pos.getLng()));
 		for(Gpoi gpoi : Container.gpois) {
-			WB_Point q = new WB_Point(GeoMath.latLngToXY(gpoi.getLat(), gpoi.getLng()));
+			WB_Point q = new WB_Point(geoMath.latLngToXY(gpoi.getLat(), gpoi.getLng()));
 			double dis = WB_GeometryOp.getDistance3D(p, q); 
 			if(dis < r) {
 				innerGpoi.add(gpoi);
