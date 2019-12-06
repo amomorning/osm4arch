@@ -6,13 +6,14 @@ import utils.Container;
 public class Main {
 
 	public static void main(String[] args) {
+		Container.initOsm();
 		
 		GeoMath geoMath = new GeoMath(Container.MAP_LAT_LNG);
 		
 		double[] a = Container.SW_LAT_LNG;
 		double[] b = Container.NE_LAT_LNG;
-		double dis = GeoMath.haversineDistance(a[0], a[1], a[0], b[1]);
-		System.out.println(a[0] + " " + a[1] + " " + a[0] + " " + b[1]);
+		double dis = GeoMath.haversineDistance(a[0], a[1], b[0], a[1]);
+		System.out.println(a[0] + " " + a[1] + " " + b[0] + " " + a[1]);
 		System.out.println(dis);
 		
 

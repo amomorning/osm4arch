@@ -29,7 +29,7 @@ public class PbfReader implements Sink {
 	long cnta;
 	long cntb;
 
-	GeoMath geoMath = new GeoMath(Container.MAP_LAT_LNG);
+	GeoMath geoMath;
 
 	@Override
 	public void initialize(Map<String, Object> arg0) {
@@ -156,6 +156,7 @@ public class PbfReader implements Sink {
 			System.out.println("OSM_CENTER_LATLNG [" + x + ", " + y + "]");
 			
 			double[] center = new double[] {y, x};
+			geoMath = new GeoMath(center);
 			Container.MAP_LAT_LNG = center;
 			Container.SW_LAT_LNG = new double[] {myBound.getBottom(), myBound.getLeft()};
 			Container.NE_LAT_LNG = new double[] {myBound.getTop(), myBound.getRight()};
