@@ -39,7 +39,7 @@ public class DisplayRoad extends PApplet {
 				plys.add(aoi.getPly());
 				color.add(OsmTypeDetail.roadColor.get(road));
 			} else {
-				aoi.printTag();
+//				aoi.printTag();
 				plys.add(aoi.getPly());
 				color.add(new int[] { 255, 255, 255 });
 			}
