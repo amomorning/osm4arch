@@ -13,7 +13,7 @@ import org.openstreetmap.osmosis.core.domain.v0_6.Relation;
 import org.openstreetmap.osmosis.core.domain.v0_6.Way;
 import org.openstreetmap.osmosis.core.task.v0_6.Sink;
 
-public class PbfReader implements Sink {
+public class ReaderSink implements Sink {
 
 	@Override
 	public void initialize(Map<String, Object> arg0) {

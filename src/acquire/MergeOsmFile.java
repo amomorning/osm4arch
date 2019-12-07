@@ -42,7 +42,7 @@ public class MergeOsmFile {
 			System.out.println(filename);
 			File file = new File(filename);
 			XmlReader reader = new XmlReader(file, true, CompressionMethod.None);
-			reader.setSink(new PbfReader());
+			reader.setSink(new ReaderSink());
 			reader.run();
 		}
 
@@ -72,7 +72,7 @@ public class MergeOsmFile {
 		for(File file:files) {
 			System.out.println(file.toString());
 			XmlReader reader = new XmlReader(file, true, CompressionMethod.None);
-			reader.setSink(new PbfReader());
+			reader.setSink(new ReaderSink());
 			reader.run();
 		}
 
