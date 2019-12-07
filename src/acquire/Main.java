@@ -17,6 +17,8 @@ public class Main {
 		}
 //
 		OsmDownload.setFilepath(PATHNAME);
+		// WARNING: find (latitude, longitude) swapped in Europe, 
+		// 			need to manually check if you can get right result...
 		if (OsmDownload.getBoundary(BBOX[1], BBOX[0], BBOX[3], BBOX[2])) {
 
 			File[] files = path.listFiles();
