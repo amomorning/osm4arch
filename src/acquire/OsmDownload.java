@@ -57,7 +57,6 @@ public class OsmDownload {
 					}
 				}
 			} else if(connection.getResponseCode() == 200) {
-				InputStream is = connection.getInputStream();
 				BufferedInputStream in = new BufferedInputStream(connection.getInputStream());
 				String filename = PATHNAME + "/" + name + ".osm";
 				FileOutputStream fileOutputStream = new FileOutputStream(filename);

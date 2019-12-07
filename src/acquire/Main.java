@@ -24,12 +24,11 @@ public class Main {
 			File[] files = path.listFiles();
 			List<File> toPbf = new ArrayList<>();
 			for (int i = 0; i < files.length; ++i) {
-				System.out.println(files[i]);
 				if(files[i].toString().indexOf(".osm") > -1) {
 					toPbf.add(files[i]);
 				}
 			}
-			MergeOsmFile.merge(PATHNAME + ".pbf", toPbf);;
+			MergeOsmFile.merge(false, PATHNAME + ".pbf", toPbf);;
 
 		} else {
 			System.err.println("ERROR");

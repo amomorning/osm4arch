@@ -18,6 +18,7 @@ import org.openstreetmap.osmosis.osmbinary.file.BlockOutputStream;
 import org.openstreetmap.osmosis.xml.common.CompressionMethod;
 import org.openstreetmap.osmosis.xml.v0_6.XmlReader;
 
+import crosby.binary.osmosis.OsmosisReader;
 import crosby.binary.osmosis.OsmosisSerializer;
 
 public class MergeOsmFile {
@@ -29,7 +30,8 @@ public class MergeOsmFile {
 	public static double right, left, top, bottom;
 	public static String origin;
 
-	public static void main(String[] args) throws FileNotFoundException {
+
+	public static void merge(boolean isPbf, String outfile, List<File> files) throws FileNotFoundException {
 		nodes = new ArrayList<>();
 		ways = new ArrayList<>();
 		relations = new ArrayList<>();
@@ -37,43 +39,16 @@ public class MergeOsmFile {
 		bottom = 90;
 
 		// TODO Auto-generated method stub
-		for (int i = 0; i < 12; ++i) {
-			String filename = "./data/prato/prato_" + i + ".osm";
-			System.out.println(filename);
-			File file = new File(filename);
-			XmlReader reader = new XmlReader(file, true, CompressionMethod.None);
-			reader.setSink(new ReaderSink());
-			reader.run();
-		}
-
-		Bound nb = bound;
-		bound = new Bound(right, left, top, bottom, nb.getOrigin());
-		bound.setChangesetId(nb.getChangesetId());
-		bound.setVersion(nb.getVersion());
-		bound.setId(nb.getId());
-		bound.setTimestamp(nb.getTimestamp());
-		bound.setUser(nb.getUser());
-
-		OutputStream outputStream = new FileOutputStream("./data/prato_test.pbf");
-		PbfWriter writer = new PbfWriter();
-		writer.setSink(new OsmosisSerializer(new BlockOutputStream(outputStream)));
-		writer.write();
-		writer.complete();
-	}
-	
-	public static void merge(String outfile, List<File> files) throws FileNotFoundException{ 
-		nodes = new ArrayList<>();
-		ways = new ArrayList<>();
-		relations = new ArrayList<>();
-		left = 180;
-		bottom = 90;
-
-		// TODO Auto-generated method stub
-		for(File file:files) {
-			System.out.println(file.toString());
-			XmlReader reader = new XmlReader(file, true, CompressionMethod.None);
-			reader.setSink(new ReaderSink());
-			reader.run();
+		for (File file : files) {
+			if (isPbf == false) {
+				XmlReader reader = new XmlReader(file, true, CompressionMethod.None);
+				reader.setSink(new ReaderSink());
+				reader.run();
+			} else {
+				OsmosisReader reader = new OsmosisReader(new FileInputStream(file));
+				reader.setSink(new ReaderSink());
+				reader.run();
+			}
 		}
 
 		Bound nb = bound;
@@ -88,7 +63,6 @@ public class MergeOsmFile {
 		PbfWriter writer = new PbfWriter();
 		writer.setSink(new OsmosisSerializer(new BlockOutputStream(outputStream)));
 		writer.write();
-		writer.complete();	
+		writer.complete();
 	}
-
 }
