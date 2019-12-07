@@ -15,10 +15,7 @@ public class Main {
 		if (!path.exists() && path.mkdirs()) {
 			System.out.println(path.getName() + " is created!");
 		}
-//
 		OsmDownload.setFilepath(PATHNAME);
-		// WARNING: find (latitude, longitude) swapped in Europe, 
-		// 			need to manually check if you can get right result...
 		if (OsmDownload.getBoundary(BBOX[0], BBOX[1], BBOX[2], BBOX[3])) {
 
 			File[] files = path.listFiles();
