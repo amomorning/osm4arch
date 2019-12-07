@@ -7,19 +7,19 @@ import java.util.List;
 
 public class Main {
 
-	private static final String PATHNAME = "./data/pratotest";
-	private static final double[] BBOX = { 43.8314126, 11.0202649, 43.9252112, 11.1474862 };
+	private static final String PATHNAME = "./data/nanjing";
+	private static final double[] BBOX = { 118.7062, 32.0020, 118.9758, 32.1231 };
 
 	public static void main(String[] args) throws FileNotFoundException {
 		File path = new File(PATHNAME);
 		if (!path.exists() && path.mkdirs()) {
-			System.out.println(path.getName() + "is created!");
+			System.out.println(path.getName() + " is created!");
 		}
 //
 		OsmDownload.setFilepath(PATHNAME);
 		// WARNING: find (latitude, longitude) swapped in Europe, 
 		// 			need to manually check if you can get right result...
-		if (OsmDownload.getBoundary(BBOX[1], BBOX[0], BBOX[3], BBOX[2])) {
+		if (OsmDownload.getBoundary(BBOX[0], BBOX[1], BBOX[2], BBOX[3])) {
 
 			File[] files = path.listFiles();
 			List<File> toPbf = new ArrayList<>();

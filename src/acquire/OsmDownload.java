@@ -32,33 +32,32 @@ public class OsmDownload {
 //		}
 //	}
 
-	public static boolean getBoundary(double minlat, double minlng, double maxlat, double maxlng) {
+	public static boolean getBoundary(double minLng, double minLat, double maxLng, double maxLat) {
 		URL url;
 		HttpURLConnection connection;
-		String name =minlat + "," + minlng + "," + maxlat + ","
-				+ maxlng;
+		String bbox =minLng + "," + minLat + "," + maxLng + ","
+				+ maxLat;
 		try {
-			url = new URL("https://www.openstreetmap.org/api/0.6/map?bbox=" + minlat + "," + minlng + "," + maxlat + ","
-					+ maxlng);
+			url = new URL("https://www.openstreetmap.org/api/0.6/map?bbox=" + bbox);
 			System.out.println(url.toString());
 			connection = (HttpURLConnection) url.openConnection();
 			connection.connect();
 			boolean flag = true;
 			if (connection.getResponseCode() == 400) {
 				System.err.println("WARNING: Map boundary box split to 4 parts.");
-				double dlat = (maxlat - minlat)/2.;
-				double dlng = (maxlng - minlng)/2.;
+				double dlat = (maxLat - minLat)/2.;
+				double dlng = (maxLng - minLng)/2.;
 				
 				for(int i = 0; i < 2; ++ i) {
 					for(int j = 0; j < 2; ++ j) {
-						double mlat = minlat + i*dlat;
-						double mlng = minlng + j*dlng;
-						flag &= getBoundary(mlat, mlng, mlat+dlat, mlng+dlng);
+						double mlat = minLat + i*dlat;
+						double mlng = minLng + j*dlng;
+						flag &= getBoundary(mlng, mlat, mlng+dlng, mlat+dlat);
 					}
 				}
 			} else if(connection.getResponseCode() == 200) {
 				BufferedInputStream in = new BufferedInputStream(connection.getInputStream());
-				String filename = PATHNAME + "/" + name + ".osm";
+				String filename = PATHNAME + "/" + bbox + ".osm";
 				FileOutputStream fileOutputStream = new FileOutputStream(filename);
 				byte dataBuffer[] = new byte[1024];
 				int bytesRead;
