@@ -1,4 +1,4 @@
-package test;
+package acquire;
 
 import java.util.Map;
 
@@ -38,7 +38,7 @@ public class PbfReader implements Sink {
 		if (entityContainer instanceof NodeContainer) {
 
 			Node myNode = ((NodeContainer) entityContainer).getEntity();
-			MergeOSMFile.nodes.add(myNode);
+			MergeOsmFile.nodes.add(myNode);
 
 		}
 		else if (entityContainer instanceof WayContainer) {
@@ -46,20 +46,20 @@ public class PbfReader implements Sink {
 //			System.out.println("Way"+Container.wayCount);
 			// Get all geometry ways
 			Way myWay = ((WayContainer) entityContainer).getEntity();
-			MergeOSMFile.ways.add(myWay);
+			MergeOsmFile.ways.add(myWay);
 		}
 		else if (entityContainer instanceof RelationContainer) {
 			// Nothing to do here
 			Relation myRelation = ((RelationContainer) entityContainer).getEntity();
-			MergeOSMFile.relations.add(myRelation);
+			MergeOsmFile.relations.add(myRelation);
 		}
 		else if (entityContainer instanceof BoundContainer) {
 			Bound myBound = ((BoundContainer) entityContainer).getEntity();
-			MergeOSMFile.left = Math.min(MergeOSMFile.left, myBound.getLeft());
-			MergeOSMFile.bottom = Math.min(MergeOSMFile.bottom, myBound.getBottom());
-			MergeOSMFile.right = Math.max(MergeOSMFile.right, myBound.getRight());
-			MergeOSMFile.top = Math.max(MergeOSMFile.top, myBound.getTop());
-			MergeOSMFile.bound = myBound;
+			MergeOsmFile.left = Math.min(MergeOsmFile.left, myBound.getLeft());
+			MergeOsmFile.bottom = Math.min(MergeOsmFile.bottom, myBound.getBottom());
+			MergeOsmFile.right = Math.max(MergeOsmFile.right, myBound.getRight());
+			MergeOsmFile.top = Math.max(MergeOsmFile.top, myBound.getTop());
+			MergeOsmFile.bound = myBound;
 		} else {
 			System.out.println("Unknown Entity!");
 		}

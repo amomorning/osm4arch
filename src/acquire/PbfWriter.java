@@ -1,4 +1,4 @@
-package test;
+package acquire;
 
 import java.io.FileNotFoundException;
 import java.util.Date;
@@ -25,14 +25,14 @@ public class PbfWriter implements Source{
     }
  
     public void write() {
-    	sink.process(new BoundContainer(MergeOSMFile.bound));
-    	for (Node node : MergeOSMFile.nodes) {
+    	sink.process(new BoundContainer(MergeOsmFile.bound));
+    	for (Node node : MergeOsmFile.nodes) {
     		sink.process(new NodeContainer(node));
     	}
-    	for (Way way : MergeOSMFile.ways) {
+    	for (Way way : MergeOsmFile.ways) {
     		sink.process(new WayContainer(way));
     	}
-    	for (Relation relation : MergeOSMFile.relations) {
+    	for (Relation relation : MergeOsmFile.relations) {
     		sink.process(new RelationContainer(relation));
     	}
     }

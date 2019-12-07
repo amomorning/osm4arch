@@ -37,7 +37,11 @@
 			<artifactId>osmosis-pbf</artifactId>
 			<version>0.47</version>
 		</dependency>
-
+		<dependency>
+			<groupId>org.openstreetmap.osmosis</groupId>
+			<artifactId>osmosis-xml</artifactId>
+			<version>0.47</version>
+		</dependency>
 		<!-- PROCESSING -->
 		<dependency>
 			<groupId>org.processing</groupId>
