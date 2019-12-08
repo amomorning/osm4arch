@@ -30,7 +30,7 @@ public class Container {
 
 //    public static final String OSM_FILENAME = "./data/centro-latest.osm.pbf";
 //	public static final String OSM_FILENAME = "./data/MountLotus.pbf";
-	public static final String OSM_FILENAME = "./data/pratotest.pbf";
+	public static final String OSM_FILENAME = "./data/prato.pbf";
 //    public static final double[] BASE = new double[] { 11.0913501, 43.88255};
 	public static final int UTMZONE = 32;
 	public static final char UTMLETTER = 'T';

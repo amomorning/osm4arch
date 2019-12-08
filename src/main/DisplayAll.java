@@ -220,7 +220,7 @@ public class DisplayAll extends PApplet {
 		if (key == 'i' || key == 'I') {
 			polygon = new ArrayList<>();
 			for(Aoi aoi : Container.aois) {
-				if(aoi.isClosed && aoi.isBuilding()) {
+				if(aoi.isClosed && aoi.isBuilding) {
 					polygon.add(Tools.toWB_Polygon(aoi.getPly()));
 				}
 			}

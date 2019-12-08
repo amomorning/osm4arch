@@ -30,6 +30,13 @@
 			<version>23.5-jre</version> <!-- or 23.5-android for the Android flavor -->
 		</dependency>
 
+		<!-- JTS -->
+		<dependency>
+			<groupId>org.locationtech.jts</groupId>
+			<artifactId>jts-core</artifactId>
+			<version>1.16.1</version>
+		</dependency>
+
 
 		<!-- OSM -->
 		<dependency>
@@ -58,7 +65,7 @@
 			<artifactId>jogl-all-main</artifactId>
 			<version>2.3.2</version>
 		</dependency>
-		
+
 		<!-- GMAP -->
 		<dependency>
 			<groupId>com.google.maps</groupId>

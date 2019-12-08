@@ -71,10 +71,11 @@ public class Tools {
 	 * @throws:
 	 */
 	public static WB_Polygon toWB_Polygon(Polygon ply) {
-		Coordinate[] pts = new Coordinate[ply.getNumPoints()];
+		Coordinate[] pts = ply.getCoordinates();
 		WB_Point[] polypt = new WB_Point[ply.getNumPoints() - 1];
 
 		for (int i = 0; i < pts.length - 1; ++i) {
+//			System.out.println("i = " + i);
 			polypt[i] = new WB_Point(pts[i].x, pts[i].y, pts[i].z);
 		}
 		return new WB_GeometryFactory().createSimplePolygon(polypt);

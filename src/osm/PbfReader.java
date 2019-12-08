@@ -127,6 +127,8 @@ public class PbfReader implements Sink {
 					for (Tag tag : myWay.getTags()) {
 						String key = tag.getKey();
 						String value = tag.getValue();
+						if(key.equals("highway")) aoi.isHighway = true;
+						if(key.equals("building")) aoi.isBuilding = true;
 						aoi.addTag(key, value);
 						if (!Container.tagList.containsEntry(key, value)) {
 							Container.tagList.put(key, value);

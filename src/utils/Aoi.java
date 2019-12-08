@@ -15,6 +15,8 @@ public class Aoi {
     private WB_PolyLine ply;
     private Map<String, String> tags;
     public boolean isClosed = false;
+    public boolean isBuilding = false;
+    public boolean isHighway = false;
 
     
     public Aoi(WB_PolyLine polyline) {
@@ -59,13 +61,6 @@ public class Aoi {
         System.out.println("---------------------------------------------");
     }
 
-	public boolean isBuilding() {
-		// TODO Auto-generated method stub
-		for(String key : getTags().keySet()) {
-			if(key.equals("building")) return true;
-		}
-		return false;
-	}
 
 	public WB_PolyLine getPly() {
 		return ply;
