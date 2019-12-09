@@ -79,7 +79,7 @@ public class DisplayAll extends PApplet {
 		
 
 
-		if (polygon != null) shapeAnalysis.drawShapeIndex(tools);
+//		if (polygon != null) shapeAnalysis.drawShapeIndex(tools);
 
 		tools.drawCP5();
 	}
@@ -173,7 +173,7 @@ public class DisplayAll extends PApplet {
 	
 		System.out.println(ply.get(0).getPoint(0));
 		System.out.println(ply.get(0).getPoint(1));
-		shapeAnalysis.shapeIndex(polygon, 8);
+//		shapeAnalysis.shapeIndex(polygon, 8);
 	}
 
 	public void typeControl() {
@@ -214,7 +214,7 @@ public class DisplayAll extends PApplet {
 				pts.add(new WB_Point(pos));
 			}
 
-			functionAnalysis.gridCount(Tools.toPoint3D(pts));
+//			functionAnalysis.gridCount(Tools.toPoint3D(pts));
 		}
 		
 		if (key == 'i' || key == 'I') {

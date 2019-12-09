@@ -18,22 +18,14 @@ import wblut.geom.WB_Point;
 import wblut.geom.WB_PolyLine;
 
 public class Container {
-//    public static String OSM_FILENAME = "./data/part_prato.osm.pbf";
-//	public static double[] MAP_LAT_LNG = new double[] { 43.8783119, 11.08387555 };
-//	public static double[] NE_LAT_LNG = new double[] { 43.9252112, 11.1474862 };
-//	public static double[] SW_LAT_LNG = new double[] { 43.8314126, 11.0202649 };
 	public static double[] MAP_LAT_LNG = null;
 	public static double[] NE_LAT_LNG = null;
 	public static double[] SW_LAT_LNG = null;
+	public static double MAPRATIO = 0.0;
 
 	public static long[] TIME_MIN_MAX = new long[] { 1215035100000L, 1572163411000L };
 
-//    public static final String OSM_FILENAME = "./data/centro-latest.osm.pbf";
-//	public static final String OSM_FILENAME = "./data/MountLotus.pbf";
 	public static final String OSM_FILENAME = "./data/prato.pbf";
-//    public static final double[] BASE = new double[] { 11.0913501, 43.88255};
-	public static final int UTMZONE = 32;
-	public static final char UTMLETTER = 'T';
 
 	public static BiMap<Long, Integer> wayid;
 	public static BiMap<Long, Integer> nodeid;

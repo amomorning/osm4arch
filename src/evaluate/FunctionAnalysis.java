@@ -146,8 +146,12 @@ public class FunctionAnalysis {
 		int cnt = 0;
 		for(LineString line : mergedLineStrings) {
 			ls = ls.union(line);
-			System.out.println("Line #" + (cnt++) + " is merged.");
+			System.out.println("Line #" + (cnt++) + "/" 
+			+ mergedLineStrings.size() + " is merged.");
 		}
+
+		ls = ls.buffer(15.0);
+		ls = ls.buffer(-5.0);
 
 		polygonizer.add(ls);
 

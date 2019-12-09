@@ -72,12 +72,13 @@ public class Tools {
 	 */
 	public static WB_Polygon toWB_Polygon(Polygon ply) {
 		Coordinate[] pts = ply.getCoordinates();
-		WB_Point[] polypt = new WB_Point[ply.getNumPoints() - 1];
+		WB_Point[] polypt = new WB_Point[ply.getNumPoints()];
 
-		for (int i = 0; i < pts.length - 1; ++i) {
+		for (int i = 0; i < pts.length ; ++i) {
 //			System.out.println("i = " + i);
-			polypt[i] = new WB_Point(pts[i].x, pts[i].y, pts[i].z);
+			polypt[i] = new WB_Point(pts[i].x, pts[i].y);
 		}
+		System.out.println(polypt[0]);
 		return new WB_GeometryFactory().createSimplePolygon(polypt);
 	}
 	

@@ -3,6 +3,7 @@ package osm;
 import java.util.Locale;
 
 import utils.Container;
+import utils.Tools;
 import wblut.geom.WB_Coord;
 
 public class GeoMath {
@@ -77,19 +78,18 @@ public class GeoMath {
 	 */
 	public double[] latLngToXY(double lat, double lng) {
 		double d = haversineDistance(lat, lng, CENTER[0], CENTER[1]);
-		double y = EARTH_RADIUS * Math.toRadians(lat - CENTER[0]);
-//		lng = Math.toRadians(lng - CENTER[1]);
-//		System.out.println(lat + ", " + lng);
-		
-		double x = Math.sqrt(d * d - y * y);
-		if(lng < CENTER[1]) x = -x;
-		
-		return new double[] {x, y};
+		double y = Math.toRadians(lat - CENTER[0]);
+		double xp = Math.toRadians(lng - CENTER[1]);
 
-//		lat = Math.log((1. + Math.sin(lat)) / (1. - Math.sin(lat)) ) / 2.;
-//		double lat0 = Math.toRadians(CENTER[0]);
-//		lat0 = Math.log((1. + Math.sin(lat0)) / (1. - Math.sin(lat0)) ) / 2.;
-//		return new double[] { lng * EARTH_RADIUS, (lat-lat0) * EARTH_RADIUS };
+		if (Container.MAPRATIO == 0) {
+			double yp = Math.log(Math.tan(Math.PI / 4 + Math.toRadians(lat) / 2))
+					- Math.log(Math.tan(Math.PI / 4 + Math.toRadians(CENTER[0]) / 2));
+			Container.MAPRATIO = y / yp;
+		}
+
+		double x = Container.MAPRATIO * xp;
+
+		return new double[] { EARTH_RADIUS * x, EARTH_RADIUS * y };
 	}
 
 	public double[] latLngToXY(double[] latLng) {
@@ -106,10 +106,11 @@ public class GeoMath {
 	 * @return: double[]
 	 */
 	public double[] xyToLatLng(double x, double y) {
-		double lat = Math.toDegrees(y / EARTH_RADIUS);
-		double lng = Math.toDegrees(x / EARTH_RADIUS);
+		double lat = Math.toDegrees(y / EARTH_RADIUS + Tools.EPS) + CENTER[0];
+		x /= Container.MAPRATIO;
+		double lng = Math.toDegrees(x / EARTH_RADIUS + Tools.EPS) + CENTER[1];
 
-		return new double[] { lat + CENTER[0], lng + CENTER[1] };
+		return new double[] { lat, lng };
 	}
 
 	/**

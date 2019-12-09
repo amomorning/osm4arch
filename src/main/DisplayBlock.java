@@ -47,6 +47,7 @@ public class DisplayBlock extends PApplet {
 
 		polygon = fa.getMapPolygon(plys);
 
+		System.out.println("Total generated polygon number: " + polygon.size());
 
 		initGUI();
 		colorMode(HSB);
@@ -57,9 +58,11 @@ public class DisplayBlock extends PApplet {
 		tools.cam.drawSystem(LEN_OF_CAMERA);
 
 		stroke(255);
-		System.out.println(polygon.size());
+//		System.out.println(polygon.size());
 		for (int i = 0; i < polygon.size(); ++i) {
 			fill(c[i], 100, 200);
+//			System.out.println("number = " + polygon.get(i).getNumberOfPoints() );
+			if(polygon.get(i).getSignedArea() > 100) continue;
 			tools.render.drawPolygonEdges(polygon.get(i));
 		}
 
