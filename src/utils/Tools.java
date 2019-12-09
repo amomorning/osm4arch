@@ -6,20 +6,33 @@ package utils;
 import java.util.List;
 import java.util.Random;
 
+import org.locationtech.jts.algorithm.MinimumDiameter;
 
-import com.vividsolutions.jts.algorithm.MinimumDiameter;
-import com.vividsolutions.jts.geom.*;
-import com.vividsolutions.jts.operation.buffer.BufferOp;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.GeometryFactory;
+import org.locationtech.jts.geom.Point;
+import org.locationtech.jts.geom.Polygon;
+import org.locationtech.jts.operation.buffer.BufferOp;
 
-import processing.core.*;
-import wblut.geom.*;
-import wblut.math.WB_Epsilon;
-import wblut.processing.WB_Render;
-import Guo_Cam.*;
+import Guo_Cam.CameraController;
+import Guo_Cam.Vec_Guo;
 import controlP5.ControlP5;
 import igeo.ICurve;
 import igeo.IG;
 import igeo.IPoint;
+import processing.core.PApplet;
+import wblut.geom.WB_AABB;
+import wblut.geom.WB_Coord;
+import wblut.geom.WB_CoordCollection;
+import wblut.geom.WB_GeometryFactory;
+import wblut.geom.WB_Point;
+import wblut.geom.WB_PolyLine;
+import wblut.geom.WB_Polygon;
+import wblut.geom.WB_Segment;
+import wblut.geom.WB_Vector;
+import wblut.math.WB_Epsilon;
+import wblut.processing.WB_Render;
 
 /**
  * @author amo Sep 14, 2018
