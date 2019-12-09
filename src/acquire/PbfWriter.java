@@ -15,6 +15,13 @@ import org.openstreetmap.osmosis.core.domain.v0_6.Way;
 import org.openstreetmap.osmosis.core.task.v0_6.Sink;
 import org.openstreetmap.osmosis.core.task.v0_6.Source;
 
+/**
+
+ * @ClassName: PbfWriter
+ * @Description: implement
+ * @author: amomorning
+ * @date: Dec 9, 2019 8:08:45 PM
+ */
 public class PbfWriter implements Source{
 
     private Sink sink;

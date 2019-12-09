@@ -8,7 +8,9 @@ import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.LineString;
+import org.locationtech.jts.geom.MultiPolygon;
 import org.locationtech.jts.geom.Polygon;
+import org.locationtech.jts.operation.buffer.BufferOp;
 import org.locationtech.jts.operation.linemerge.LineMerger;
 import org.locationtech.jts.operation.polygonize.Polygonizer;
 
@@ -125,6 +127,7 @@ public class FunctionAnalysis {
 		return innerGpoi.toArray(new Gpoi[innerGpoi.size()]);
 	}
 
+	@SuppressWarnings("deprecation")
 	public List<WB_Polygon> getMapPolygon(List<WB_PolyLine> plys) {
 		LineMerger lineMerger = new LineMerger();
 
@@ -150,12 +153,14 @@ public class FunctionAnalysis {
 			+ mergedLineStrings.size() + " is merged.");
 		}
 
-		ls = ls.buffer(15.0);
-		ls = ls.buffer(-5.0);
-
 		polygonizer.add(ls);
-
+//
 		Collection<Polygon> polygons = polygonizer.getPolygons();
+		Collection<LineString> lines = polygonizer.getCutEdges();
+		
+
+
+		GeometryFactory gf = new GeometryFactory();
 		
 		List<WB_Polygon> ret = new ArrayList<>();
 		for(Polygon polygon : polygons) {

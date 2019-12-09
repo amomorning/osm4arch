@@ -118,6 +118,7 @@ public class PbfReader implements Sink {
 					pts.remove(pts.size() - 1);
 				}
 
+
 				// Get Piazza
 
 				// Get Area of Interest
@@ -134,6 +135,7 @@ public class PbfReader implements Sink {
 							Container.tagList.put(key, value);
 						}
 					}
+					aoi.setWayid(myWay.getId());
 					if (myWay.getTimestamp().getTime() != -1) {
 						cnta = (cnta > myWay.getTimestamp().getTime()) ? cnta : myWay.getTimestamp().getTime();
 						cntb = (cntb < myWay.getTimestamp().getTime()) ? cntb : myWay.getTimestamp().getTime();

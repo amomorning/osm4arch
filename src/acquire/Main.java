@@ -5,10 +5,17 @@ import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+
+ * @ClassName: Main
+ * @Description: Usage of acquire package
+ * @author: amomorning
+ * @date: Dec 9, 2019 8:03:22 PM
+ */
 public class Main {
 
-	private static final String PATHNAME = "./data/nanjing";
-	private static final double[] BBOX = { 118.7062, 32.0020, 118.9758, 32.1231 };
+	private static final String PATHNAME = "./data/zurich";
+	private static final double[] BBOX = { 8.532250000000001,47.3902,8.599625000000001,47.420249999999996 };
 
 	public static void main(String[] args) throws FileNotFoundException {
 		File path = new File(PATHNAME);

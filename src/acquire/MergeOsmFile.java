@@ -21,6 +21,13 @@ import org.openstreetmap.osmosis.xml.v0_6.XmlReader;
 import crosby.binary.osmosis.OsmosisReader;
 import crosby.binary.osmosis.OsmosisSerializer;
 
+/**
+
+ * @ClassName: MergeOsmFile
+ * @Description: Merge several OSM/PBF files
+ * @author: amomorning
+ * @date: Dec 9, 2019 8:03:56 PM
+ */
 public class MergeOsmFile {
 
 	public static List<Node> nodes;
@@ -31,6 +38,16 @@ public class MergeOsmFile {
 	public static String origin;
 
 
+	/**
+	 * @Function: merge
+	 * @Description: Static function to merge files
+	 * @param isPbf true uses pbf reader method, false uses xml reader method.
+	 * @param outfile merged output file name
+	 * @param files a list of raw osm files
+	 * @throws FileNotFoundException
+	 *
+	 * @return: void
+	 */
 	public static void merge(boolean isPbf, String outfile, List<File> files) throws FileNotFoundException {
 		nodes = new ArrayList<>();
 		ways = new ArrayList<>();

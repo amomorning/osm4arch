@@ -9,28 +9,16 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.concurrent.TimeUnit;
 
+/**
+
+ * @ClassName: OsmDownload
+ * @Description: Recursive OSM file downloader from osm website(https://www.openstreetmap.org) 
+ * @author: amomorning
+ * @date: Dec 9, 2019 8:06:53 PM
+ */
 public class OsmDownload {
 
 	private static String PATHNAME = null;
-//
-//	public static void main(String[] args) {
-//		String FILE_URL = "https://www.openstreetmap.org/api/0.6/map?bbox=120.5754,36.4313,120.6562,36.4679";
-//		String FILE_NAME = "./data/test.osm";
-////		BufferedInputStream in = new BufferedInputStream(new URL(FILE_URL).openStream());
-//
-//		try (BufferedInputStream in = new BufferedInputStream(new URL(FILE_URL).openStream());
-//				FileOutputStream fileOutputStream = new FileOutputStream(FILE_NAME)) {
-//			byte dataBuffer[] = new byte[1024];
-//			int bytesRead;
-//			while ((bytesRead = in.read(dataBuffer, 0, 1024)) != -1) {
-//				fileOutputStream.write(dataBuffer, 0, bytesRead);
-//			}
-//			System.out.println("File Download Finished");
-//		} catch (IOException e) {
-//			// handle exception
-//			System.out.println(e);
-//		}
-//	}
 
 	public static boolean getBoundary(double minLng, double minLat, double maxLng, double maxLat) {
 		URL url;

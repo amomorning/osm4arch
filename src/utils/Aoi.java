@@ -11,7 +11,8 @@ import wblut.geom.WB_PolyLine;
 import wblut.geom.WB_Polygon;
 
 public class Aoi {
-    Date timestamp;
+    private Date timestamp;
+    private long wayid;
     private WB_PolyLine ply;
     private Map<String, String> tags;
     public boolean isClosed = false;
@@ -30,15 +31,6 @@ public class Aoi {
         setTags(new HashMap<>());
     }
     
-    //TODO: UNCHECKED
-    public Aoi(WB_Polygon out, WB_Polygon inner) {
-        setPly((new WB_GeometryFactory()).createPolygonWithHole(
-                out.getPoints().toArray(), inner.getPoints().toArray()));
-    }
-    
-    public Aoi(WB_Point...pts) {
-       setPly((new WB_GeometryFactory()).createSimplePolygon(pts));
-    }
 
     public void addTag(String key, String value) {
         getTags().put(key, value);
@@ -46,7 +38,7 @@ public class Aoi {
     
     
     public void setDate(Date t) {
-        timestamp = t;
+        setTimestamp(t);
     }
     
     public void draw(Tools tool) {
@@ -76,6 +68,22 @@ public class Aoi {
 
 	public void setTags(Map<String, String> tags) {
 		this.tags = tags;
+	}
+
+	public long getWayid() {
+		return wayid;
+	}
+
+	public void setWayid(long wayid) {
+		this.wayid = wayid;
+	}
+
+	public Date getTimestamp() {
+		return timestamp;
+	}
+
+	public void setTimestamp(Date timestamp) {
+		this.timestamp = timestamp;
 	}
 
 }

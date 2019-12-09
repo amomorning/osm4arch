@@ -406,4 +406,8 @@ public class Tools {
 	public static WB_Polygon toWB_Polygon(WB_PolyLine ply) {
 		return new WB_Polygon(ply.getPoints());
 	}
+	
+	public static void toCSV(String filename, String[] in) {
+		
+	}
 }
