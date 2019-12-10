@@ -15,6 +15,7 @@ import org.locationtech.jts.operation.linemerge.LineMerger;
 import org.locationtech.jts.operation.polygonize.Polygonizer;
 
 import osm.GeoMath;
+import readDXF.DXFImport;
 import utils.ColorHelper;
 import utils.Container;
 import utils.Gpoi;
@@ -32,6 +33,14 @@ public class FunctionAnalysis {
 	private double step = 150;
 
 	private GeoMath geoMath = new GeoMath(Container.MAP_LAT_LNG);
+
+	private static class AnalysisLoader {
+		private static final FunctionAnalysis instance = new FunctionAnalysis();
+	}
+	
+	public static FunctionAnalysis getInstance() {
+		return AnalysisLoader.instance;
+	}
 
 	public void gridCount(double[][] points) {
 
@@ -125,6 +134,19 @@ public class FunctionAnalysis {
 			}
 		}
 		return innerGpoi.toArray(new Gpoi[innerGpoi.size()]);
+	}
+	
+	public List<WB_Polygon> getMapPolygonOffline() {
+		double[][][] polys = DXFImport.polylines_layer("./data/siteblock.dxf", "brokenLine");
+		List<WB_Polygon> polygons = new ArrayList<>();
+		for(int i = 0; i < polys.length; ++ i) {
+			WB_Point[] pts = new WB_Point[polys[i].length];
+			for(int j = 0; j < polys[i].length; ++ j) {
+				pts[j] = new WB_Point(polys[i][j]);
+			}
+			polygons.add(new WB_Polygon(pts));
+		}
+		return polygons;
 	}
 
 	@SuppressWarnings("deprecation")

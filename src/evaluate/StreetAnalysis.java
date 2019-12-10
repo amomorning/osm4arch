@@ -65,7 +65,7 @@ public class StreetAnalysis {
 				for (int i = 0; i < pts.size(); ++i) {
 					WB_Coord pt = pts.get(i);
 
-					System.out.println(pt.xd() + ", " + pt.yd());
+//					System.out.println(pt.xd() + ", " + pt.yd());
 					int x = (int) ((pt.xd() - min[0]) / step);
 					int y = (int) ((pt.yd() - min[1]) / step);
 //					System.out.println("x = " + x + ", y = " + y);

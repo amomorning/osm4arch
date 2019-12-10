@@ -5,13 +5,23 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+import dxfExporter.Constants;
+import dxfExporter.DXFData;
+import dxfExporter.DXFExport;
+import dxfExporter.DXFLayer;
+import dxfExporter.DXFPoint;
 import evaluate.FunctionAnalysis;
 import evaluate.StreetAnalysis;
 import osm.OsmTypeDetail;
 import processing.core.PApplet;
+import readDXF.DXFImport;
 import utils.Aoi;
+import utils.ColorHelper;
 import utils.Container;
+import utils.ExportDXF;
 import utils.Tools;
+import wblut.geom.WB_Coord;
+import wblut.geom.WB_CoordCollection;
 import wblut.geom.WB_Point;
 import wblut.geom.WB_PolyLine;
 import wblut.geom.WB_Polygon;
@@ -19,7 +29,7 @@ import wblut.geom.WB_Polygon;
 public class DisplayBlock extends PApplet {
 
 	List<WB_Point> pts;
-	List<WB_Polygon> polygon;
+	List<WB_Polygon> polygons;
 	List<WB_PolyLine> plys;
 	Tools tools;
 	public static final int LEN_OF_CAMERA = 5000;
@@ -36,33 +46,11 @@ public class DisplayBlock extends PApplet {
 	}
 
 	public void setup() {
-		FunctionAnalysis fa = new FunctionAnalysis();
 		tools = new Tools(this, LEN_OF_CAMERA);
-
-		plys = new ArrayList<>();
-		for (Aoi aoi : Container.aois) {
-			if (!aoi.isHighway)
-				continue;
-			String key = aoi.getTags().get("highway");
-			if(key.indexOf("link") > -1) continue;
-			if (OsmTypeDetail.roadMap.containsKey(key) && OsmTypeDetail.roadMap.get(key) != OsmTypeDetail.Road.R1
-					&& OsmTypeDetail.roadMap.get(key) != OsmTypeDetail.Road.S3)
-				plys.add(aoi.getPly());
-		}
-
-//		polygon = fa.getMapPolygon(plys);
-//		colorMode(HSB);
-		
-		try {
-			pts = StreetAnalysis.writeSamplePoint("./data/points.csv");
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-//		pts = StreetAnalysis.getSamplePoint(plys);
-//		System.out.println("Point number: " + pts.size());
-
-//		System.out.println("Total generated polygon number: " + polygon.size());
+		seivePolyline();
+//		calcBlock();
+		readBlock();
+		calcUniformPoint();
 
 		initGUI();
 	}
@@ -71,19 +59,13 @@ public class DisplayBlock extends PApplet {
 		background(255);
 		tools.cam.drawSystem(LEN_OF_CAMERA);
 
-		stroke(255);
-////		System.out.println(polygon.size());
-//		for (int i = 0; i < polygon.size(); ++i) {
-//			fill(c[i], 100, 200);
-////			System.out.println("number = " + polygon.get(i).getNumberOfPoints() );
-//			if(polygon.get(i).getSignedArea() > 100) continue;
-//			tools.render.drawPolygonEdges(polygon.get(i));
-//		}
-//		
-		stroke(255, 0, 0);
-		fill(255, 0, 0);
-		if(pts != null) tools.render.drawPoint(pts, 4);
+		float[] c = ColorHelper.hexToHSV(ColorHelper.RED);
+		stroke(c[0], c[1], c[2]);
+		fill(c[0], c[1], c[2]);
+		if (pts != null)
+			tools.render.drawPoint(pts, 4);
 
+		drawBlock();
 		stroke(0);
 		tools.render.drawPolylineEdges(plys);
 		tools.drawCP5();
@@ -93,7 +75,67 @@ public class DisplayBlock extends PApplet {
 
 	}
 
+	public void seivePolyline() {
+
+		plys = new ArrayList<>();
+		for (Aoi aoi : Container.aois) {
+			if (!aoi.isHighway)
+				continue;
+			String key = aoi.getTags().get("highway");
+			if (key.indexOf("link") > -1)
+				continue;
+			if (OsmTypeDetail.roadMap.containsKey(key) && OsmTypeDetail.roadMap.get(key) != OsmTypeDetail.Road.R1
+					&& OsmTypeDetail.roadMap.get(key) != OsmTypeDetail.Road.S3)
+				plys.add(aoi.getPly());
+		}
+	}
+
+	public void calcUniformPoint() {
+		try {
+			pts = StreetAnalysis.writeSamplePoint("./data/points(Uniform).csv");
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+
+	public void calcBlock() {
+
+		polygons = FunctionAnalysis.getInstance().getMapPolygon(plys);
+		colorMode(HSB);
+		System.out.println("Total polygons: " + polygons.size());
+
+	}
+
+	public void drawBlock() {
+		if (polygons == null)
+			return;
+		stroke(255);
+		for (int i = 0; i < polygons.size(); ++i) {
+			fill(c[i], 100, 200);
+			if (polygons.get(i).getSignedArea() > 100)
+				continue;
+			tools.render.drawPolygonEdges(polygons.get(i));
+		}
+
+	}
+
+	public void readBlock() {
+		polygons = FunctionAnalysis.getInstance().getMapPolygonOffline();
+		System.out.println("Total polygons: " + polygons.size());
+		colorMode(HSB);
+	}
+
+	@SuppressWarnings("unchecked")
 	public void keyPressed() {
+		if (key == 's' || key == 'S') {
+			ExportDXF dxf = new ExportDXF();
+			for (WB_Polygon plg : polygons) {
+				dxf.add(plg, ExportDXF.BROKEN);
+			}
+			dxf.save("./data/siteblock.dxf");
+			System.out.println("Finish export.");
+
+		}
 	}
 
 }

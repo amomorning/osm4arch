@@ -61,6 +61,16 @@ public class ColorHelper {
 
 		return new float[] { h, s, l };
 	}
+	
+	public static int hsvToHEX(float[] hsv) {
+		int[] rgb = hsvToRGB(hsv);
+		return rgbToHEX(rgb);
+	}
+	
+	public static float[] hexToHSV(int c) {
+		int[] rgb = hexToRGB(c);
+		return rgbToHSV(rgb);
+	}
 
 	public static float[] rgbToHSV(int r, int g, int b) {
 		float max = Math.max(r, Math.max(g, b));

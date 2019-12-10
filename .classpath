@@ -20,5 +20,7 @@
 	</classpathentry>
 	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/iGeo"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/HE_Mesh"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/DXF_Exporter"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/DXF_Impoter"/>
 	<classpathentry kind="output" path="target/classes"/>
 </classpath>

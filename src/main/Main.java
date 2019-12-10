@@ -7,6 +7,7 @@ import utils.Container;
 public class Main {
 
 	public static void main(String[] args) {
+		Container.OSM_FILENAME = "./data/prato.pbf";
 		Container.initAll();
 //		PApplet.main("main.DisplayAll");
 //		PApplet.main("main.DisplayRoad");
