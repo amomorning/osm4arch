@@ -7,12 +7,14 @@ import evaluate.StreetAnalysis;
 import processing.core.PApplet;
 import utils.Tools;
 import wblut.geom.WB_Point;
+import wblut.geom.WB_Segment;
 
 public class DisplayTemplate extends PApplet {
 	Tools tools;
-	public static final int LEN_OF_CAMERA = 5000;
+	public static final int LEN_OF_CAMERA = 50;
 	
 	List<WB_Point> pts;
+	WB_Segment seg;
 
 	public void settings() {
 		size(1200, 1000, P3D);
@@ -21,15 +23,12 @@ public class DisplayTemplate extends PApplet {
 	public void setup() {
 		tools = new Tools(this, LEN_OF_CAMERA);
 	
-		try {
-			pts = StreetAnalysis.writeSamplePoint("./data/points.csv");
-			System.out.println("Number of points:" + pts.size());
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		
-		initGUI();
+		WB_Point p0 = new WB_Point(0, 0);
+		WB_Point p1 = new WB_Point(100, 200);
+		seg = new WB_Segment(p0, p1);
+
+		pts = StreetAnalysis.getInstance().distDivideLine(p0, p1);
+
 	}	
 	
 	public void draw() {
@@ -38,6 +37,9 @@ public class DisplayTemplate extends PApplet {
 
 		stroke(255, 0, 0);
 		if(pts != null) tools.render.drawPoint(pts, 3);
+		
+		stroke(0);
+		tools.render.drawSegment(seg);
 		tools.drawCP5();
 	}
 	

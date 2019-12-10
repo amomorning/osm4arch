@@ -65,7 +65,7 @@ public class DisplayBlock extends PApplet {
 		if (pts != null)
 			tools.render.drawPoint(pts, 4);
 
-		drawBlock();
+//		drawBlock();
 		stroke(0);
 		tools.render.drawPolylineEdges(plys);
 		tools.drawCP5();
@@ -92,7 +92,7 @@ public class DisplayBlock extends PApplet {
 
 	public void calcUniformPoint() {
 		try {
-			pts = StreetAnalysis.writeSamplePoint("./data/points(Uniform).csv");
+			pts = StreetAnalysis.getInstance().writeSamplePoint("./data/points(Uniform).csv");
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

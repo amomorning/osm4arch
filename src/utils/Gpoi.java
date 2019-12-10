@@ -1,5 +1,7 @@
 package utils;
 
+import wblut.geom.WB_Point;
+
 public class Gpoi {
 	private String placeid;
 	private float lat;
