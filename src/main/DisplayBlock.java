@@ -48,9 +48,9 @@ public class DisplayBlock extends PApplet {
 	public void setup() {
 		tools = new Tools(this, LEN_OF_CAMERA);
 		seivePolyline();
-//		calcBlock();
-		readBlock();
-		calcUniformPoint();
+		calcBlock();
+//		readBlock();
+//		calcUniformPoint();
 
 		initGUI();
 	}
@@ -65,7 +65,7 @@ public class DisplayBlock extends PApplet {
 		if (pts != null)
 			tools.render.drawPoint(pts, 4);
 
-//		drawBlock();
+		drawBlock();
 		stroke(0);
 		tools.render.drawPolylineEdges(plys);
 		tools.drawCP5();
@@ -79,11 +79,12 @@ public class DisplayBlock extends PApplet {
 
 		plys = new ArrayList<>();
 		for (Aoi aoi : Container.aois) {
-			if (!aoi.isHighway)
-				continue;
+			if (!aoi.isHighway) continue;
+			if(!aoi.getTags().containsKey("junction") && aoi.isClosed) continue;
+
 			String key = aoi.getTags().get("highway");
-			if (key.indexOf("link") > -1)
-				continue;
+
+			if (key.indexOf("link") > -1) continue;
 			if (OsmTypeDetail.roadMap.containsKey(key) && OsmTypeDetail.roadMap.get(key) != OsmTypeDetail.Road.R1
 					&& OsmTypeDetail.roadMap.get(key) != OsmTypeDetail.Road.S3)
 				plys.add(aoi.getPly());

@@ -149,7 +149,6 @@ public class FunctionAnalysis {
 		return polygons;
 	}
 
-	@SuppressWarnings("deprecation")
 	public List<WB_Polygon> getMapPolygon(List<WB_PolyLine> plys) {
 		LineMerger lineMerger = new LineMerger();
 
@@ -178,11 +177,21 @@ public class FunctionAnalysis {
 		polygonizer.add(ls);
 //
 		Collection<Polygon> polygons = polygonizer.getPolygons();
-		Collection<LineString> lines = polygonizer.getCutEdges();
-		
+//		
+//		Geometry g = polygons.iterator().next();
+//
+//		for(Polygon polygon: polygons) {
+//			g = g.union(polygon);
+//		}
+//
+//		g = g.buffer(-5);
+//		g = g.buffer(5);
+//
+//		polygonizer = new Polygonizer();
+//		polygonizer.add(g);
 
 
-		GeometryFactory gf = new GeometryFactory();
+		polygons = polygonizer.getPolygons();
 		
 		List<WB_Polygon> ret = new ArrayList<>();
 		for(Polygon polygon : polygons) {

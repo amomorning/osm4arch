@@ -18,6 +18,11 @@ public class Main {
 
 //		Container.initGmaps();
 //		PApplet.main("main.DisplayGrid");
+
+	}
+	
+	public void test() {
+		System.out.println(System.getProperty("user.dir"));
 	}
 
 }

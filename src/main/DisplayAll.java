@@ -15,6 +15,7 @@ import osm.GeoMath;
 import processing.core.PApplet;
 import utils.Aoi;
 import utils.Container;
+import utils.ExportDXF;
 import utils.Gpoi;
 import utils.Tools;
 import wblut.geom.WB_AABB;
@@ -202,7 +203,10 @@ public class DisplayAll extends PApplet {
 		}
 
 		if (key == 's' || key == 'S') {
-			Tools.saveWB_Polyline(ply.toArray(new WB_PolyLine[ply.size()]), "./data/"+aoiKey.getLabel() + "_" + aoiValue.getLabel() + ".3dm");
+			ExportDXF dxf = new ExportDXF();
+			for(WB_PolyLine pl : ply) {
+				dxf.add(pl, ExportDXF.BROKEN);
+			}
 		}
 
 		if (key == 'g' || key == 'G') {

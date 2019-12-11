@@ -25,7 +25,7 @@ public class Container {
 
 	public static long[] TIME_MIN_MAX = new long[] { 1215035100000L, 1572163411000L };
 
-	public static String OSM_FILENAME = "./data/part_prato.pbf";
+	public static String OSM_FILENAME = null;
 
 	public static BiMap<Long, Integer> wayid;
 	public static BiMap<Long, Integer> nodeid;
