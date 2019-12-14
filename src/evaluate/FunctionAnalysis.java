@@ -136,8 +136,10 @@ public class FunctionAnalysis {
 	}
 
 	public List<WB_Polygon> getMapPolygonOffline() {
-		double[][][] polys = DXFImport.polylines_layer("./data/siteblock_r.dxf", "brokenLine");
+		double[][][] polys = DXFImport.polylines_layer("./data/siteblock.dxf", "brokenLine");
 		List<WB_Polygon> polygons = new ArrayList<>();
+		
+
 		for (int i = 0; i < polys.length; ++i) {
 			WB_Point[] pts = new WB_Point[polys[i].length];
 			for (int j = 0; j < polys[i].length; ++j) {
@@ -145,6 +147,22 @@ public class FunctionAnalysis {
 			}
 			polygons.add(new WB_Polygon(pts));
 		}
+		
+//		
+//		List<WB_Polygon> ret = new ArrayList<>();		
+//
+//		for(int i = 0; i < polygons.size(); ++ i) {
+//			WB_Polygon p = polygons.get(i);
+//			Polygon jp = Tools.toJTSPolygon(p);
+//			boolean flag = false;
+//			for(int j = 0; j < polygons.size(); ++ j) {
+//				if(j == i) continue;
+//				Polygon kp = Tools.toJTSPolygon(polygons.get(j));
+//				if(jp.within(kp)) flag = true;
+//			}
+//			if(flag) continue;
+//			ret.add(p);
+//		}
 		return polygons;
 	}
 

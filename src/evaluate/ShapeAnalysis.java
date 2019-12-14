@@ -5,8 +5,6 @@ import java.util.List;
 
 import utils.ColorHelper;
 import utils.Tools;
-import wblut.geom.WB_AABB;
-import wblut.geom.WB_AABB2D;
 import wblut.geom.WB_Coord;
 import wblut.geom.WB_GeometryFactory;
 import wblut.geom.WB_GeometryOp;
@@ -20,6 +18,14 @@ public class ShapeAnalysis {
 	private WB_Polygon[] polygons;
 	private int[][] color;
 
+	private static class AnalysisLoader {
+		private static final ShapeAnalysis instance = new ShapeAnalysis();
+	}
+
+	public static ShapeAnalysis getInstance() {
+		return AnalysisLoader.instance;
+	}
+	
 	/**
 	 * @Function: shapeIndexBoyeeClark
 	 * @Description: 1964, safe version which can get all n indices,
@@ -37,8 +43,8 @@ public class ShapeAnalysis {
 		WB_Transform3D T = new WB_Transform3D().addTranslate(-1, polygon.getCenter());
 		polygon.applySelf(T);
 
-		System.out.println(pt);
-		System.out.println(polygon.getCenter());
+//		System.out.println(pt);
+//		System.out.println(polygon.getCenter());
 
 		// get max r
 		double r = 0;
