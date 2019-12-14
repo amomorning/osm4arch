@@ -84,14 +84,15 @@ public class Tools {
 	 * @throws:
 	 */
 	public static WB_Polygon toWB_Polygon(Polygon ply) {
-		Coordinate[] pts = ply.getCoordinates();
-		WB_Point[] polypt = new WB_Point[ply.getNumPoints()];
+		Geometry g = ply.getExteriorRing();
+		Coordinate[] pts = g.getCoordinates();
+		WB_Point[] polypt = new WB_Point[g.getNumPoints()];
 
 		for (int i = 0; i < pts.length ; ++i) {
 //			System.out.println("i = " + i);
 			polypt[i] = new WB_Point(pts[i].x, pts[i].y);
 		}
-		System.out.println(polypt[0]);
+//		System.out.println(polypt[0]);
 		return new WB_GeometryFactory().createSimplePolygon(polypt);
 	}
 	

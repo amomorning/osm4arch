@@ -10,7 +10,6 @@ import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.LineString;
 import org.locationtech.jts.geom.MultiPolygon;
 import org.locationtech.jts.geom.Polygon;
-import org.locationtech.jts.operation.buffer.BufferOp;
 import org.locationtech.jts.operation.linemerge.LineMerger;
 import org.locationtech.jts.operation.polygonize.Polygonizer;
 
@@ -37,7 +36,7 @@ public class FunctionAnalysis {
 	private static class AnalysisLoader {
 		private static final FunctionAnalysis instance = new FunctionAnalysis();
 	}
-	
+
 	public static FunctionAnalysis getInstance() {
 		return AnalysisLoader.instance;
 	}
@@ -135,13 +134,13 @@ public class FunctionAnalysis {
 		}
 		return innerGpoi.toArray(new Gpoi[innerGpoi.size()]);
 	}
-	
+
 	public List<WB_Polygon> getMapPolygonOffline() {
-		double[][][] polys = DXFImport.polylines_layer("./data/siteblock.dxf", "brokenLine");
+		double[][][] polys = DXFImport.polylines_layer("./data/siteblock_r.dxf", "brokenLine");
 		List<WB_Polygon> polygons = new ArrayList<>();
-		for(int i = 0; i < polys.length; ++ i) {
+		for (int i = 0; i < polys.length; ++i) {
 			WB_Point[] pts = new WB_Point[polys[i].length];
-			for(int j = 0; j < polys[i].length; ++ j) {
+			for (int j = 0; j < polys[i].length; ++j) {
 				pts[j] = new WB_Point(polys[i][j]);
 			}
 			polygons.add(new WB_Polygon(pts));
@@ -158,7 +157,7 @@ public class FunctionAnalysis {
 			GeometryFactory gf = new GeometryFactory();
 			int n = ply.getNumberOfPoints();
 			Coordinate[] pts = new Coordinate[n];
-			for(int i = 0; i < n; ++ i) {
+			for (int i = 0; i < n; ++i) {
 				WB_Point pt = ply.getPoint(i);
 				pts[i] = new Coordinate(pt.xd(), pt.yd(), pt.zd());
 			}
@@ -168,34 +167,39 @@ public class FunctionAnalysis {
 		Collection<LineString> mergedLineStrings = lineMerger.getMergedLineStrings();
 
 		int cnt = 0;
-		for(LineString line : mergedLineStrings) {
+		for (LineString line : mergedLineStrings) {
 			ls = ls.union(line);
-			System.out.println("Line #" + (cnt++) + "/" 
-			+ mergedLineStrings.size() + " is merged.");
+			System.out.println("Line #" + (cnt++) + "/" + mergedLineStrings.size() + " is merged.");
 		}
 
 		polygonizer.add(ls);
 //
 		Collection<Polygon> polygons = polygonizer.getPolygons();
-//		
-//		Geometry g = polygons.iterator().next();
-//
-//		for(Polygon polygon: polygons) {
-//			g = g.union(polygon);
-//		}
-//
-//		g = g.buffer(-5);
-//		g = g.buffer(5);
-//
-//		polygonizer = new Polygonizer();
-//		polygonizer.add(g);
 
 
 		polygons = polygonizer.getPolygons();
-		
+
 		List<WB_Polygon> ret = new ArrayList<>();
-		for(Polygon polygon : polygons) {
-			ret.add(Tools.toWB_Polygon(polygon));
+		for (Polygon polygon : polygons) {
+			Geometry g = polygon.buffer(-7);
+			g = g.buffer(4.5);
+			if (g.getGeometryType() == "Polygon") {
+
+				WB_Polygon pl = Tools.toWB_Polygon((Polygon) g);
+				if (pl != null && Math.abs(pl.getSignedArea()) > 650) {
+					ret.add(pl);
+				}
+
+			} else if (g.getGeometryType() == "MultiPolygon") {
+				MultiPolygon mp = (MultiPolygon) g;
+				for (int i = 0; i < mp.getNumGeometries(); ++i) {
+					WB_Polygon pl = Tools.toWB_Polygon((Polygon) mp.getGeometryN(i));
+
+					if (pl != null && Math.abs(pl.getSignedArea()) > 650) {
+						ret.add(pl);
+					}
+				}
+			}
 		}
 		return ret;
 	}

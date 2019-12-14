@@ -48,8 +48,8 @@ public class DisplayBlock extends PApplet {
 	public void setup() {
 		tools = new Tools(this, LEN_OF_CAMERA);
 		seivePolyline();
-		calcBlock();
-//		readBlock();
+//		calcBlock();
+		readBlock();
 //		calcUniformPoint();
 
 		initGUI();
@@ -126,7 +126,7 @@ public class DisplayBlock extends PApplet {
 		colorMode(HSB);
 	}
 
-	@SuppressWarnings("unchecked")
+//	@SuppressWarnings("unchecked")
 	public void keyPressed() {
 		if (key == 's' || key == 'S') {
 			ExportDXF dxf = new ExportDXF();
