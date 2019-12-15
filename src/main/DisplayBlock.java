@@ -5,23 +5,18 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-import dxfExporter.Constants;
-import dxfExporter.DXFData;
-import dxfExporter.DXFExport;
-import dxfExporter.DXFLayer;
-import dxfExporter.DXFPoint;
 import evaluate.FunctionAnalysis;
 import evaluate.StreetAnalysis;
+import osm.GeoMath;
 import osm.OsmTypeDetail;
 import processing.core.PApplet;
-import readDXF.DXFImport;
 import utils.Aoi;
 import utils.ColorHelper;
 import utils.Container;
 import utils.ExportDXF;
+import utils.Gpoi;
 import utils.Tools;
-import wblut.geom.WB_Coord;
-import wblut.geom.WB_CoordCollection;
+import wblut.geom.WB_GeometryOp;
 import wblut.geom.WB_Point;
 import wblut.geom.WB_PolyLine;
 import wblut.geom.WB_Polygon;
@@ -36,6 +31,8 @@ public class DisplayBlock extends PApplet {
 
 	Random rand = new Random(233);
 	int[] c;
+	
+	int[] digs;
 
 	public void settings() {
 		size(1200, 1000, P3D);
@@ -67,7 +64,11 @@ public class DisplayBlock extends PApplet {
 
 		drawBlock();
 		stroke(0);
-		tools.render.drawPolylineEdges(plys);
+//		tools.render.drawPolylineEdges(plys);
+		
+		if(digs != null) {
+			drawDigit();
+		}
 		tools.drawCP5();
 	}
 
@@ -92,6 +93,7 @@ public class DisplayBlock extends PApplet {
 	}
 
 	public void calcUniformPoint() {
+		pts = new ArrayList<>();
 		try {
 			pts = StreetAnalysis.getInstance().writeSamplePoint("./data/points(Uniform).csv");
 		} catch (IOException e) {
@@ -125,9 +127,17 @@ public class DisplayBlock extends PApplet {
 		System.out.println("Total polygons: " + polygons.size());
 		colorMode(HSB);
 	}
-
-//	@SuppressWarnings("unchecked")
+	
+	
+	public void drawDigit() {
+		for(int i = 0; i < digs.length; ++ i) {
+			WB_Point pt = polygons.get(i).getCenter();
+			tools.printOnScreen3D("" + digs[i], 30, pt.xd(), pt.yd(), pt.zd());
+		}
+	}
+	
 	public void keyPressed() {
+		
 		if (key == 's' || key == 'S') {
 			ExportDXF dxf = new ExportDXF();
 			for (WB_Polygon plg : polygons) {
@@ -136,6 +146,52 @@ public class DisplayBlock extends PApplet {
 			dxf.save("./data/siteblock.dxf");
 			System.out.println("Finish export.");
 
+		}
+		
+		if (key == 'p' || key == 'P') {
+			//save pdf;
+		}
+		
+		if (key == 'b' || key == 'B') {
+			
+		}
+	
+		if (key == 'g' || key == 'G' ) {
+			GeoMath geo = new GeoMath(Container.MAP_LAT_LNG);
+			
+			digs = new int[polygons.size()];
+				
+			int cnt = 0;
+			for(Gpoi p : Container.gpois) {
+				WB_Point pt = new WB_Point(geo.latLngToXY(p.getLat(), p.getLng()));
+				for(int i = 0; i < polygons.size(); ++ i) {
+					WB_Polygon ply = polygons.get(i);
+					double d =WB_GeometryOp.getDistance3D(pt, 
+							WB_GeometryOp.getClosestPoint3D(pt, ply));
+					
+					if(d < 4) {
+						digs[i] ++;
+					}
+				}
+				cnt ++;
+				if(cnt % 100 == 0) {
+					
+				}
+			}
+		}
+		
+		if (key == 'y' || key == 'Y') {
+			
+		}
+		
+		if (key == 'c' || key == 'C') {
+		// cleaner
+			digs = null;
+			pts = null;
+		}
+		
+		if (key == 's' || key == 'S') {
+			calcUniformPoint();
 		}
 	}
 
