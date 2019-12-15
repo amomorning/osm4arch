@@ -52,6 +52,9 @@ public class MergeOsmFile {
 		nodes = new ArrayList<>();
 		ways = new ArrayList<>();
 		relations = new ArrayList<>();
+		
+		top = -90;
+		right = -180;
 		left = 180;
 		bottom = 90;
 

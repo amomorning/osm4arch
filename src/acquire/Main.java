@@ -14,8 +14,8 @@ import java.util.List;
  */
 public class Main {
 
-	private static final String PATHNAME = "./data/zurich";
-	private static final double[] BBOX = { 8.532250000000001,47.3902,8.599625000000001,47.420249999999996 };
+	private static final String PATHNAME = "./data/syracuse";
+	private static final double[] BBOX = {-76.2741 , 42.9799, -76.0046, 43.0906 };
 
 	public static void main(String[] args) throws FileNotFoundException {
 		File path = new File(PATHNAME);

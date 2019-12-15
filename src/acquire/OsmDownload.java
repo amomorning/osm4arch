@@ -44,6 +44,7 @@ public class OsmDownload {
 					}
 				}
 			} else if(connection.getResponseCode() == 200) {
+				System.out.println("downloading....");
 				BufferedInputStream in = new BufferedInputStream(connection.getInputStream());
 				String filename = PATHNAME + "/" + bbox + ".osm";
 				FileOutputStream fileOutputStream = new FileOutputStream(filename);
@@ -52,12 +53,13 @@ public class OsmDownload {
 				while ((bytesRead = in.read(dataBuffer, 0, 1024)) != -1) {
 					fileOutputStream.write(dataBuffer, 0, bytesRead);
 				}
-				System.out.println(filename + "download finished");
+				System.out.println(filename + " download finished");
 				fileOutputStream.close();
 				in.close();
 			} else {
 				System.err.println("ERROR: Connection error.");
 			}
+			System.out.println("waiting....");
 			TimeUnit.SECONDS.sleep(1);
 			return flag;
 		} catch (MalformedURLException e) {
