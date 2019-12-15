@@ -1,12 +1,19 @@
 package main;
 
 import java.io.IOException;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+import com.csvreader.CsvWriter;
+
+import controlP5.Button;
+import controlP5.DropdownList;
 import evaluate.FunctionAnalysis;
 import evaluate.StreetAnalysis;
+import gmaps.GmapsTypeDetail;
+import gmaps.GmapsTypeDetail.Types;
 import osm.GeoMath;
 import osm.OsmTypeDetail;
 import processing.core.PApplet;
@@ -16,6 +23,7 @@ import utils.Container;
 import utils.ExportDXF;
 import utils.Gpoi;
 import utils.Tools;
+import wblut.geom.WB_AABB;
 import wblut.geom.WB_GeometryOp;
 import wblut.geom.WB_Point;
 import wblut.geom.WB_PolyLine;
@@ -30,15 +38,21 @@ public class DisplayBlock extends PApplet {
 	public static final int LEN_OF_CAMERA = 5000;
 
 	Random rand = new Random(233);
-	int[] c;
-	
 	int[] digs;
+	int[][] c;
+
+	String[] header;
+	int[][] content;
+	
+	
+	public DropdownList  poiType;
+	public Button typeButton;
 
 	public void settings() {
 		size(1200, 1000, P3D);
-		c = new int[11000];
+		c = new int[11000][3];
 		for (int i = 0; i < 11000; ++i) {
-			c[i] = rand.nextInt(255);
+			c[i] = new int[]{rand.nextInt(255), 100, 200};
 		}
 	}
 
@@ -47,7 +61,6 @@ public class DisplayBlock extends PApplet {
 		seivePolyline();
 //		calcBlock();
 		readBlock();
-//		calcUniformPoint();
 
 		initGUI();
 	}
@@ -56,17 +69,17 @@ public class DisplayBlock extends PApplet {
 		background(255);
 		tools.cam.drawSystem(LEN_OF_CAMERA);
 
-		float[] c = ColorHelper.hexToHSV(ColorHelper.RED);
-		stroke(c[0], c[1], c[2]);
-		fill(c[0], c[1], c[2]);
-		if (pts != null)
+		if (pts != null) {
+			stroke(ColorHelper.RED);
+			fill(ColorHelper.RED);
 			tools.render.drawPoint(pts, 4);
+		}
 
 		drawBlock();
 		stroke(0);
 //		tools.render.drawPolylineEdges(plys);
-		
-		if(digs != null) {
+
+		if (digs != null) {
 			drawDigit();
 		}
 		tools.drawCP5();
@@ -74,18 +87,42 @@ public class DisplayBlock extends PApplet {
 
 	public void initGUI() {
 
-	}
+		poiType = tools.cp5.addDropdownList("poiType").setPosition(100, 100).setSize(240, 240).setItemHeight(30)
+				.setBarHeight(30).setColorBackground(color(255, 128)).setColorActive(color(0))
+				.setColorForeground(color(255, 100, 0));
 
+		poiType.getCaptionLabel().toUpperCase(true);
+		poiType.getCaptionLabel().setColor(0xffff0000);
+		poiType.getCaptionLabel().getStyle().marginTop = 3;
+		poiType.getValueLabel().getStyle().marginTop = 3;
+		
+		typeButton = tools.cp5.addButton("typeControl").setPosition(100, 80);
+		
+		int c[][] = ColorHelper.createGradientHue(GmapsTypeDetail.Types.values().length + 1,
+				ColorHelper.RED, ColorHelper.BLUE);
+		int cnt = 0;
+		for (Types type : GmapsTypeDetail.Types.values()) {
+			String str = type.toString();
+			poiType.addItem(str, cnt).setLabel(str).setColorBackground(color(c[cnt][0], c[cnt][1], c[cnt][2]));
+			cnt ++ ;
+		} 
+		poiType.addItem("all", cnt ++).setLabel("all");
+		
+
+	}
 	public void seivePolyline() {
 
 		plys = new ArrayList<>();
 		for (Aoi aoi : Container.aois) {
-			if (!aoi.isHighway) continue;
-			if(!aoi.getTags().containsKey("junction") && aoi.isClosed) continue;
+			if (!aoi.isHighway)
+				continue;
+			if (!aoi.getTags().containsKey("junction") && aoi.isClosed)
+				continue;
 
 			String key = aoi.getTags().get("highway");
 
-			if (key.indexOf("link") > -1) continue;
+			if (key.indexOf("link") > -1)
+				continue;
 			if (OsmTypeDetail.roadMap.containsKey(key) && OsmTypeDetail.roadMap.get(key) != OsmTypeDetail.Road.R1
 					&& OsmTypeDetail.roadMap.get(key) != OsmTypeDetail.Road.S3)
 				plys.add(aoi.getPly());
@@ -104,7 +141,6 @@ public class DisplayBlock extends PApplet {
 	public void calcBlock() {
 
 		polygons = FunctionAnalysis.getInstance().getMapPolygon(plys);
-		colorMode(HSB);
 		System.out.println("Total polygons: " + polygons.size());
 
 	}
@@ -114,7 +150,9 @@ public class DisplayBlock extends PApplet {
 			return;
 		stroke(255);
 		for (int i = 0; i < polygons.size(); ++i) {
-			fill(c[i], 100, 200);
+			
+			int[] co = ColorHelper.hsvToRGB(c[i][0], c[i][1], c[i][2]);
+			fill(co[0], co[1], co[2]);
 			if (polygons.get(i).getSignedArea() > 100)
 				continue;
 			tools.render.drawPolygonEdges(polygons.get(i));
@@ -125,19 +163,19 @@ public class DisplayBlock extends PApplet {
 	public void readBlock() {
 		polygons = FunctionAnalysis.getInstance().getMapPolygonOffline();
 		System.out.println("Total polygons: " + polygons.size());
-		colorMode(HSB);
 	}
-	
-	
+
 	public void drawDigit() {
-		for(int i = 0; i < digs.length; ++ i) {
+		fill(0);
+		stroke(0);
+		for (int i = 0; i < digs.length; ++i) {
 			WB_Point pt = polygons.get(i).getCenter();
-			tools.printOnScreen3D("" + digs[i], 30, pt.xd(), pt.yd(), pt.zd());
+			tools.printOnScreen3D("" + digs[i], 10, pt.xd(), pt.yd(), pt.zd());
 		}
 	}
-	
+
 	public void keyPressed() {
-		
+
 		if (key == 's' || key == 'S') {
 			ExportDXF dxf = new ExportDXF();
 			for (WB_Polygon plg : polygons) {
@@ -147,51 +185,98 @@ public class DisplayBlock extends PApplet {
 			System.out.println("Finish export.");
 
 		}
-		
+
 		if (key == 'p' || key == 'P') {
-			//save pdf;
+			// save pdf;
 		}
-		
+
 		if (key == 'b' || key == 'B') {
-			
+
 		}
-	
-		if (key == 'g' || key == 'G' ) {
-			GeoMath geo = new GeoMath(Container.MAP_LAT_LNG);
+
+		if (key == 'g' || key == 'G') {
+			String filename = "./data/block_gmaps_infomation.csv";
+			CsvWriter csvWriter = new CsvWriter(filename, ',', Charset.forName("UTF-8"));
 			
-			digs = new int[polygons.size()];
-				
+			header = new String[GmapsTypeDetail.Types.values().length + 4];
 			int cnt = 0;
-			for(Gpoi p : Container.gpois) {
-				WB_Point pt = new WB_Point(geo.latLngToXY(p.getLat(), p.getLng()));
-				for(int i = 0; i < polygons.size(); ++ i) {
-					WB_Polygon ply = polygons.get(i);
-					double d =WB_GeometryOp.getDistance3D(pt, 
-							WB_GeometryOp.getClosestPoint3D(pt, ply));
-					
-					if(d < 4) {
-						digs[i] ++;
-					}
-				}
-				cnt ++;
-				if(cnt % 100 == 0) {
-					
-				}
+			header[cnt++] = "poi";
+			header[cnt++] = "yellow";
+			header[cnt++] = "brown";
+			header[cnt++] = "green";
+
+			for (Types type : GmapsTypeDetail.Types.values()) {
+				header[cnt++] = type.toString();
+			} 	
+
+			for(int i = 0; i < cnt; ++ i) {
+				System.out.println(header[i]);
 			}
-		}
-		
-		if (key == 'y' || key == 'Y') {
+			try {
+				csvWriter.writeRecord(header);
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
 			
+			
+			calcBlockGmaps(csvWriter);
+			csvWriter.close();
 		}
-		
+
+		if (key == 'y' || key == 'Y') {
+
+		}
+
 		if (key == 'c' || key == 'C') {
-		// cleaner
+			// cleaner
 			digs = null;
 			pts = null;
 		}
-		
+
 		if (key == 's' || key == 'S') {
 			calcUniformPoint();
+		}
+	}
+
+	public void calcBlockGmaps(CsvWriter csvWriter) {
+		GeoMath geo = new GeoMath(Container.MAP_LAT_LNG);
+
+		digs = new int[polygons.size()];
+		
+		pts = new ArrayList<>();
+		
+		int max = 0;
+		
+		
+		for(Gpoi gp : Container.gpois) {
+			WB_Point pt = new WB_Point(geo.latLngToXY(gp.getLat(), gp.getLng()));
+			pts.add(pt);
+		}
+		
+		for( int i = 0; i < polygons.size(); i ++) {
+
+			WB_Polygon ply = polygons.get(i);
+			WB_AABB aabb = ply.getAABB();
+			for(Gpoi gp : Container.gpois) {
+				WB_Point pt = new WB_Point(geo.latLngToXY(gp.getLat(), gp.getLng()));
+				if(!aabb.contains(pt)) continue;
+
+				double d = WB_GeometryOp.getDistance3D(pt, WB_GeometryOp.getClosestPoint3D(pt, ply));
+				if(d < 1) {
+					digs[i] ++ ;
+				}
+			}
+			System.out.println("ID #" + i + ": " + digs[i]);
+			max = Math.max(max, digs[i]);
+		}
+		
+		int num = 8;
+		int[][] co = ColorHelper.createGradientHue(num, ColorHelper.RED, ColorHelper.BLUE);
+		int step = max / (num - 1);
+		System.out.println(step);
+		for( int i = 0; i < digs.length; ++ i) {
+			System.out.println(digs[i]/step);
+			c[i] = co[digs[i]/step];
 		}
 	}
 

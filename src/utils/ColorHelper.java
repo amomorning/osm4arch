@@ -67,6 +67,11 @@ public class ColorHelper {
 		return rgbToHEX(rgb);
 	}
 	
+	public static int hsvToHEX(float h, float s, float v) {
+		int[] rgb = hsvToRGB(h, s, v);
+		return rgbToHEX(rgb);
+	}
+	
 	public static float[] hexToHSV(int c) {
 		int[] rgb = hexToRGB(c);
 		return rgbToHSV(rgb);
