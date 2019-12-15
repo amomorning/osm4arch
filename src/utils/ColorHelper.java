@@ -173,11 +173,25 @@ public class ColorHelper {
 	}
 
 	public static int[][] createGradientHue(int num, int a, int b) {
-		return createGradientHue(num, hexToRGB(a), hexToRGB(b));
+		return createGradientHue(num, hexToHSV(a), hexToHSV(b));
 	}
 
-	private static int[][] createGradientHue(int num, int[] a, int[] b) {
-		return createGradientHue(num, rgbToHSV(a), rgbToHSV(b));
-	}
 
+	public static int[][] createGradientBright(int num, float[] a) {
+		
+		float h = a[0];
+		float s = a[1];
+
+		int[][] c = new int[num][3];
+		float step = a[2] / (num-1);
+		for(int i = 0; i < num; ++ i) {
+			float v = step * i;
+			c[i] = hsvToRGB(h, s, v);
+		}
+		return c;
+	}
+	
+	public static int[][] createGradientBright(int num, int a) {
+		return createGradientBright(num, hexToHSV(a));
+	}
 }
