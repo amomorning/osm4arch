@@ -68,5 +68,13 @@ public class Gpoi {
 	public void setTypeDetail(String typeDetail) {
 		this.typeDetail = typeDetail;
 	}
+	public boolean isGreen() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+	
+	public boolean isBrown() {
+		return false;
+	}
 	
 }

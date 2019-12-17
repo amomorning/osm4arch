@@ -3,8 +3,11 @@ package main;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import com.csvreader.CsvWriter;
 
@@ -38,21 +41,22 @@ public class DisplayBlock extends PApplet {
 	public static final int LEN_OF_CAMERA = 5000;
 
 	Random rand = new Random(233);
-	int[] digs;
+	int[] poi, yellow, brown, green;
+	Map<String, AtomicInteger> map = new HashMap<>();
+
 	int[][] c;
 
 	String[] header;
 	int[][] content;
-	
-	
-	public DropdownList  poiType;
+
+	public DropdownList poiType;
 	public Button typeButton;
 
 	public void settings() {
 		size(1200, 1000, P3D);
 		c = new int[11000][3];
 		for (int i = 0; i < 11000; ++i) {
-			c[i] = new int[]{rand.nextInt(255), 100, 200};
+			c[i] = new int[] { rand.nextInt(255), 100, 200 };
 		}
 	}
 
@@ -79,7 +83,7 @@ public class DisplayBlock extends PApplet {
 		stroke(0);
 //		tools.render.drawPolylineEdges(plys);
 
-		if (digs != null) {
+		if (poi != null) {
 			drawDigit();
 		}
 		tools.drawCP5();
@@ -95,21 +99,22 @@ public class DisplayBlock extends PApplet {
 		poiType.getCaptionLabel().setColor(0xffff0000);
 		poiType.getCaptionLabel().getStyle().marginTop = 3;
 		poiType.getValueLabel().getStyle().marginTop = 3;
-		
+
 		typeButton = tools.cp5.addButton("typeControl").setPosition(100, 80);
-		
-		int c[][] = ColorHelper.createGradientHue(GmapsTypeDetail.Types.values().length + 1,
-				ColorHelper.RED, ColorHelper.BLUE);
+
+		int c[][] = ColorHelper.createGradientHue(GmapsTypeDetail.Types.values().length + 1, ColorHelper.RED,
+				ColorHelper.BLUE);
 		int cnt = 0;
 		for (Types type : GmapsTypeDetail.Types.values()) {
 			String str = type.toString();
+
 			poiType.addItem(str, cnt).setLabel(str).setColorBackground(color(c[cnt][0], c[cnt][1], c[cnt][2]));
-			cnt ++ ;
-		} 
-		poiType.addItem("all", cnt ++).setLabel("all");
-		
+			cnt++;
+		}
+		poiType.addItem("all", cnt++).setLabel("all");
 
 	}
+
 	public void seivePolyline() {
 
 		plys = new ArrayList<>();
@@ -150,7 +155,7 @@ public class DisplayBlock extends PApplet {
 			return;
 		stroke(255);
 		for (int i = 0; i < polygons.size(); ++i) {
-			
+
 			int[] co = ColorHelper.hsvToRGB(c[i][0], c[i][1], c[i][2]);
 			fill(co[0], co[1], co[2]);
 			if (polygons.get(i).getSignedArea() > 100)
@@ -168,9 +173,9 @@ public class DisplayBlock extends PApplet {
 	public void drawDigit() {
 		fill(0);
 		stroke(0);
-		for (int i = 0; i < digs.length; ++i) {
+		for (int i = 0; i < poi.length; ++i) {
 			WB_Point pt = polygons.get(i).getCenter();
-			tools.printOnScreen3D("" + digs[i], 10, pt.xd(), pt.yd(), pt.zd());
+			tools.printOnScreen3D("" + poi[i], 10, pt.xd(), pt.yd(), pt.zd());
 		}
 	}
 
@@ -197,7 +202,7 @@ public class DisplayBlock extends PApplet {
 		if (key == 'g' || key == 'G') {
 			String filename = "./data/block_gmaps_infomation.csv";
 			CsvWriter csvWriter = new CsvWriter(filename, ',', Charset.forName("UTF-8"));
-			
+
 			header = new String[GmapsTypeDetail.Types.values().length + 4];
 			int cnt = 0;
 			header[cnt++] = "poi";
@@ -207,9 +212,10 @@ public class DisplayBlock extends PApplet {
 
 			for (Types type : GmapsTypeDetail.Types.values()) {
 				header[cnt++] = type.toString();
-			} 	
+				map.put(type.toString(), new AtomicInteger(1));
+			}
 
-			for(int i = 0; i < cnt; ++ i) {
+			for (int i = 0; i < cnt; ++i) {
 				System.out.println(header[i]);
 			}
 			try {
@@ -217,8 +223,7 @@ public class DisplayBlock extends PApplet {
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
-			
-			
+
 			calcBlockGmaps(csvWriter);
 			csvWriter.close();
 		}
@@ -228,8 +233,7 @@ public class DisplayBlock extends PApplet {
 		}
 
 		if (key == 'c' || key == 'C') {
-			// cleaner
-			digs = null;
+			poi = null;
 			pts = null;
 		}
 
@@ -241,42 +245,81 @@ public class DisplayBlock extends PApplet {
 	public void calcBlockGmaps(CsvWriter csvWriter) {
 		GeoMath geo = new GeoMath(Container.MAP_LAT_LNG);
 
-		digs = new int[polygons.size()];
-		
+		poi = new int[polygons.size()];
+		yellow = new int[polygons.size()];
+		green = new int[polygons.size()];
+		brown = new int[polygons.size()];
 		pts = new ArrayList<>();
-		
-		int max = 0;
-		
-		
-		for(Gpoi gp : Container.gpois) {
+
+		for (Gpoi gp : Container.gpois) {
 			WB_Point pt = new WB_Point(geo.latLngToXY(gp.getLat(), gp.getLng()));
 			pts.add(pt);
 		}
-		
-		for( int i = 0; i < polygons.size(); i ++) {
+
+		for (int i = 0; i < polygons.size(); i++) {
 
 			WB_Polygon ply = polygons.get(i);
 			WB_AABB aabb = ply.getAABB();
-			for(Gpoi gp : Container.gpois) {
+			for (Gpoi gp : Container.gpois) {
 				WB_Point pt = new WB_Point(geo.latLngToXY(gp.getLat(), gp.getLng()));
-				if(!aabb.contains(pt)) continue;
+				if (!aabb.contains(pt))
+					continue;
 
 				double d = WB_GeometryOp.getDistance3D(pt, WB_GeometryOp.getClosestPoint3D(pt, ply));
-				if(d < 1) {
-					digs[i] ++ ;
+				if (d > 1)
+					continue;
+
+				poi[i]++;
+
+				if (gp.isChinese())
+					yellow[i]++;
+				if (gp.isGreen())
+					green[i]++;
+				if (gp.isBrown())
+					brown[i]++;
+
+				String type = gp.getType();
+				if (type != "null") {
+					AtomicInteger count = map.get(type);
+					if (count == null) {
+						System.err.println("WRONG TYPE: " + type);
+					} else {
+						count.incrementAndGet();
+					}
 				}
 			}
-			System.out.println("ID #" + i + ": " + digs[i]);
-			max = Math.max(max, digs[i]);
+			System.out.println("ID #" + i + ": " + poi[i]);
+
+			String content = "" + poi[i] + ", " + yellow[i] + ", " + brown[i] + ", " + green[i];
+			for (Types type : GmapsTypeDetail.Types.values()) {
+				AtomicInteger count = map.get(type.toString());
+				content += ", " + count.intValue();
+			}
+
+			try {
+				csvWriter.write(content);
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
 		}
-		
-		int num = 8;
+
+		System.out.println("Finished.");
+//		setColor(poi);
+
+	}
+
+	public void setColor(int[] arr) {
+		int max = 0;
+		for (int i = 0; i < arr.length; ++i)
+			max = Math.max(max, arr[i]);
+		int num = (int) (Math.log1p(max) / Math.log(Tools.RATIO));
 		int[][] co = ColorHelper.createGradientHue(num, ColorHelper.RED, ColorHelper.BLUE);
-		int step = max / (num - 1);
-		System.out.println(step);
-		for( int i = 0; i < digs.length; ++ i) {
-			System.out.println(digs[i]/step);
-			c[i] = co[digs[i]/step];
+
+		for (int i = 0; i < arr.length; ++i) {
+			if (arr[i] == 0)
+				c[i] = new int[] { 255, 255, 255 };
+			else
+				c[i] = co[num - (int) (Math.log1p(arr[i]) / Math.log(Tools.RATIO))];
 		}
 	}
 
