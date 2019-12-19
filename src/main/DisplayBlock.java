@@ -1,5 +1,6 @@
 package main;
 
+import java.awt.Color;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
@@ -47,6 +48,7 @@ public class DisplayBlock extends PApplet {
 
 	Random rand = new Random(233);
 
+	double[] area;
 	int[] arr;
 	int[][] c;
 	int[][] a;
@@ -60,7 +62,9 @@ public class DisplayBlock extends PApplet {
 		size(1200, 1000, P3D);
 		c = new int[11000][3];
 		for (int i = 0; i < 11000; ++i) {
-			c[i] = new int[] { rand.nextInt(255), 100, 200 };
+			float[] hsv = new float[] { rand.nextInt(255), 100, 200 };
+		
+			c[i] = ColorHelper.hsvToRGB(hsv);
 		}
 	}
 
@@ -86,8 +90,10 @@ public class DisplayBlock extends PApplet {
 		drawBlock();
 		stroke(0);
 
-		if (arr != null)
+		if (arr != null) {
 			drawDigit(arr);
+			drawTabels(arr);
+		}
 
 		tools.drawCP5();
 	}
@@ -164,16 +170,14 @@ public class DisplayBlock extends PApplet {
 		polygons = FunctionAnalysis.getInstance().getMapPolygon(plys);
 		System.out.println("Total polygons: " + polygons.size());
 
-	}
-
+	} 
 	public void drawBlock() {
 		if (polygons == null)
 			return;
-		stroke(255);
+		tools.app.stroke(255);
 		for (int i = 0; i < polygons.size(); ++i) {
 
-			int[] co = ColorHelper.hsvToRGB(c[i][0], c[i][1], c[i][2]);
-			fill(co[0], co[1], co[2]);
+			tools.app.fill(c[i][0], c[i][1], c[i][2]);
 			if (polygons.get(i).getSignedArea() > 100)
 				continue;
 			tools.render.drawPolygonEdges(polygons.get(i));
@@ -184,6 +188,10 @@ public class DisplayBlock extends PApplet {
 	public void readBlock() {
 		polygons = FunctionAnalysis.getInstance().getMapPolygonOffline();
 		System.out.println("Total polygons: " + polygons.size());
+		area = new double[polygons.size()];
+		for(int i = 0; i < polygons.size(); ++ i) {
+			area[i] = Math.abs(polygons.get(i).getSignedArea());
+		}
 	}
 
 	public void drawDigit(int[] arr) {
@@ -217,7 +225,9 @@ public class DisplayBlock extends PApplet {
 			setColor(arr);
 		}
 
-		if (key == 'g' || key == 'G') {
+
+		if (key == 'g' && key == 'G') {
+
 			String filename = "./data/block_gmaps_infomation.csv";
 			CsvWriter csvWriter = new CsvWriter(filename, ',', Charset.forName("UTF-8"));
 
@@ -253,6 +263,7 @@ public class DisplayBlock extends PApplet {
 		if (key == 'r' || key == 'R') {
 			String filename = "./data/block_gmaps_infomation.csv";
 			readCSV(filename);
+			System.out.println("Finished");
 		}
 	}
 
@@ -274,6 +285,7 @@ public class DisplayBlock extends PApplet {
 		try {
 			CsvReader csvReader = new CsvReader(filename);
 			csvReader.readHeaders();
+			setHeader();
 			int tot = 0;
 			while (csvReader.readRecord())
 				tot++;
@@ -384,16 +396,50 @@ public class DisplayBlock extends PApplet {
 
 	public void setColor(int[] arr) {
 		int max = 0;
-		for (int i = 0; i < arr.length; ++i)
-			max = Math.max(max, arr[i]);
-		int num = (int) (Math.log1p(max) / Math.log(Tools.RATIO));
+		for (int i = 0; i < arr.length; ++i) {
+			int tmp = arr[i]*100 / ( (int)Math.sqrt(area[i]));
+			max = Math.max(max, tmp);
+		}
+		int num = (int) (Math.log1p(max) / Math.log(Tools.RATIO)) + 1;
 		int[][] co = ColorHelper.createGradientHue(num, ColorHelper.RED, ColorHelper.BLUE);
 
 		for (int i = 0; i < arr.length; ++i) {
 			if (arr[i] == 0)
 				c[i] = new int[] { 255, 255, 255 };
-			else
-				c[i] = co[num - (int) (Math.log1p(arr[i]) / Math.log(Tools.RATIO))];
+			else {
+				int tmp = arr[i]*100 / ( (int)Math.sqrt(area[i]));
+//				int tmp = arr[i] / ((int) Math.log( Math.sqrt(area[i]) ));
+//				if(tmp == 0) System.out.println(arr[i] + " " + (int) Math.log(  Math.sqrt(area[i])) );
+				
+				c[i] = co[num -1 - (int) (Math.log1p(tmp) / Math.log(Tools.RATIO))];
+			}
+		}
+		
+	}
+	
+	public void drawTabels(int[] arr) {
+		int max = 0;
+		for (int i = 0; i < arr.length; ++i) {
+			int tmp = arr[i]*100 / ( (int)Math.sqrt(area[i]));
+			max = Math.max(max, tmp);
+		}
+		int num = (int) (Math.log1p(max) / Math.log(Tools.RATIO))+1;
+		int[][] co = ColorHelper.createGradientHue(num, ColorHelper.RED, ColorHelper.BLUE);
+		for (int i = 0; i < co.length; ++i) {
+			int x = 100;
+			int y = tools.app.height - 100 - i * 50;
+			tools.cam.begin2d();
+			tools.app.noStroke();
+			tools.app.fill(co[i][0], co[i][1], co[i][2]);
+			tools.app.rect(x, y, 30, 30);
+
+			tools.app.fill(0);
+			tools.app.textSize(17);
+
+			int l = (int) Math.ceil(Math.exp((Math.log(Tools.RATIO) * (num - i-1)))) - 1;
+			int r = (int) Math.ceil(Math.exp((Math.log(Tools.RATIO) * (num - i)))) - 1;
+			tools.app.text("POI Num Range [" + l + ", " + r + ") ", x + 50, y + 20);
+			tools.cam.begin3d();
 		}
 	}
 

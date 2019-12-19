@@ -16,7 +16,7 @@ public class Main {
 //		PApplet.main("main.DisplayTemplate");
 
 //		Container.initGmaps();
-		PApplet.main("main.DisplayGrid");
+//		PApplet.main("main.DisplayGrid");
 
 	}
 	
