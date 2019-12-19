@@ -1,5 +1,8 @@
 package main;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
@@ -9,6 +12,7 @@ import java.util.Map;
 import java.util.Random;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import com.csvreader.CsvReader;
 import com.csvreader.CsvWriter;
 
 import controlP5.Button;
@@ -25,6 +29,7 @@ import utils.ColorHelper;
 import utils.Container;
 import utils.ExportDXF;
 import utils.Gpoi;
+import utils.Poi;
 import utils.Tools;
 import wblut.geom.WB_AABB;
 import wblut.geom.WB_GeometryOp;
@@ -41,13 +46,12 @@ public class DisplayBlock extends PApplet {
 	public static final int LEN_OF_CAMERA = 5000;
 
 	Random rand = new Random(233);
-	int[] poi, yellow, brown, green;
-	Map<String, AtomicInteger> map = new HashMap<>();
 
+	int[] arr;
 	int[][] c;
+	int[][] a;
 
 	String[] header;
-	int[][] content;
 
 	public DropdownList poiType;
 	public Button typeButton;
@@ -81,11 +85,10 @@ public class DisplayBlock extends PApplet {
 
 		drawBlock();
 		stroke(0);
-//		tools.render.drawPolylineEdges(plys);
 
-		if (poi != null) {
-			drawDigit();
-		}
+		if (arr != null)
+			drawDigit(arr);
+
 		tools.drawCP5();
 	}
 
@@ -113,6 +116,19 @@ public class DisplayBlock extends PApplet {
 		}
 		poiType.addItem("all", cnt++).setLabel("all");
 
+	}
+
+	public void typeControl() {
+		String label = poiType.getLabel();
+
+		int tmp = 0;
+		for (int i = 0; i < header.length; ++i)
+			if (header[i].equals(label)) {
+				tmp = i;
+			}
+
+		arr = a[tmp];
+		setColor(arr);
 	}
 
 	public void seivePolyline() {
@@ -170,12 +186,12 @@ public class DisplayBlock extends PApplet {
 		System.out.println("Total polygons: " + polygons.size());
 	}
 
-	public void drawDigit() {
+	public void drawDigit(int[] arr) {
 		fill(0);
 		stroke(0);
-		for (int i = 0; i < poi.length; ++i) {
+		for (int i = 0; i < arr.length; ++i) {
 			WB_Point pt = polygons.get(i).getCenter();
-			tools.printOnScreen3D("" + poi[i], 10, pt.xd(), pt.yd(), pt.zd());
+			tools.printOnScreen3D("" + arr[i], 10, pt.xd(), pt.yd(), pt.zd());
 		}
 	}
 
@@ -192,63 +208,100 @@ public class DisplayBlock extends PApplet {
 		}
 
 		if (key == 'p' || key == 'P') {
-			// save pdf;
+			arr = a[0];
+			setColor(arr);
 		}
 
 		if (key == 'b' || key == 'B') {
-
+			arr = a[2];
+			setColor(arr);
 		}
 
 		if (key == 'g' || key == 'G') {
 			String filename = "./data/block_gmaps_infomation.csv";
 			CsvWriter csvWriter = new CsvWriter(filename, ',', Charset.forName("UTF-8"));
 
-			header = new String[GmapsTypeDetail.Types.values().length + 4];
-			int cnt = 0;
-			header[cnt++] = "poi";
-			header[cnt++] = "yellow";
-			header[cnt++] = "brown";
-			header[cnt++] = "green";
-
-			for (Types type : GmapsTypeDetail.Types.values()) {
-				header[cnt++] = type.toString();
-				map.put(type.toString(), new AtomicInteger(1));
-			}
-
-			for (int i = 0; i < cnt; ++i) {
+			setHeader();
+			for (int i = 0; i < header.length; ++i) {
 				System.out.println(header[i]);
 			}
 			try {
 				csvWriter.writeRecord(header);
+				calcBlockGmaps(csvWriter);
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
 
-			calcBlockGmaps(csvWriter);
 			csvWriter.close();
 		}
 
 		if (key == 'y' || key == 'Y') {
 
+			arr = a[1];
+			setColor(arr);
 		}
 
 		if (key == 'c' || key == 'C') {
-			poi = null;
+			arr = null;
 			pts = null;
 		}
 
 		if (key == 's' || key == 'S') {
 			calcUniformPoint();
 		}
+
+		if (key == 'r' || key == 'R') {
+			String filename = "./data/block_gmaps_infomation.csv";
+			readCSV(filename);
+		}
 	}
 
-	public void calcBlockGmaps(CsvWriter csvWriter) {
+	public void setHeader() {
+		header = new String[GmapsTypeDetail.Types.values().length + 4];
+		int cnt = 0;
+		header[cnt++] = "poi";
+		header[cnt++] = "yellow";
+		header[cnt++] = "brown";
+		header[cnt++] = "green";
+
+		for (Types type : GmapsTypeDetail.Types.values()) {
+			header[cnt++] = type.toString();
+		}
+
+	}
+
+	public void readCSV(String filename) {
+		try {
+			CsvReader csvReader = new CsvReader(filename);
+			csvReader.readHeaders();
+			int tot = 0;
+			while (csvReader.readRecord())
+				tot++;
+
+			csvReader = new CsvReader(filename);
+			csvReader.readHeaders();
+			int n = csvReader.getHeaderCount();
+
+			a = new int[n][tot];
+
+			int k = 0;
+			while (csvReader.readRecord()) {
+				for (int i = 0; i < csvReader.getHeaderCount(); ++i) {
+					a[i][k] = Integer.parseInt(csvReader.get(i));
+				}
+				k++;
+			}
+
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+
+	public void calcBlockGmaps(CsvWriter csvWriter) throws IOException {
 		GeoMath geo = new GeoMath(Container.MAP_LAT_LNG);
 
-		poi = new int[polygons.size()];
-		yellow = new int[polygons.size()];
-		green = new int[polygons.size()];
-		brown = new int[polygons.size()];
 		pts = new ArrayList<>();
 
 		for (Gpoi gp : Container.gpois) {
@@ -257,8 +310,15 @@ public class DisplayBlock extends PApplet {
 		}
 
 		for (int i = 0; i < polygons.size(); i++) {
+			int poi = 0, yellow = 0, brown = 0, green = 0;
+
+			Map<String, AtomicInteger> map = new HashMap<>();
+			for (Types type : GmapsTypeDetail.Types.values()) {
+				map.put(type.toString(), new AtomicInteger(0));
+			}
 
 			WB_Polygon ply = polygons.get(i);
+
 			WB_AABB aabb = ply.getAABB();
 			for (Gpoi gp : Container.gpois) {
 				WB_Point pt = new WB_Point(geo.latLngToXY(gp.getLat(), gp.getLng()));
@@ -269,42 +329,56 @@ public class DisplayBlock extends PApplet {
 				if (d > 1)
 					continue;
 
-				poi[i]++;
+				poi++;
 
 				if (gp.isChinese())
-					yellow[i]++;
+					yellow++;
 				if (gp.isGreen())
-					green[i]++;
+					green++;
 				if (gp.isBrown())
-					brown[i]++;
+					brown++;
 
 				String type = gp.getType();
-				if (type != "null") {
+				if (type.indexOf("null") < 0) {
 					AtomicInteger count = map.get(type);
-					if (count == null) {
-						System.err.println("WRONG TYPE: " + type);
-					} else {
-						count.incrementAndGet();
-					}
+					count.incrementAndGet();
+					System.out.println("Count = " + count.get());
 				}
 			}
-			System.out.println("ID #" + i + ": " + poi[i]);
+			System.out.println("ID #" + i + ": " + poi);
 
-			String content = "" + poi[i] + ", " + yellow[i] + ", " + brown[i] + ", " + green[i];
+			for (Poi op : Container.pois) {
+				WB_Point pt = op.getPosition();
+				if (!aabb.contains(pt))
+					continue;
+
+				double d = WB_GeometryOp.getDistance3D(pt, WB_GeometryOp.getClosestPoint3D(pt, ply));
+				if (d > 1)
+					continue;
+
+				if (op.isGreen()) {
+					green++;
+				}
+				if (op.isBrown()) {
+					brown++;
+				}
+			}
+
+			// Save data
+			String[] content = new String[header.length];
+			content[0] = "" + poi;
+			content[1] = "" + yellow;
+			content[2] = "" + brown;
+			content[3] = "" + green;
+			int cnt = 4;
 			for (Types type : GmapsTypeDetail.Types.values()) {
 				AtomicInteger count = map.get(type.toString());
-				content += ", " + count.intValue();
+				content[cnt++] = "" + count.get();
 			}
-
-			try {
-				csvWriter.write(content);
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
+			csvWriter.writeRecord(content);
 		}
 
 		System.out.println("Finished.");
-//		setColor(poi);
 
 	}
 
