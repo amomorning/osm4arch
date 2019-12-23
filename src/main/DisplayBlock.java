@@ -71,7 +71,6 @@ public class DisplayBlock extends PApplet {
 	public void setup() {
 		tools = new Tools(this, LEN_OF_CAMERA);
 		seivePolyline();
-//		calcBlock();
 		readBlock();
 
 		initGUI();
@@ -198,6 +197,7 @@ public class DisplayBlock extends PApplet {
 		fill(0);
 		stroke(0);
 		for (int i = 0; i < arr.length; ++i) {
+			if(arr[i] == 0) continue;
 			WB_Point pt = polygons.get(i).getCenter();
 			tools.printOnScreen3D("" + arr[i], 10, pt.xd(), pt.yd(), pt.zd());
 		}

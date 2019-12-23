@@ -1,25 +1,26 @@
 package main;
 
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
-import evaluate.FunctionAnalysis;
+import com.csvreader.CsvReader;
+
 import osm.GeoMath;
 import processing.core.PApplet;
+import utils.Aoi;
 import utils.ColorHelper;
 import utils.Container;
-import utils.Gpoi;
 import utils.Tools;
-import wblut.geom.WB_GeometryOp;
-import wblut.geom.WB_Point;
 import wblut.geom.WB_Polygon;
 
 public class DisplayBlockFuntion extends PApplet {
 	Tools tools;
 	public static final int LEN_OF_CAMERA = 5000;
 
-	List<WB_Point> pts;
 	List<WB_Polygon> plgs;
-	int[] cnt;
 	int[][] color;
 
 	public void settings() {
@@ -28,29 +29,6 @@ public class DisplayBlockFuntion extends PApplet {
 
 	public void setup() {
 		tools = new Tools(this, LEN_OF_CAMERA);
-		GeoMath geoMath = new GeoMath(Container.MAP_LAT_LNG);
-
-//		int n = Container.gpois
-		plgs = FunctionAnalysis.getInstance().getMapPolygonOffline();
-		cnt = new int[plgs.size()];
-
-		int ttt = 0;
-		for(int i = 0; i < plgs.size(); ++ i) cnt[i] = 0;
-		for (Gpoi gpoi : Container.gpois) {
-
-			WB_Point pt = new WB_Point(geoMath.latLngToXY(gpoi.getLat(), gpoi.getLng()));
-			for (int i = 0; i < plgs.size(); ++i) {
-				WB_Polygon plg = plgs.get(i);
-				if (WB_GeometryOp.contains2D(pt, plg)) {
-					cnt[i]++;
-					break;
-				}
-			}
-			
-			System.out.println("Finished #" + (ttt++) + "/" + Container.gpois.size());
-		}
-		
-		color = getColor(8, cnt);
 
 		initGUI();
 	}
@@ -60,15 +38,10 @@ public class DisplayBlockFuntion extends PApplet {
 		tools.cam.drawSystem(LEN_OF_CAMERA);
 
 		stroke(255, 0, 0);
-		if (pts != null)
-			tools.render.drawPoint(pts, 3);
-		
-		for(int i = 0; i < cnt.length; ++ i) {
-			if(cnt[i] > 0) {
-				fill(color[i][0], color[i][1], color[i][2]);
-				tools.render.drawPolygonEdges(plgs.get(i));
-			}
-		}
+
+		if (plgs != null)
+			tools.render.drawPolygonEdges(plgs);
+
 		tools.drawCP5();
 	}
 
@@ -76,7 +49,8 @@ public class DisplayBlockFuntion extends PApplet {
 		int min = Integer.MAX_VALUE;
 		int max = Integer.MIN_VALUE;
 		for (int i = 0; i < a.length; ++i) {
-			if(a[i] == 0) continue;
+			if (a[i] == 0)
+				continue;
 			min = Math.min(a[i], min);
 			max = Math.min(a[i], max);
 		}
@@ -87,7 +61,8 @@ public class DisplayBlockFuntion extends PApplet {
 
 		int[][] ret = new int[a.length][3];
 		for (int i = 0; i < a.length; ++i) {
-			if(a[i] == 0) continue;
+			if (a[i] == 0)
+				continue;
 			int tmp = (a[i] - min) / step;
 			ret[i] = c[tmp];
 		}
@@ -99,6 +74,60 @@ public class DisplayBlockFuntion extends PApplet {
 	}
 
 	public void keyPressed() {
+
+		if (key == 'g' || key == 'G') {
+			getPolygonFuntionFromCSV("./data/green.csv");
+		}
+		if (key == 'b' || key == 'B') {
+			getPolygonFuntionFromCSV("./data/blue.csv");
+		}
+		if (key == 'i' || key == 'I') {
+			getPolygonFuntionFromCSV("./data/brown.csv");
+		}
+
+	}
+
+	public void getPolygonFuntionFromCSV(String filename) {
+		try {
+			CsvReader reader = new CsvReader(filename);
+
+			List<String> keys = new ArrayList<>();
+			List<String> values = new ArrayList<>();
+			while (reader.readRecord()) {
+				keys.add(reader.get(0));
+				values.add(reader.get(1));
+			}
+
+			plgs = new ArrayList<>();
+			for (Aoi aoi : Container.aois) {
+//				if (!aoi.isClosed)
+//					continue;
+
+				Map<String, String> mp = aoi.getTags();
+				boolean flag = false;
+
+				for (int i = 0; i < keys.size(); ++i) {
+					if (!mp.containsKey(keys.get(i)))
+						continue;
+					if (mp.get(keys.get(i)).equals(values.get(i))) {
+						flag = true;
+					}
+					if(values.get(i).equals("all")) {
+						flag = true;
+					}
+				}
+
+				if (flag == true) {
+					plgs.add(Tools.toWB_Polygon(aoi.getPly()));
+				}
+			}
+
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 }

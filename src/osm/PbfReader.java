@@ -11,7 +11,10 @@ import org.openstreetmap.osmosis.core.container.v0_6.NodeContainer;
 import org.openstreetmap.osmosis.core.container.v0_6.RelationContainer;
 import org.openstreetmap.osmosis.core.container.v0_6.WayContainer;
 import org.openstreetmap.osmosis.core.domain.v0_6.Bound;
+import org.openstreetmap.osmosis.core.domain.v0_6.EntityType;
 import org.openstreetmap.osmosis.core.domain.v0_6.Node;
+import org.openstreetmap.osmosis.core.domain.v0_6.Relation;
+import org.openstreetmap.osmosis.core.domain.v0_6.RelationMember;
 import org.openstreetmap.osmosis.core.domain.v0_6.Tag;
 import org.openstreetmap.osmosis.core.domain.v0_6.Way;
 import org.openstreetmap.osmosis.core.domain.v0_6.WayNode;
@@ -149,6 +152,16 @@ public class PbfReader implements Sink {
 
 		else if (entityContainer instanceof RelationContainer) {
 			// Nothing to do here
+//			Relation myRelation = ((RelationContainer) entityContainer).getEntity();
+//			
+//			for(RelationMember rm : myRelation.getMembers()) {
+//				if(rm.getMemberType() == EntityType.Way) {
+//					long wayid = rm.getMemberId();
+//					Integer id = Container.wayid.get(wayid);
+//					Aoi aoi = Container.aois.get(id);
+//
+//				}
+//			}
 
 		}
 

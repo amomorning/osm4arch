@@ -22,5 +22,10 @@
 	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/HE_Mesh"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/DXF_Exporter"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/DXF_Impoter"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/MidiMapper"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/gzf"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/core"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/reference"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/jdk1.8"/>
 	<classpathentry kind="output" path="target/classes"/>
 </classpath>

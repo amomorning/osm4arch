@@ -1,11 +1,11 @@
 package utils;
 
-import processing.core.PImage;
-
 public class ColorHelper {
 	public static int RED = 0xff3333;
 	public static int BLUE = 0x6666ff;
 	public static int PINK = 0xff66cc;
+	public static int LIGHTRED = 0xF3CBC3;
+	public static int LIGHTBLUE = 0xC3DBF3;
 	public static int BACKGROUNDBLUE = 0x1e2832;
 
 	public static int[] hexToRGB(int c) {
