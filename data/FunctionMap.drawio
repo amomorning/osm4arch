@@ -1,6 +1,6 @@
-<mxfile host="www.draw.io" modified="2019-11-30T10:23:40.952Z" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/78.0.3904.108 Safari/537.36" etag="DCBuRJDdvyeb2Ik251gy" version="12.3.3" type="github" pages="1">
+<mxfile host="www.draw.io" modified="2019-12-23T14:34:06.389Z" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0.3945.88 Safari/537.36" etag="M2fCLdsnOkv_ejOvHRbE" version="12.4.3" type="github" pages="1">
   <diagram id="6a731a19-8d31-9384-78a2-239565b7b9f0" name="Page-1">
-    <mxGraphModel dx="2825" dy="880" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1169" pageHeight="827" background="#ffffff" math="0" shadow="0">
+    <mxGraphModel dx="3516" dy="1165" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1169" pageHeight="827" background="#ffffff" math="0" shadow="0">
       <root>
         <mxCell id="0"/>
         <mxCell id="1" parent="0"/>
@@ -253,7 +253,7 @@
         <mxCell id="wet6F0pMuHpz1zGbCpwc-111" value="stadium" style="text;html=1;fontColor=#000000;" parent="wet6F0pMuHpz1zGbCpwc-152" vertex="1">
           <mxGeometry x="49.70846047156727" y="30.68181818181818" width="54" height="21.81818181818182" as="geometry"/>
         </mxCell>
-        <mxCell id="wet6F0pMuHpz1zGbCpwc-139" value="" style="group" parent="1" vertex="1" connectable="0">
+        <mxCell id="wet6F0pMuHpz1zGbCpwc-139" value="" style="group;fillColor=none;" parent="1" vertex="1" connectable="0">
           <mxGeometry x="-470" y="50" width="405" height="230" as="geometry"/>
         </mxCell>
         <mxCell id="wet6F0pMuHpz1zGbCpwc-15" value="" style="ellipse;whiteSpace=wrap;html=1;fillColor=#D4E1F5;strokeColor=none;" parent="wet6F0pMuHpz1zGbCpwc-139" vertex="1">
