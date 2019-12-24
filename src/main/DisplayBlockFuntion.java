@@ -8,20 +8,25 @@ import java.util.Map;
 
 import com.csvreader.CsvReader;
 
+import Guo_Cam.Vec_Guo;
 import osm.GeoMath;
 import processing.core.PApplet;
 import utils.Aoi;
 import utils.ColorHelper;
 import utils.Container;
 import utils.Tools;
+import wblut.geom.WB_Circle;
+import wblut.geom.WB_PolyLine;
 import wblut.geom.WB_Polygon;
 
 public class DisplayBlockFuntion extends PApplet {
 	Tools tools;
 	public static final int LEN_OF_CAMERA = 5000;
 
+	List<WB_PolyLine> plys;
 	List<WB_Polygon> plgs;
-	int[][] color;
+	int[] fillcolor, linecolor;
+	private double circleR = 10;
 
 	public void settings() {
 		size(1200, 1000, P3D);
@@ -39,10 +44,21 @@ public class DisplayBlockFuntion extends PApplet {
 
 		stroke(255, 0, 0);
 
-		if (plgs != null)
+		if (plgs != null) {
+			fill(fillcolor[0], fillcolor[1], fillcolor[2]);
+			stroke(linecolor[0], linecolor[1], linecolor[2]);
 			tools.render.drawPolygonEdges(plgs);
+		}
+		
+		if(plys != null) { 
+			noFill();
+			stroke(linecolor[0], linecolor[1], linecolor[2]);
+			tools.render.drawPolylineEdges(plys);
+		}
 
 		tools.drawCP5();
+		tools.drawCircle(this, circleR);
+
 	}
 
 	public int[][] getColor(int num, int[] a) {
@@ -77,14 +93,29 @@ public class DisplayBlockFuntion extends PApplet {
 
 		if (key == 'g' || key == 'G') {
 			getPolygonFuntionFromCSV("./data/green.csv");
+			fillcolor = ColorHelper.hsvToRGB(80.0f/360*255, 255*0.15f, 255*0.95f);
+			linecolor = ColorHelper.hsvToRGB(80.0f/360*255, 255*0.25f, 255*0.45f);
 		}
 		if (key == 'b' || key == 'B') {
 			getPolygonFuntionFromCSV("./data/blue.csv");
+			fillcolor = ColorHelper.hsvToRGB(180.0f/360*255, 255*0.15f, 255*0.95f);
+			linecolor = ColorHelper.hsvToRGB(180.0f/360*255, 255*0.25f, 255*0.45f);
 		}
 		if (key == 'i' || key == 'I') {
 			getPolygonFuntionFromCSV("./data/brown.csv");
+			fillcolor = ColorHelper.hsvToRGB(10.0f/360*255, 255*0.15f, 255*0.55f);
+			linecolor = ColorHelper.hsvToRGB(10.0f/360*255, 255*0.25f, 255*0.25f);
+		}
+		
+		if(key == ']') {
+			circleR += 10;
+			System.out.println("Now circle radius is " + circleR + "m.");
 		}
 
+		if(key == '[') {
+			circleR -= 10;
+			System.out.println("Now circle radius is " + circleR + "m.");
+		}
 	}
 
 	public void getPolygonFuntionFromCSV(String filename) {
@@ -99,6 +130,7 @@ public class DisplayBlockFuntion extends PApplet {
 			}
 
 			plgs = new ArrayList<>();
+			plys = new ArrayList<>();
 			for (Aoi aoi : Container.aois) {
 //				if (!aoi.isClosed)
 //					continue;
@@ -118,7 +150,8 @@ public class DisplayBlockFuntion extends PApplet {
 				}
 
 				if (flag == true) {
-					plgs.add(Tools.toWB_Polygon(aoi.getPly()));
+					if(aoi.isClosed) plgs.add(Tools.toWB_Polygon(aoi.getPly()));
+					else plys.add(aoi.getPly());
 				}
 			}
 
@@ -128,6 +161,7 @@ public class DisplayBlockFuntion extends PApplet {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		System.out.println("Finish read.");
 	}
 
 }

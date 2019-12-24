@@ -69,6 +69,7 @@ public class ColorHelper {
 	
 	public static int hsvToHEX(float h, float s, float v) {
 		int[] rgb = hsvToRGB(h, s, v);
+		System.out.println(rgb[0] + " " + rgb[1] + " " + rgb[2]);
 		return rgbToHEX(rgb);
 	}
 	

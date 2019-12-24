@@ -23,6 +23,7 @@ import igeo.IG;
 import igeo.IPoint;
 import processing.core.PApplet;
 import wblut.geom.WB_AABB;
+import wblut.geom.WB_Circle;
 import wblut.geom.WB_Coord;
 import wblut.geom.WB_CoordCollection;
 import wblut.geom.WB_GeometryFactory;
@@ -411,5 +412,13 @@ public class Tools {
 	
 	public static void toCSV(String filename, String[] in) {
 		
+	}
+
+	public void drawCircle(PApplet app, double radius) {
+		Vec_Guo v = cam.getCoordinateFromScreenOnXYPlane(app.mouseX, app.mouseY);
+		WB_Circle c = new WB_Circle(v.x, v.y, radius);
+		app.fill(230, 200, 180);
+		app.noStroke();
+		render.drawCircle(c);
 	}
 }
