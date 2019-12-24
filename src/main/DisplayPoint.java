@@ -11,6 +11,7 @@ import evaluate.StreetAnalysis;
 import osm.GeoMath;
 import osm.OsmTypeDetail;
 import processing.core.PApplet;
+import processing.core.PImage;
 import utils.Aoi;
 import utils.ColorHelper;
 import utils.Container;
@@ -27,6 +28,7 @@ public class DisplayPoint extends PApplet {
 	List<WB_Polygon> building;
 	List<int[]> co;
 	Tools tools;
+	PImage img, emg;
 	public static final int LEN_OF_CAMERA = 5000;
 
 	public void settings() {
@@ -53,6 +55,13 @@ public class DisplayPoint extends PApplet {
 			for (int i = 0; i < pts.size(); ++i) {
 				tools.drawPoint(pts.get(i), 10, co.get(i));
 			}
+		}
+		
+		if(img != null) {
+			tools.cam.begin2d();
+			image(img, 250, 300, 300, 300);
+			image(emg, 550, 300, 400, 300);
+			tools.cam.begin3d();
 		}
 
 		stroke(0);
@@ -147,8 +156,13 @@ public class DisplayPoint extends PApplet {
 			e.printStackTrace();
 		}
 	}
+	
+	public void loadImg(String name) {
+		img = loadImage(name);
+	}
 
 	public void mouseClicked() {
+		if(img != null) {img = null; return;}
 		if(vpt == null) return;
 		double[] tmp = tools.cam.getCoordinateFromScreenOnXYPlaneDouble(mouseX, mouseY);
 		WB_Point pos = new WB_Point(tmp);
@@ -163,7 +177,8 @@ public class DisplayPoint extends PApplet {
 		}
 		if(pt == null) {System.out.println("Point not find."); }
 		else {
-			System.out.println("img name :" +  pt.imgname);
+			img = loadImage("E:\\evaluate_img\\" + pt.imgname + ".jpg");
+			emg = loadImage("E:\\evaluate_img\\" + pt.imgname + ".png");
 		}
 	}
 	

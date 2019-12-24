@@ -9,15 +9,15 @@ public class Main {
 		Container.OSM_FILENAME = "./data/prato.pbf";
 		Container.initAll();
 //		PApplet.main("main.DisplayAll");
-//		PApplet.main("main.DisplayRoad");
-//		PApplet.main("main.DisplayBlock");
-//		PApplet.main("main.DisplayBlockFuntion");
+		PApplet.main("main.DisplayRoad");
+		PApplet.main("main.DisplayBlock");
+		PApplet.main("main.DisplayBlockFuntion");
 		PApplet.main("main.DisplayPoint");
 
 //		PApplet.main("main.DisplayTemplate");
 
 //		Container.initGmaps();
-		PApplet.main("main.DisplayGrid");
+//		PApplet.main("main.DisplayGrid");
 
 	}
 	
