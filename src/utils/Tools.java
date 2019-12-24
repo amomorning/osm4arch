@@ -3,6 +3,7 @@
  */
 package utils;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Random;
 
@@ -41,7 +42,7 @@ import wblut.processing.WB_Render;
  */
 public class Tools {
 	public static double EPS = Double.longBitsToDouble(971L << 52);
-	public static double RATIO = (Math.sqrt(5) + 1.0)/2;
+	public static double RATIO = (Math.sqrt(5) + 1.0) / 2;
 
 	/**
 	 * @param testUtils
@@ -89,18 +90,19 @@ public class Tools {
 		Coordinate[] pts = g.getCoordinates();
 		WB_Point[] polypt = new WB_Point[g.getNumPoints()];
 
-		for (int i = 0; i < pts.length ; ++i) {
+		for (int i = 0; i < pts.length; ++i) {
 //			System.out.println("i = " + i);
 			polypt[i] = new WB_Point(pts[i].x, pts[i].y);
 		}
 //		System.out.println(polypt[0]);
 		return new WB_GeometryFactory().createSimplePolygon(polypt);
 	}
-	
+
 	public static double[][] toPoint3D(List<WB_Point> pts) {
-		if(pts == null) return null;
+		if (pts == null)
+			return null;
 		double[][] ret = new double[pts.size()][3];
-		for(int i = 0; i < pts.size(); ++ i) {
+		for (int i = 0; i < pts.size(); ++i) {
 			ret[i][0] = pts.get(i).xd();
 			ret[i][1] = pts.get(i).yd();
 			ret[i][2] = pts.get(i).zd();
@@ -408,16 +410,22 @@ public class Tools {
 	public static WB_Polygon toWB_Polygon(WB_PolyLine ply) {
 		return new WB_Polygon(ply.getPoints());
 	}
-	
-	
+
 	public static void toCSV(String filename, String[] in) {
-		
+
 	}
 
 	public void drawCircle(PApplet app, double radius) {
 		Vec_Guo v = cam.getCoordinateFromScreenOnXYPlane(app.mouseX, app.mouseY);
 		WB_Circle c = new WB_Circle(v.x, v.y, radius);
 		app.fill(230, 200, 180);
+		app.noStroke();
+		render.drawCircle(c);
+	}
+
+	public void drawPoint(final WB_Coord pts, final double r, int[] co) {
+		WB_Circle c = new WB_Circle(pts.xd(), pts.yd(), r);
+		app.fill(co[0], co[1], co[2]);
 		app.noStroke();
 		render.drawCircle(c);
 	}

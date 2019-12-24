@@ -200,4 +200,11 @@ public class ColorHelper {
 	public static int[][] createGradientBright(int num, int a) {
 		return createGradientBright(num, hexToHSV(a));
 	}
+	
+	public static int[] colorLighter(int c, double ratio)  {
+		float[] hsv = hexToHSV(c);
+		hsv[2] *= (1+ratio);
+		if(hsv[2] > 255) hsv[2] = 255.0f;
+		return hsvToRGB(hsv);
+	}
 }
