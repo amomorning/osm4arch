@@ -15,6 +15,7 @@ import wblut.geom.WB_Coord;
 import wblut.geom.WB_CoordCollection;
 import wblut.geom.WB_Point;
 import wblut.geom.WB_PolyLine;
+import wblut.geom.WB_Polygon;
 import wblut.geom.WB_Segment;
 
 public class StreetAnalysis {
@@ -37,6 +38,41 @@ public class StreetAnalysis {
 				ret.add(new WB_Point(pts.get(i)));
 			}
 		}
+		return ret;
+	}
+	
+	public List<WB_Point> writePolygonPoint(String filename, List<WB_Polygon> plys) throws IOException {
+		GeoMath geoMath = new GeoMath(Container.MAP_LAT_LNG);
+		
+		CsvWriter writer = new CsvWriter(filename, ',', Charset.forName("UTF-8"));
+		String[] header = {"lat", "lng", "polyid"};
+		writer.writeRecord(header);
+		
+		List<WB_Point> ret = new ArrayList<>();
+		for(int i = 0; i < plys.size(); ++ i) {
+			List<WB_Point> curP = new ArrayList<>();
+			double last = 0;
+			int n = plys.get(i).getNumberOfPoints();
+			for(int j = 0; j < n; ++ j) {
+				WB_Point p0 = plys.get(i).getPoint(j);
+				WB_Point p1 = plys.get(i).getPoint((j+1)%n);
+				last = distDicideLine(curP, p0, p1, last);
+			}
+			
+			for(WB_Point p : curP) {
+				double[] latlng = geoMath.xyToLatLng(p.xd(), p.yd());
+				
+				String[] content = {
+						String.valueOf(latlng[0]),
+						String.valueOf(latlng[1]),
+						String.valueOf(i)
+				};
+				
+				writer.writeRecord(content);
+			}
+			ret.addAll(curP);
+		}
+		writer.close();
 		return ret;
 	}
 
@@ -109,6 +145,21 @@ public class StreetAnalysis {
 		return ret;
 	}
 
+	
+	public double distDicideLine(List<WB_Point> pts, WB_Coord p0, WB_Coord p1, double last) {
+		double dist = 50;
+		WB_Segment seg = new WB_Segment(p0, p1);
+		
+		double length = seg.getLength();
+		int n = (int) ((length + last) / dist);
+		
+		for(int i = 1; i <= n; ++ i) {
+			double t = (dist * i - last) / length;
+			pts.add(seg.getParametricPoint(t));
+		}
+		
+		return length - n * dist + last;
+	}
 	
 	public List<WB_Point> distDivideLine(WB_Coord p0, WB_Coord p1) {
 		WB_Segment seg = new WB_Segment(p0, p1);

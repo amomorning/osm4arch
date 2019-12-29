@@ -72,6 +72,7 @@ public class DisplayBlock extends PApplet {
 		tools = new Tools(this, LEN_OF_CAMERA);
 		seivePolyline();
 		readBlock();
+//		calcBlockPoint();
 
 		initGUI();
 	}
@@ -81,8 +82,9 @@ public class DisplayBlock extends PApplet {
 		tools.cam.drawSystem(LEN_OF_CAMERA);
 
 		if (pts != null) {
-			stroke(ColorHelper.RED);
-			fill(ColorHelper.RED);
+			int[] c = ColorHelper.hexToRGB(ColorHelper.RED);
+			stroke(c[0], c[1], c[2]);
+			fill(c[0], c[1], c[2]);
 			tools.render.drawPoint(pts, 4);
 		}
 
@@ -159,6 +161,15 @@ public class DisplayBlock extends PApplet {
 		pts = new ArrayList<>();
 		try {
 			pts = StreetAnalysis.getInstance().writeSamplePoint("./data/points(Uniform).csv");
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	public void calcBlockPoint() {
+		pts = new ArrayList<>();
+		try {
+			pts = StreetAnalysis.getInstance().writePolygonPoint("./data/BlockPoints.csv", polygons);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -438,7 +449,7 @@ public class DisplayBlock extends PApplet {
 
 			int l = (int) Math.ceil(Math.exp((Math.log(Tools.RATIO) * (num - i-1)))) - 1;
 			int r = (int) Math.ceil(Math.exp((Math.log(Tools.RATIO) * (num - i)))) - 1;
-			tools.app.text("POI Num Range [" + l + ", " + r + ") ", x + 50, y + 20);
+			tools.app.text("POI Score [" + l + ", " + r + ") ", x + 50, y + 20);
 			tools.cam.begin3d();
 		}
 	}
