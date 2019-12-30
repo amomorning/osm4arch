@@ -58,7 +58,6 @@ public class MergeOsmFile {
 		left = 180;
 		bottom = 90;
 
-		// TODO Auto-generated method stub
 		for (File file : files) {
 			if (isPbf == false) {
 				XmlReader reader = new XmlReader(file, true, CompressionMethod.None);

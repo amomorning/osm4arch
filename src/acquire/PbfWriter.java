@@ -47,11 +47,11 @@ public class PbfWriter implements Source{
     public void complete() {
         sink.complete();
     }
- 
-    private CommonEntityData createEntity(int idx) {
-        return new CommonEntityData(idx, 1, new Date(), new OsmUser(idx, "Amo"), idx);
-    }
- 
+// 
+//    private CommonEntityData createEntity(int idx) {
+//        return new CommonEntityData(idx, 1, new Date(), new OsmUser(idx, "Amo"), idx);
+//    }
+// 
     public static void main(String[] args) throws FileNotFoundException {
 
     }
