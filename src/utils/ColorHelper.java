@@ -2,6 +2,7 @@ package utils;
 
 public class ColorHelper {
 	public static int RED = 0xff3333;
+	public static int YELLOW = 0xFFFF00;
 	public static int BLUE = 0x6666ff;
 	public static int PINK = 0xff66cc;
 	public static int LIGHTRED = 0xF3CBC3;
@@ -199,6 +200,25 @@ public class ColorHelper {
 	
 	public static int[][] createGradientBright(int num, int a) {
 		return createGradientBright(num, hexToHSV(a));
+
+	}
+	
+	public static int[][] createGradientSaturate(int num, float[] a) {
+		
+		float h = a[0];
+		float v = a[2];
+
+		int[][] c = new int[num][3];
+		float step = (a[1] - 80) / (num-1);
+		for(int i = 0; i < num; ++ i) {
+			float s = step * i + 80;
+			c[i] = hsvToRGB(h, s, v);
+		}
+		return c;
+	}
+	
+	public static int[][] createGradientSaturate(int num, int a) {
+		return createGradientSaturate(num, hexToHSV(a));
 	}
 	
 	public static int[] colorLighter(int c, double ratio)  {

@@ -1,5 +1,6 @@
 package test;
 
+import java.io.UnsupportedEncodingException;
 import java.util.List;
 
 import utils.Container;
@@ -9,21 +10,14 @@ import wblut.geom.WB_Point;
 public class Main {
 
 	public static void main(String[] args) {
-
 		Container.initGmaps();
-		for (Gpoi p : Container.gpois) {
-			if (p.isChinese() == false) {
-				int total = p.judgePinyin(p.getName().toLowerCase());
-				int length = countChar(p.getName());
-
-				if(total == length) {
-					System.out.println(p.getName());
-
-					System.out.println(total + "/" + p.getName().length());
-					System.out.println("-----------------");
-				}
-			}
+		int cnt = 0;
+		for(Gpoi p : Container.gpois) {
+			if(p.isChinese()) continue;
+			cnt += p.getName().length();
 		}
+		System.out.println("cnt = " + cnt);
+		
 	}
 
 	public static int countChar (String str) {

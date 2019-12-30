@@ -1,9 +1,6 @@
 package main;
 
-import java.awt.Color;
-import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
@@ -216,15 +213,7 @@ public class DisplayBlock extends PApplet {
 
 	public void keyPressed() {
 
-		if (key == 's' || key == 'S') {
-			ExportDXF dxf = new ExportDXF();
-			for (WB_Polygon plg : polygons) {
-				dxf.add(plg, ExportDXF.BROKEN);
-			}
-			dxf.save("./data/siteblock.dxf");
-			System.out.println("Finish export.");
 
-		}
 
 		if (key == 'p' || key == 'P') {
 			arr = a[0];
@@ -259,7 +248,7 @@ public class DisplayBlock extends PApplet {
 		if (key == 'y' || key == 'Y') {
 
 			arr = a[1];
-			setColor(arr);
+			setColorSingle(arr);
 		}
 
 		if (key == 'c' || key == 'C') {
@@ -268,7 +257,7 @@ public class DisplayBlock extends PApplet {
 		}
 
 		if (key == 's' || key == 'S') {
-			calcUniformPoint();
+			save("test123123.png");
 		}
 
 		if (key == 'r' || key == 'R') {
@@ -404,6 +393,29 @@ public class DisplayBlock extends PApplet {
 		System.out.println("Finished.");
 
 	}
+	
+
+	public void setColorSingle(int[] arr) {
+		int max = 0;
+		for (int i = 0; i < arr.length; ++i) {
+			int tmp = arr[i]*100 / ( (int)Math.sqrt(area[i]));
+			max = Math.max(max, tmp);
+		}
+		int num = (int) (Math.log1p(max) / Math.log(Tools.RATIO)) + 1;
+		int[][] co = ColorHelper.createGradientSaturate(num, ColorHelper.YELLOW);
+
+		for (int i = 0; i < arr.length; ++i) {
+			if (arr[i] == 0)
+				c[i] = new int[] { 255, 255, 255 };
+			else {
+				int tmp = arr[i]*100 / ( (int)Math.sqrt(area[i]));
+				
+				c[i] = co[(int) (Math.log1p(tmp) / Math.log(Tools.RATIO))];
+			}
+		}
+		
+	}
+	
 
 	public void setColor(int[] arr) {
 		int max = 0;
