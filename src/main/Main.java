@@ -13,12 +13,12 @@ public class Main {
 		PApplet.main("main.DisplayBlock");
 //		PApplet.main("main.DisplayBlockFuntion");
 //		PApplet.main("main.DisplayPoint");
-//		PApplet.main("main.DisplayGmapsPoint");
+		PApplet.main("main.DisplayGmapsPoint");
 
 //		PApplet.main("main.DisplayTemplate");
 
 //		Container.initGmaps();
-//		PApplet.main("main.DisplayGrid");
+		PApplet.main("main.DisplayGrid");
 
 	}
 	

@@ -116,12 +116,14 @@ public class DisplayGmapsPoint extends PApplet {
 			msg = "Point not found.";
 		} else {
 
-			msg = pt.getLat() + ", "
+			msg = pt.getPlaceid() + "\n" 
+				+ pt.getLat() + ", "
 				+ pt.getLng() + "\n"
 				+ pt.getName() + "\n"
 				+ pt.getRating() + " ("
 				+ pt.getUserRatingsTotal() + ")\n"
 				+ pt.getType() + ": " + pt.getTypeDetail();
+			System.out.println(msg);
 		}
 
 	}
