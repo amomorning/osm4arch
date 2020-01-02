@@ -203,22 +203,22 @@ public class DisplayAll extends PApplet {
 		}
 
 		if (key == 's' || key == 'S') {
+			String filePath = "./data/" + aoiKey.getLabel() + "_" + aoiValue.getLabel() + ".dxf";
 			ExportDXF dxf = new ExportDXF();
 			for(WB_PolyLine pl : ply) {
 				dxf.add(pl, ExportDXF.BROKEN);
 			}
+			dxf.save(filePath);
 		}
 
 		if (key == 'g' || key == 'G') {
 			pts = new ArrayList<>();
 			for (Gpoi g : Container.gpois) {
 				double[] pos = geoMath.latLngToXY(g.getLat(), g.getLng());
-//				if (g.getType() == "null")
-//					continue;
+
 				pts.add(new WB_Point(pos));
 			}
 
-//			functionAnalysis.gridCount(Tools.toPoint3D(pts));
 		}
 		
 		if (key == 'i' || key == 'I') {
@@ -228,7 +228,6 @@ public class DisplayAll extends PApplet {
 					polygon.add(Tools.toWB_Polygon(aoi.getPly()));
 				}
 			}
-//			shapeAnalysis.shapeIndex(polygon, 8);
 		}
 
 	}

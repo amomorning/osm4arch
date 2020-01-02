@@ -1,6 +1,4 @@
 {
-    "python.pythonPath": "C:\\Users\\amomorning\\Anaconda3\\envs\\amo\\python.exe",
-    "vim.handleKeys": {
-        "<C-w>": false
-    }
+    "python.pythonPath": "C:\\Users\\amomorning\\Anaconda3\\envs\\amo\\python.exe"
+
 }
