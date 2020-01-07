@@ -87,6 +87,7 @@ public class DisplayGmapsPoint extends PApplet {
 		stroke(0);
 		tools.drawCP5();
 		drawTabels();
+			tools.drawCircle(this, 135);
 		
 		tools.printOnScreen(msg, 16, 100, 30);
 	}
@@ -96,6 +97,11 @@ public class DisplayGmapsPoint extends PApplet {
 	}
 
 	public void keyPressed() {
+		if(key == 's' || key == 'S') {
+			saveFrame("./img/GmapsPoint.png");
+		}
+		if(key == 'c' || key == 'C') {
+		}
 	}
 
 	public void mouseClicked() {
