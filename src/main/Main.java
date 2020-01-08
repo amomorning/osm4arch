@@ -16,7 +16,8 @@ public class Main {
 //		PApplet.main("main.DisplayBlock");
 //		PApplet.main("main.DisplayBlockFuntion");
 //		PApplet.main("main.DisplayPoint");
-		PApplet.main("main.DisplayGmapsPoint");
+//		PApplet.main("main.DisplayGmapsPoint");
+		PApplet.main("main.DisplayBuilding");
 
 //		PApplet.main("main.DisplayTemplate");
 

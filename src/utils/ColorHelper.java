@@ -221,6 +221,15 @@ public class ColorHelper {
 		return createGradientSaturate(num, hexToHSV(a));
 	}
 	
+	/**
+	 * @Function: colorLighter
+	 * @Description: HSV Brighter *= (1+ratio)
+	 * @param c
+	 * @param ratio
+	 * @return
+	 *
+	 * @return: int[]
+	 */
 	public static int[] colorLighter(int c, double ratio)  {
 		float[] hsv = hexToHSV(c);
 		hsv[2] *= (1+ratio);
