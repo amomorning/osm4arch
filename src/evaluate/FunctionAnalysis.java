@@ -81,7 +81,8 @@ public class FunctionAnalysis {
 				float y = (float) (j * step + min[1]);
 				tools.app.noStroke();
 				if (cnt[i][j] == 0) {
-					tools.app.fill(255);
+					int c[] = ColorHelper.hexToRGB(ColorHelper.BACKGROUNDBLUE);
+					tools.app.fill(c[0], c[1], c[2]);
 				} else {
 					int[] c = color[totNum - (int) (Math.log1p(cnt[i][j]) / Math.log(Tools.RATIO))];
 					tools.app.fill(c[0], c[1], c[2]);
@@ -98,7 +99,7 @@ public class FunctionAnalysis {
 			tools.app.fill(color[i][0], color[i][1], color[i][2]);
 			tools.app.rect(x, y, 30, 30);
 
-			tools.app.fill(0);
+			tools.app.fill(255);
 			tools.app.textSize(17);
 
 			int l = (int) Math.ceil(Math.exp((Math.log(Tools.RATIO) * (totNum - i)))) - 1;

@@ -8,25 +8,30 @@ import java.util.Map;
 
 import com.csvreader.CsvReader;
 
-import Guo_Cam.Vec_Guo;
 import osm.GeoMath;
 import processing.core.PApplet;
 import utils.Aoi;
 import utils.ColorHelper;
 import utils.Container;
+import utils.Gpoi;
 import utils.Tools;
-import wblut.geom.WB_Circle;
+import wblut.geom.WB_AABB;
+import wblut.geom.WB_Point;
 import wblut.geom.WB_PolyLine;
 import wblut.geom.WB_Polygon;
 
 public class DisplayBlockFuntion extends PApplet {
 	Tools tools;
-	public static final int LEN_OF_CAMERA = 5000;
+	public static final int LEN_OF_CAMERA = 11000;
 
+	List<WB_Point> pts;
 	List<WB_PolyLine> plys;
 	List<WB_Polygon> plgs;
 	int[] fillcolor, linecolor;
 	private double circleR = 10;
+	WB_AABB rect = null;
+	String tag;
+	GeoMath geoMath = new GeoMath(Container.MAP_LAT_LNG);
 
 	public void settings() {
 		size(1200, 1000, P3D);
@@ -34,13 +39,14 @@ public class DisplayBlockFuntion extends PApplet {
 
 	public void setup() {
 		tools = new Tools(this, LEN_OF_CAMERA);
+		tools.cam.top();
+		rect = new WB_AABB(geoMath.latLngToXY(Container.SW_LAT_LNG), geoMath.latLngToXY(Container.NE_LAT_LNG));
 
-		initGUI();
 	}
 
 	public void draw() {
 		background(255);
-		tools.cam.drawSystem(LEN_OF_CAMERA);
+//		tools.cam.drawSystem(LEN_OF_CAMERA);
 
 		stroke(255, 0, 0);
 
@@ -49,15 +55,23 @@ public class DisplayBlockFuntion extends PApplet {
 			stroke(linecolor[0], linecolor[1], linecolor[2]);
 			tools.render.drawPolygonEdges(plgs);
 		}
-		
-		if(plys != null) { 
+
+		if (plys != null) {
 			noFill();
 			stroke(linecolor[0], linecolor[1], linecolor[2]);
 			tools.render.drawPolylineEdges(plys);
 		}
+		if (pts != null) {
+			stroke(linecolor[0], linecolor[1], linecolor[2]);
+			for (WB_Point pt : pts) {
+				tools.drawPoint(pt, 40, fillcolor);
+			}
+		}
 
 		tools.drawCP5();
-		tools.drawCircle(this, circleR);
+//		tools.drawCircle(this, circccleR);
+		noFill();
+		tools.render.drawAABB(rect);
 
 	}
 
@@ -85,36 +99,54 @@ public class DisplayBlockFuntion extends PApplet {
 		return ret;
 	}
 
-	public void initGUI() {
-
-	}
-
 	public void keyPressed() {
 
 		if (key == 'g' || key == 'G') {
+			tag = "green";
 			getPolygonFuntionFromCSV("./data/green.csv");
-			fillcolor = ColorHelper.hsvToRGB(80.0f/360*255, 255*0.15f, 255*0.95f);
-			linecolor = ColorHelper.hsvToRGB(80.0f/360*255, 255*0.25f, 255*0.45f);
+			fillcolor = ColorHelper.hsvToRGB(80.0f / 360 * 255, 255 * 0.15f, 255 * 0.95f);
+			linecolor = ColorHelper.hsvToRGB(80.0f / 360 * 255, 255 * 0.25f, 255 * 0.45f);
 		}
 		if (key == 'b' || key == 'B') {
+			tag = "blue";
 			getPolygonFuntionFromCSV("./data/blue.csv");
-			fillcolor = ColorHelper.hsvToRGB(180.0f/360*255, 255*0.15f, 255*0.95f);
-			linecolor = ColorHelper.hsvToRGB(180.0f/360*255, 255*0.25f, 255*0.45f);
+			fillcolor = ColorHelper.hsvToRGB(180.0f / 360 * 255, 255 * 0.15f, 255 * 0.95f);
+			linecolor = ColorHelper.hsvToRGB(180.0f / 360 * 255, 255 * 0.25f, 255 * 0.45f);
 		}
 		if (key == 'i' || key == 'I') {
+			tag = "brown";
 			getPolygonFuntionFromCSV("./data/brown.csv");
-			fillcolor = ColorHelper.hsvToRGB(10.0f/360*255, 255*0.15f, 255*0.55f);
-			linecolor = ColorHelper.hsvToRGB(10.0f/360*255, 255*0.25f, 255*0.25f);
+			fillcolor = ColorHelper.hsvToRGB(10.0f / 360 * 255, 255 * 0.15f, 255 * 0.55f);
+			linecolor = ColorHelper.hsvToRGB(10.0f / 360 * 255, 255 * 0.25f, 255 * 0.25f);
 		}
-		
-		if(key == ']') {
+
+		if (key == 'y' || key == 'Y') {
+			tag = "yellow";
+			plgs = new ArrayList<>();
+			plys = new ArrayList<>();
+
+			pts = new ArrayList<>();
+			for (Gpoi g : Container.gpois) {
+				if (g.isChinese()) {
+					double[] pos = geoMath.latLngToXY(g.getLat(), g.getLng());
+					pts.add(new WB_Point(pos));
+				}
+			}
+			fillcolor = ColorHelper.hexToRGB(0xFFF7A1);
+			linecolor = ColorHelper.hexToRGB(0xB6A666);
+		}
+
+		if (key == ']') {
 			circleR += 10;
 			System.out.println("Now circle radius is " + circleR + "m.");
 		}
 
-		if(key == '[') {
+		if (key == '[') {
 			circleR -= 10;
 			System.out.println("Now circle radius is " + circleR + "m.");
+		}
+		if (key == 's' || key == 'S') {
+			saveFrame("./img/" + tag + ".png");
 		}
 	}
 
@@ -131,9 +163,9 @@ public class DisplayBlockFuntion extends PApplet {
 
 			plgs = new ArrayList<>();
 			plys = new ArrayList<>();
+			pts = new ArrayList<>();
+
 			for (Aoi aoi : Container.aois) {
-//				if (!aoi.isClosed)
-//					continue;
 
 				Map<String, String> mp = aoi.getTags();
 				boolean flag = false;
@@ -144,21 +176,22 @@ public class DisplayBlockFuntion extends PApplet {
 					if (mp.get(keys.get(i)).equals(values.get(i))) {
 						flag = true;
 					}
-					if(values.get(i).equals("all")) {
+					if (values.get(i).equals("all")) {
 						flag = true;
 					}
 				}
 
 				if (flag == true) {
-					if(aoi.isClosed) plgs.add(Tools.toWB_Polygon(aoi.getPly()));
-					else plys.add(aoi.getPly());
+					if (aoi.isClosed)
+						plgs.add(Tools.toWB_Polygon(aoi.getPly()));
+					else
+						plys.add(aoi.getPly());
 				}
 			}
 
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		System.out.println("Finish read.");

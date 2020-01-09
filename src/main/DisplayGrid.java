@@ -20,7 +20,7 @@ import wblut.geom.WB_Point;
 
 public class DisplayGrid extends PApplet {
 	Tools tools;
-	public static final int LEN_OF_CAMERA = 5000;
+	public static final int LEN_OF_CAMERA = 11000;
 
 	FunctionAnalysis functionAnalysis;
 	ShapeAnalysis shapeAnalysis;
@@ -31,12 +31,13 @@ public class DisplayGrid extends PApplet {
 	private List<WB_Point> pts;
 	
 	public void settings() {
-		size(1200, 1000, P3D);
+		size(1500, 1000, P3D);
 	}
 
 	public void setup() {
 		GeoMath geoMath = new GeoMath(Container.MAP_LAT_LNG);
 		tools = new Tools(this, LEN_OF_CAMERA);
+		tools.cam.top();
 
 		functionAnalysis = new FunctionAnalysis();
 		rect = new WB_AABB(geoMath.latLngToXY(Container.SW_LAT_LNG), geoMath.latLngToXY(Container.NE_LAT_LNG));
@@ -53,13 +54,13 @@ public class DisplayGrid extends PApplet {
 	}
 	
 	public void draw() {
-		background(255);
-		tools.cam.drawSystem(LEN_OF_CAMERA);
+		background(ColorHelper.BACKGROUNDBLUE);
+//		tools.cam.drawSystem(LEN_OF_CAMERA);
 		stroke(255, 0, 0);
 
 		stroke(255, 0, 0);
 		noFill();
-		tools.render.drawAABB(rect);
+//		tools.render.drawAABB(rect);
 		
 		noStroke();
 		functionAnalysis.drawGridCount(tools);

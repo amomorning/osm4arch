@@ -31,7 +31,6 @@ public class DisplayAll extends PApplet {
 	List<WB_PolyLine> ply;
 	List<WB_Point> pts;
 
-	WB_AABB rect = null;
 
 	DropdownList aoiKey, aoiValue, poiType;
 	Button keyButton, valueButton, typeButton;
@@ -39,6 +38,7 @@ public class DisplayAll extends PApplet {
 	FunctionAnalysis functionAnalysis;
 	ShapeAnalysis shapeAnalysis;
 	GeoMath geoMath = new GeoMath(Container.MAP_LAT_LNG);
+	WB_AABB rect = null;
 
 	public void settings() {
 		size(1800, 1000, P3D);

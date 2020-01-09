@@ -60,7 +60,7 @@ public class ShapeAnalysis {
 
 		if (WB_GeometryOp.contains2D(WB_Point.ZERO(), polygon) == false) {
 			polygon = WB_GeometryOp.trimConvexPolygon2D(polygon, 150);
-			System.err.println("Polygon center is not in polygon.");
+//			System.err.println("Polygon center is not in polygon.");
 //			return 0;
 		}
 
@@ -75,7 +75,7 @@ public class ShapeAnalysis {
 					continue;
 				}
 				if (tmp != null) {
-					System.err.println("Rays intersect conflictly");
+//					System.err.println("Rays intersect conflictly");
 					if (tmp.getLength() < p.getLength())
 						tmp = p.copy();
 //					return 0;
@@ -84,7 +84,7 @@ public class ShapeAnalysis {
 				}
 			}
 			if (tmp == null) {
-				System.err.println("Polygon is broken.");
+//				System.err.println("Polygon is broken.");
 			} else {
 			segments.add(new WB_Segment(WB_Point.ZERO(), tmp));
 			}
@@ -114,25 +114,28 @@ public class ShapeAnalysis {
 		for (int i = 0; i < plys.size(); ++i) {
 			polygons[i] = new WB_Polygon(plys.get(i));
 			index[i] = shapeIndexBoyeeClark(plys.get(i), 20);
-			System.out.println("index = " + index[i]);
+//			System.out.println("index = " + index[i]);
 
 			if (index[i] > 0.0) {
 				min = Math.min(min, index[i]);
 				max = Math.max(max, index[i]);
 			}
+
 		}
+		max = 60;
 
 		int[][] c = ColorHelper.createGradientHue(num, ColorHelper.RED, ColorHelper.BLUE);
 		double div = (max - min) / (num - 1);
+		System.out.println("div = " + div + " max = " + max + " min = " + min);
 
 		for (int i = 0; i < plys.size(); ++i) {
 			if (index[i] > 0.0) {
 				double tmp = index[i] - min;
+				if(tmp > max) tmp = max;
 				color[i] = c[num-1-(int) Math.floor(tmp / div)];
 			} else {
 
-				color[i] = new int[] {0, 0, 0};
-//				color[i] = ColorHelper.hexToRGB(ColorHelper.PINK);
+				color[i] = ColorHelper.colorLighter(ColorHelper.BACKGROUNDBLUE, 0.5);
 			}
 		}
 
@@ -140,9 +143,10 @@ public class ShapeAnalysis {
 
 	public void drawShapeIndex(Tools tools) {
 
+		int[] b = ColorHelper.hexToRGB(ColorHelper.BACKGROUNDBLUE);
+		tools.app.stroke(b[0], b[1], b[2]);
 		for (int i = 0; i < color.length; ++i) {
 			tools.app.fill(color[i][0], color[i][1], color[i][2]);
-			tools.app.stroke(0);
 			tools.render.drawPolygonEdges(polygons[i]);
 		}
 	}

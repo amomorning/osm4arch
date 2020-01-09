@@ -4,8 +4,11 @@ import java.io.IOException;
 import java.util.List;
 
 import evaluate.StreetAnalysis;
+import osm.GeoMath;
 import processing.core.PApplet;
+import utils.Container;
 import utils.Tools;
+import wblut.geom.WB_AABB;
 import wblut.geom.WB_Point;
 import wblut.geom.WB_Segment;
 
@@ -15,7 +18,8 @@ public class DisplayTemplate extends PApplet {
 	
 	List<WB_Point> pts;
 	WB_Segment seg;
-
+	GeoMath geoMath = new GeoMath(Container.MAP_LAT_LNG);
+	WB_AABB rect = null;
 	public void settings() {
 		size(1200, 1000, P3D);
 	}
@@ -40,6 +44,7 @@ public class DisplayTemplate extends PApplet {
 		
 		stroke(0);
 		tools.render.drawSegment(seg);
+
 		tools.drawCP5();
 	}
 	

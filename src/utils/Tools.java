@@ -23,6 +23,8 @@ import igeo.ICurve;
 import igeo.IG;
 import igeo.IPoint;
 import processing.core.PApplet;
+import processing.core.PGraphics;
+import processing.opengl.PGraphics3D;
 import wblut.geom.WB_AABB;
 import wblut.geom.WB_Circle;
 import wblut.geom.WB_Coord;
@@ -68,6 +70,8 @@ public class Tools {
 		cp5.setAutoDraw(false);
 		this.app = app;
 	}
+	
+
 
 	public static void timerStart() {
 		lastTimeMillis = System.currentTimeMillis();
@@ -424,9 +428,9 @@ public class Tools {
 	}
 
 	public void drawPoint(final WB_Coord pts, final double r, int[] co) {
-		WB_Circle c = new WB_Circle(pts.xd(), pts.yd(), r);
+		WB_Circle c = new WB_Circle(new WB_Point(pts.xd(), pts.yd(), 0.1), r);
+//		WB_Circle c = new WB_Circle(pts.xd(), pts.yd(), r);
 		app.fill(co[0], co[1], co[2]);
-		app.noStroke();
 		render.drawCircle(c);
 	}
 }

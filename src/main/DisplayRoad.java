@@ -21,7 +21,7 @@ public class DisplayRoad extends PApplet {
 	List<int[]> color;
 
 	public void settings() {
-		size(1600, 1000, P3D);
+		size(3000, 1800, P3D);
 	}
 
 	public void setup() {
@@ -39,7 +39,6 @@ public class DisplayRoad extends PApplet {
 				plys.add(aoi.getPly());
 				color.add(OsmTypeDetail.roadColor.get(road));
 			} else {
-//				aoi.printTag();
 				plys.add(aoi.getPly());
 				color.add(new int[] { 255, 255, 255 });
 			}
@@ -51,11 +50,8 @@ public class DisplayRoad extends PApplet {
 		background(ColorHelper.BACKGROUNDBLUE);
 //		tools.cam.drawSystem(LEN_OF_CAMERA);
 
-
 		drawRoads();
-
 		drawLabels();
-
 		tools.drawCP5();
 	}
 
@@ -103,6 +99,10 @@ public class DisplayRoad extends PApplet {
 		}
 		if(key == 't' || key == 'T') {
 			tools.cam.top();
+		}
+	
+		if(key == 's' || key == 'S') {
+			saveFrame("./img/Road2.png");
 		}
 	}
 

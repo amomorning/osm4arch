@@ -41,7 +41,7 @@ public class DisplayBlock extends PApplet {
 	List<WB_Polygon> polygons;
 	List<WB_PolyLine> plys;
 	Tools tools;
-	public static final int LEN_OF_CAMERA = 5000;
+	public static final int LEN_OF_CAMERA = 11000;
 
 	Random rand = new Random(233);
 
@@ -54,6 +54,8 @@ public class DisplayBlock extends PApplet {
 
 	public DropdownList poiType;
 	public Button typeButton;
+	GeoMath geoMath = new GeoMath(Container.MAP_LAT_LNG);
+	WB_AABB rect = null;
 
 	public void settings() {
 		size(1200, 1000, P3D);
@@ -67,16 +69,18 @@ public class DisplayBlock extends PApplet {
 
 	public void setup() {
 		tools = new Tools(this, LEN_OF_CAMERA);
+		tools.cam.top();
 		seivePolyline();
 		readBlock();
 //		calcBlockPoint();
+		rect = new WB_AABB(geoMath.latLngToXY(Container.SW_LAT_LNG), geoMath.latLngToXY(Container.NE_LAT_LNG));
 
 		initGUI();
 	}
 
 	public void draw() {
-		background(255);
-		tools.cam.drawSystem(LEN_OF_CAMERA);
+		background(ColorHelper.BACKGROUNDBLUE);
+//		tools.cam.drawSystem(LEN_OF_CAMERA);
 
 		if (pts != null) {
 			int[] c = ColorHelper.hexToRGB(ColorHelper.RED);
@@ -87,13 +91,18 @@ public class DisplayBlock extends PApplet {
 
 		drawBlock();
 		stroke(0);
+		
+		stroke(255, 0, 0);
+		noFill();
+		tools.render.drawAABB(rect);
+	
 
-		if (arr != null) {
-			drawDigit(arr);
-			drawTabels(arr);
-		}
+//		if (arr != null) {
+//			drawDigit(arr);
+//			drawTabels(arr);
+//		}
 
-		tools.drawCP5();
+//		tools.drawCP5();
 	}
 
 	public void initGUI() {
@@ -181,7 +190,8 @@ public class DisplayBlock extends PApplet {
 	public void drawBlock() {
 		if (polygons == null)
 			return;
-		tools.app.stroke(255);
+		int[] b = ColorHelper.hexToRGB(ColorHelper.BACKGROUNDBLUE);
+		tools.app.stroke(b[0], b[1], b[2]);
 		for (int i = 0; i < polygons.size(); ++i) {
 
 			tools.app.fill(c[i][0], c[i][1], c[i][2]);
@@ -428,7 +438,7 @@ public class DisplayBlock extends PApplet {
 
 		for (int i = 0; i < arr.length; ++i) {
 			if (arr[i] == 0)
-				c[i] = new int[] { 255, 255, 255 };
+				c[i] = ColorHelper.hexToRGB(ColorHelper.BACKGROUNDBLUE);
 			else {
 				int tmp = arr[i]*100 / ( (int)Math.sqrt(area[i]));
 //				int tmp = arr[i] / ((int) Math.log( Math.sqrt(area[i]) ));

@@ -3,122 +3,79 @@ package main;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
 import com.csvreader.CsvReader;
 
 import Guo_Cam.Vec_Guo;
-import evaluate.StreetAnalysis;
+import evaluate.FunctionAnalysis;
 import osm.GeoMath;
-import osm.OsmTypeDetail;
 import processing.core.PApplet;
-import processing.core.PImage;
-import processing.opengl.PGraphics3D;
-import utils.Aoi;
 import utils.ColorHelper;
 import utils.Container;
 import utils.Tools;
+import wblut.geom.WB_AABB;
 import wblut.geom.WB_Point;
-import wblut.geom.WB_PolyLine;
 import wblut.geom.WB_Polygon;
 
-public class DisplayPoint extends PApplet {
-
-	List<vPoint> vpt;
-	List<WB_Point> pts;
-	List<WB_PolyLine> plys;
-	List<WB_Polygon> building;
-	List<int[]> co;
+public class DisplayStreetBlock extends PApplet{
 	Tools tools;
-	PImage img, emg;
-	public static final int LEN_OF_CAMERA = 5200;
-
+	public static final int LEN_OF_CAMERA = 11000;
+	
+	List<WB_Point> pts;
+	List<WB_Polygon> polygons;
+	List<int[]> co;
+	List<vPoint> vpt;
+	int[] arr;
+	double[] sco;
+	
+	double[] area;
+	int[][] c;
+	
+	int cnt;
+	
+	
+	GeoMath geoMath = new GeoMath(Container.MAP_LAT_LNG);
+	WB_AABB rect = null;
 	public void settings() {
-		size(3200, 1800, P3D);
+		size(1200, 1000, P3D);
 	}
-
+	
 	public void setup() {
-
 		tools = new Tools(this, LEN_OF_CAMERA);
 		tools.cam.top();
-		tools.cam.getCamera().setPosition(new Vec_Guo(-1800, -220, LEN_OF_CAMERA));
-		tools.cam.getCamera().setLookAt(new Vec_Guo(-1800, -220, 0));
-		seivePolyline();
+		tools.cam.getCamera().setPosition(new Vec_Guo(-293.33333333333337, -513.3333333333331, 11000.0));
+		tools.cam.getCamera().setLookAt(new Vec_Guo(-293.33333333333337, -513.3333333333331, 0));
 
-		readEvaluetedPointsFromCSV("./data/evaluate_sample_img.csv");
-		building = new ArrayList<>();
-		for (Aoi aoi : Container.aois) {
-			if (aoi.isBuilding) {
-				building.add(Tools.toWB_Polygon(aoi.getPly()));
-			}
-		}
-
-	}
-
+		readBlock();
+		readEvaluetedPointsFromCSV("./data/evaluate_block_img.csv");
+		setBlockColor();
+	}	
+	
 	public void draw() {
 		background(ColorHelper.BACKGROUNDBLUE);
 //		tools.cam.drawSystem(LEN_OF_CAMERA);
-		if (building != null) {
-			int[] c = ColorHelper.colorLighter(ColorHelper.BACKGROUNDBLUE, 0.6);
-			fill(c[0], c[1], c[2]);
-			noStroke();
-			tools.render.drawPolygonEdges(building);
-		}
-		if (pts != null) {
-			for (int i = 0; i < pts.size(); ++i) {
-				int r = 10;
-				if(i < 5) r = 50;
-				if(i >= pts.size() - 5) r = 50;
-				tools.drawPoint(pts.get(i), r, co.get(i));
-			}
-		}
 
-		if (img != null) {
-			tools.cam.begin2d();
-			tools.app.image(img, 250, 300, 300, 300);
-			tools.app.image(emg, 550, 300, 400, 300);
-			tools.cam.begin3d();
-		}
-
-		for (int i = 0; i < 5; ++i) {
-			displayImage(vpt.get(i).getImgname(), 30, 1800 - 200 * i - 150 - 30);
-			displayImage(vpt.get(vpt.size() - i - 1).getImgname(), 2620, 200 * i + 30);
-		}
-
+		stroke(255, 0, 0);
+		
+//		drawVPoint();
+		drawBlock();
+		
 		stroke(0);
+
 		tools.drawCP5();
 	}
-
-	public void displayImage(String imgname, float x, float y) {
-		tools.cam.begin2d();
-		PImage img = loadImage("E:\\evaluate_img\\" + imgname + ".jpg");
-		PImage emg = loadImage("E:\\evaluate_img\\" + imgname + ".png");
-		tools.app.image(img, x, y, 150, 150);
-		tools.app.image(emg, x + 150, y, 200, 150);
-		tools.cam.begin3d();
-	}
-
-	public void initGUI() {
-
-	}
-
+	
 	public void keyPressed() {
-		if (key == 'r' || key == 'R') {
-		}
-		if (key == 'b' || key == 'B') {
-
-		}
-		if (key == 's' || key == 'S') {
-
+		if(key == 's' || key == 'S') {
 			System.out.println(tools.cam.getCamera().getPosition());
 			System.out.println(tools.cam.getCamera().getLookAt());
-			saveFrame("./img/PointImage.png");
+			saveFrame("./img/block_" + ("score") + ".png" );
 		}
 
 	}
-
+	
 	public void readEvaluetedPointsFromCSV(String filename) {
 		try {
 			CsvReader reader = new CsvReader(filename);
@@ -127,7 +84,9 @@ public class DisplayPoint extends PApplet {
 			pts = new ArrayList<>();
 			co = new ArrayList<>();
 			vpt = new ArrayList<>();
-
+			
+			arr = new int[polygons.size()];
+			sco = new double[polygons.size()];
 			reader.readHeaders();
 			while (reader.readRecord()) {
 				double lat = Double.parseDouble(reader.get("lat"));
@@ -143,8 +102,16 @@ public class DisplayPoint extends PApplet {
 				pt.safety = Double.parseDouble(reader.get("safety"));
 				pt.wealthy = Double.parseDouble(reader.get("wealthy"));
 				pt.score = Double.parseDouble(reader.get("score"));
+				
+				int id = (int) Double.parseDouble(reader.get("polyid"));
+				
+
+				arr[id] ++;
+				sco[id] += pt.score;
 
 				vpt.add(pt);
+				
+
 			}
 
 		} catch (FileNotFoundException e) {
@@ -164,64 +131,52 @@ public class DisplayPoint extends PApplet {
 			co.add(c[(int) (pt.score / step)]);
 		}
 	}
-
-	public void seivePolyline() {
-
-		plys = new ArrayList<>();
-		for (Aoi aoi : Container.aois) {
-			if (!aoi.isHighway)
-				continue;
-			if (!aoi.getTags().containsKey("junction") && aoi.isClosed)
-				continue;
-
-			String key = aoi.getTags().get("highway");
-
-			if (key.indexOf("link") > -1)
-				continue;
-			if (OsmTypeDetail.roadMap.containsKey(key) && OsmTypeDetail.roadMap.get(key) != OsmTypeDetail.Road.R1
-					&& OsmTypeDetail.roadMap.get(key) != OsmTypeDetail.Road.S3)
-				plys.add(aoi.getPly());
+	
+	public void drawVPoint() {
+		int[] b = ColorHelper.hexToRGB(ColorHelper.BACKGROUNDBLUE);
+		tools.app.stroke(b[0], b[1], b[2]);
+		for(int i = 0; i < vpt.size(); ++ i) {
+			tools.drawPoint(vpt.get(i).getWB_Point(), 10, co.get(i));
 		}
 	}
+	
 
-	public void calcUniformPoint() {
-		pts = new ArrayList<>();
-		try {
-			pts = StreetAnalysis.getInstance().writeSamplePoint("./data/points(Uniform).csv");
-		} catch (IOException e) {
-			e.printStackTrace();
+	public void drawBlock() {
+		if (polygons == null)
+			return;
+		int[] b = ColorHelper.hexToRGB(ColorHelper.BACKGROUNDBLUE);
+		tools.app.stroke(b[0], b[1], b[2]);
+		for (int i = 0; i < polygons.size(); ++i) {
+
+			tools.app.fill(c[i][0], c[i][1], c[i][2]);
+			if (polygons.get(i).getSignedArea() > 100)
+				continue;
+			tools.render.drawPolygonEdges(polygons.get(i));
+		}
+
+	}
+
+	public void readBlock() {
+		polygons = FunctionAnalysis.getInstance().getMapPolygonOffline();
+		System.out.println("Total polygons: " + polygons.size());
+		area = new double[polygons.size()];
+		for(int i = 0; i < polygons.size(); ++ i) {
+			area[i] = Math.abs(polygons.get(i).getSignedArea());
 		}
 	}
+	
+	public void setBlockColor() {
+		
+		double step = 1.0/ 10;
+		int[][] col = ColorHelper.createGradientHue(10, ColorHelper.RED, ColorHelper.BLUE);
+		
+		c = new int[polygons.size()][3];
 
-	public void loadImg(String name) {
-		img = loadImage(name);
+	 	for(int i = 0; i < polygons.size(); ++ i) {
+	 		double s = sco[i] / arr[i];
+	 		c[i] = col[(int) (s/step)];
+	 	}
 	}
-
-//	public void mouseClicked() {
-//		if (img != null) {
-//			img = null;
-//			return;
-//		}
-//		if (vpt == null)
-//			return;
-//		double[] tmp = tools.cam.getCoordinateFromScreenOnXYPlaneDouble(mouseX, mouseY);
-//		WB_Point pos = new WB_Point(tmp);
-//		double min = Double.MAX_VALUE;
-//		vPoint pt = null;
-//		for (vPoint p : vpt) {
-//			double dis = WB_Point.getDistance(p.getWB_Point(), pos);
-//			if (dis < min) {
-//				pt = p;
-//				min = dis;
-//			}
-//		}
-//		if (pt == null) {
-//			System.out.println("Point not find.");
-//		} else {
-//			img = loadImage("E:\\evaluate_img\\" + pt.imgname + ".jpg");
-//			emg = loadImage("E:\\evaluate_img\\" + pt.imgname + ".png");
-//		}
-//	}
 
 	class vPoint implements Comparable<vPoint> {
 		public String imgname;
@@ -309,5 +264,4 @@ public class DisplayPoint extends PApplet {
 		}
 
 	}
-
 }
