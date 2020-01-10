@@ -14,12 +14,12 @@ public class Main {
 //		PApplet.main("main.DisplayAll");
 //		PApplet.main("main.DisplayRoad");
 //		PApplet.main("main.DisplayBlock");
-		PApplet.main("main.DisplayBlockFuntion");
+//		PApplet.main("main.DisplayBlockFuntion");
 //		PApplet.main("main.DisplayPoint");
 //		PApplet.main("main.DisplayGmapsPoint");
 //		PApplet.main("main.DisplayBuilding");
 //		PApplet.main("main.DisplayStreetBlock");
-
+		PApplet.main("main.DisplaySinlgeCamera");
 //		PApplet.main("main.DisplayTemplate");
 
 //		PApplet.main("main.DisplayGrid");

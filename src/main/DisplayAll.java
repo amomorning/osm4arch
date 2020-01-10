@@ -202,6 +202,7 @@ public class DisplayAll extends PApplet {
 			}
 		}
 
+
 		if (key == 's' || key == 'S') {
 			String filePath = "./data/" + aoiKey.getLabel() + "_" + aoiValue.getLabel() + ".dxf";
 			ExportDXF dxf = new ExportDXF();
