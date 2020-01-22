@@ -21,7 +21,7 @@ public class DisplayRoad extends PApplet {
 	List<int[]> color;
 
 	public void settings() {
-		size(3000, 1800, P3D);
+		size(1200, 1000, P3D);
 	}
 
 	public void setup() {
@@ -43,7 +43,7 @@ public class DisplayRoad extends PApplet {
 				color.add(new int[] { 255, 255, 255 });
 			}
 		}
-		tools.cam.top();
+//		tools.cam.top();
 	}
 
 	public void draw() {

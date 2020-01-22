@@ -59,13 +59,13 @@ public class DisplayGmapsPoint extends PApplet {
 
 	public void setup() {
 		tools = new Tools(this, LEN_OF_CAMERA);
-		tools.cam.top();
+//		tools.cam.top();
 	}
 
 	public void draw() {
 		background(ColorHelper.BACKGROUNDBLUE);
 //		tools.cam.drawSystem(LEN_OF_CAMERA);
-//		drawTabels();
+		drawTabels();
 //		tools.drawCircle(this, 135);
 		tools.printOnScreen(msg, 16, 100, 30);
 		if (building != null) {
